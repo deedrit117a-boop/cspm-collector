@@ -1,0 +1,6 @@
+service: resourceexplorer2
+client: resource-explorer-2
+scope: regional
+tier: 3
+apis:
+  - {api: list_indexes, paginate: true, result_path: Indexes, resource_type: index, id_field: Arn, arn_field: Arn}

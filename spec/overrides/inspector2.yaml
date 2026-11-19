@@ -1,0 +1,5 @@
+service: inspector2
+client: inspector2
+scope: regional
+apis:
+  - {api: batch_get_account_status, setting: inspector2_account_status}

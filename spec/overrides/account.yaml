@@ -1,0 +1,10 @@
+# Account-wide (global). Contact information is account state, so it lands in account_settings.
+service: account
+client: account
+scope: global
+apis:
+  - {api: get_contact_information, setting: account_contact_information}
+  - {api: get_alternate_contact, alias: alt_contact_billing, setting: account_alternate_contact_billing, parameters: {AlternateContactType: BILLING}}
+  - {api: get_alternate_contact, alias: alt_contact_operations, setting: account_alternate_contact_operations, parameters: {AlternateContactType: OPERATIONS}}
+  - {api: get_alternate_contact, alias: alt_contact_security, setting: account_alternate_contact_security, parameters: {AlternateContactType: SECURITY}}
+  - {api: list_regions, paginate: true, result_path: Regions, resource_type: region, id_field: RegionName}

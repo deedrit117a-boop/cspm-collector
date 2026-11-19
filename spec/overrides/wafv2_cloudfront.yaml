@@ -1,0 +1,21 @@
+# CLOUDFRONT-scope WAFv2 objects exist only in us-east-1, so they are collected once per account (global).
+# The attached distributions come from cloudfront.list_distributions_by_web_acl_id.
+service: wafv2_cloudfront
+client: wafv2
+scope: global
+tier: 1
+apis:
+  - {api: list_web_acls, result_path: WebACLs, resource_type: web_acl, id_field: ARN, arn_field: ARN,
+     parameters: {Scope: CLOUDFRONT}, tags_from: list_tags_for_resource.TagInfoForResource.TagList}
+  - {api: get_web_acl, resource_type: web_acl, parameters: {Scope: CLOUDFRONT},
+     depends_on: {api: list_web_acls, params: {Name: Name, Id: Id}}}
+  - {api: get_logging_configuration, resource_type: web_acl, depends_on: {api: list_web_acls, params: {ResourceArn: ARN}}}
+  - {api: list_tags_for_resource, resource_type: web_acl, depends_on: {api: list_web_acls, params: {ResourceARN: ARN}}}
+  - {api: list_distributions_by_web_acl_id, client: cloudfront, resource_type: web_acl,
+     depends_on: {api: list_web_acls, params: {WebACLId: ARN}}}
+  - {api: list_rule_groups, result_path: RuleGroups, resource_type: rule_group, id_field: ARN, arn_field: ARN, parameters: {Scope: CLOUDFRONT}}
+  - {api: get_rule_group, resource_type: rule_group, parameters: {Scope: CLOUDFRONT},
+     depends_on: {api: list_rule_groups, params: {Name: Name, Id: Id}}}
+  - {api: list_ip_sets, result_path: IPSets, resource_type: ip_set, id_field: ARN, arn_field: ARN, parameters: {Scope: CLOUDFRONT}}
+  - {api: get_ip_set, resource_type: ip_set, parameters: {Scope: CLOUDFRONT},
+     depends_on: {api: list_ip_sets, params: {Name: Name, Id: Id}}}

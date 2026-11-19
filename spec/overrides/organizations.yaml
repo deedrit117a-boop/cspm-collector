@@ -1,0 +1,23 @@
+# Only the management account (or a delegated admin) may call these; others get AccessDenied rows.
+# Policies are listed once per policy type, hence the aliases.
+service: organizations
+client: organizations
+scope: global
+enablement_api: describe_organization
+apis:
+  - {api: describe_organization, setting: organizations_organization}
+  - {api: list_roots, paginate: true, result_path: Roots, resource_type: organization_root, id_field: Id, arn_field: Arn}
+  - {api: list_accounts, paginate: true, result_path: Accounts, resource_type: account, id_field: Id, arn_field: Arn}
+  - {api: list_delegated_administrators, paginate: true, result_path: DelegatedAdministrators, resource_type: delegated_administrator, id_field: Id, arn_field: Arn}
+  - {api: list_policies, alias: list_policies_scp, paginate: true, result_path: Policies, resource_type: organization_policy, id_field: Id, arn_field: Arn,
+     parameters: {Filter: SERVICE_CONTROL_POLICY}}
+  - {api: describe_policy, alias: describe_policy_scp, resource_type: organization_policy, depends_on: {api: list_policies_scp, params: {PolicyId: Id}}}
+  - {api: list_policies, alias: list_policies_tag, paginate: true, result_path: Policies, resource_type: organization_policy, id_field: Id, arn_field: Arn,
+     parameters: {Filter: TAG_POLICY}}
+  - {api: describe_policy, alias: describe_policy_tag, resource_type: organization_policy, depends_on: {api: list_policies_tag, params: {PolicyId: Id}}}
+  - {api: list_policies, alias: list_policies_backup, paginate: true, result_path: Policies, resource_type: organization_policy, id_field: Id, arn_field: Arn,
+     parameters: {Filter: BACKUP_POLICY}}
+  - {api: describe_policy, alias: describe_policy_backup, resource_type: organization_policy, depends_on: {api: list_policies_backup, params: {PolicyId: Id}}}
+  - {api: list_policies, alias: list_policies_ai_optout, paginate: true, result_path: Policies, resource_type: organization_policy, id_field: Id, arn_field: Arn,
+     parameters: {Filter: AISERVICES_OPT_OUT_POLICY}}
+  - {api: describe_policy, alias: describe_policy_ai_optout, resource_type: organization_policy, depends_on: {api: list_policies_ai_optout, params: {PolicyId: Id}}}

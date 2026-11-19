@@ -1,0 +1,9 @@
+service: eventbridge
+client: events
+scope: regional
+apis:
+  - {api: list_event_buses, result_path: EventBuses, resource_type: event_bus, id_field: Name, arn_field: Arn,
+     tags_from: list_tags_for_resource.Tags}
+  - {api: describe_event_bus, resource_type: event_bus, depends_on: {api: list_event_buses, params: {Name: Name}}}
+  - {api: list_rules, resource_type: event_bus, depends_on: {api: list_event_buses, params: {EventBusName: Name}}}
+  - {api: list_tags_for_resource, resource_type: event_bus, depends_on: {api: list_event_buses, params: {ResourceARN: Arn}}}

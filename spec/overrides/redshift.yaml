@@ -1,0 +1,13 @@
+service: redshift
+client: redshift
+scope: regional
+tier: 2
+apis:
+  - {api: describe_clusters, paginate: true, result_path: Clusters, resource_type: cluster, id_field: ClusterIdentifier}
+  - {api: describe_logging_status, resource_type: cluster, depends_on: {api: describe_clusters, params: {ClusterIdentifier: ClusterIdentifier}}}
+  - {api: describe_cluster_snapshots, paginate: true, result_path: Snapshots, resource_type: snapshot, id_field: SnapshotIdentifier,
+     parameters: {SnapshotType: manual}}
+  - {api: describe_cluster_subnet_groups, paginate: true, result_path: ClusterSubnetGroups, resource_type: subnet_group, id_field: ClusterSubnetGroupName}
+  - {api: describe_cluster_parameter_groups, paginate: true, result_path: ParameterGroups, resource_type: parameter_group, id_field: ParameterGroupName}
+  - {api: describe_cluster_parameters, paginate: true, resource_type: parameter_group, parameters: {Source: user},
+     depends_on: {api: describe_cluster_parameter_groups, params: {ParameterGroupName: ParameterGroupName}}}

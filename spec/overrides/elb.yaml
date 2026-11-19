@@ -1,0 +1,16 @@
+# Classic load balancers. They have no ARN in the API, so the DNSName / name are the link keys.
+service: elb
+client: elb
+scope: regional
+tier: 1
+apis:
+  - {api: describe_load_balancers, paginate: true, result_path: LoadBalancerDescriptions, resource_type: load_balancer,
+     id_field: LoadBalancerName, tags_from: lb_tags.TagDescriptions.0.Tags}
+  - {api: describe_load_balancer_attributes, resource_type: load_balancer,
+     depends_on: {api: describe_load_balancers, params: {LoadBalancerName: LoadBalancerName}}}
+  - {api: describe_load_balancer_policies, resource_type: load_balancer,
+     depends_on: {api: describe_load_balancers, params: {LoadBalancerName: LoadBalancerName}}}
+  - {api: describe_instance_health, resource_type: load_balancer,
+     depends_on: {api: describe_load_balancers, params: {LoadBalancerName: LoadBalancerName}}}
+  - {api: describe_tags, alias: lb_tags, resource_type: load_balancer,
+     depends_on: {api: describe_load_balancers, params: {"LoadBalancerNames[]": LoadBalancerName}}}

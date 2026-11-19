@@ -1,0 +1,37 @@
+# IAM is global. Inline policy documents and access-key last-used are fetched by the iam collector
+# (second level), and the credential report by its after_roots step.
+service: iam
+client: iam
+scope: global
+collector: iam
+apis:
+  - {api: list_users, paginate: true, result_path: Users, resource_type: user, id_field: UserName}
+  - {api: get_user, resource_type: user, depends_on: {api: list_users, params: {UserName: UserName}}}
+  - {api: list_mfa_devices, resource_type: user, depends_on: {api: list_users, params: {UserName: UserName}}}
+  - {api: list_access_keys, resource_type: user, depends_on: {api: list_users, params: {UserName: UserName}}}
+  - {api: list_attached_user_policies, resource_type: user, depends_on: {api: list_users, params: {UserName: UserName}}}
+  - {api: list_user_policies, resource_type: user, depends_on: {api: list_users, params: {UserName: UserName}}}
+  - {api: list_groups_for_user, resource_type: user, depends_on: {api: list_users, params: {UserName: UserName}}}
+  - {api: get_login_profile, resource_type: user, depends_on: {api: list_users, params: {UserName: UserName}}}
+  - {api: list_roles, paginate: true, result_path: Roles, resource_type: role, id_field: RoleName}
+  - {api: get_role, resource_type: role, depends_on: {api: list_roles, params: {RoleName: RoleName}}}
+  - {api: list_attached_role_policies, resource_type: role, depends_on: {api: list_roles, params: {RoleName: RoleName}}}
+  - {api: list_role_policies, resource_type: role, depends_on: {api: list_roles, params: {RoleName: RoleName}}}
+  - {api: list_instance_profiles_for_role, resource_type: role, depends_on: {api: list_roles, params: {RoleName: RoleName}}}
+  - {api: list_groups, paginate: true, result_path: Groups, resource_type: group, id_field: GroupName}
+  - {api: get_group, resource_type: group, depends_on: {api: list_groups, params: {GroupName: GroupName}}}
+  - {api: list_attached_group_policies, resource_type: group, depends_on: {api: list_groups, params: {GroupName: GroupName}}}
+  - {api: list_group_policies, resource_type: group, depends_on: {api: list_groups, params: {GroupName: GroupName}}}
+  - {api: list_policies, paginate: true, result_path: Policies, resource_type: policy, id_field: Arn, parameters: {Scope: Local}}
+  - {api: get_policy_version, resource_type: policy,
+     depends_on: {api: list_policies, params: {PolicyArn: Arn, VersionId: DefaultVersionId}}}
+  - {api: list_entities_for_policy, resource_type: policy, depends_on: {api: list_policies, params: {PolicyArn: Arn}}}
+  - {api: list_instance_profiles, paginate: true, result_path: InstanceProfiles, resource_type: instance_profile, id_field: InstanceProfileName}
+  - {api: list_server_certificates, paginate: true, result_path: ServerCertificateMetadataList, resource_type: server_certificate, id_field: ServerCertificateName}
+  - {api: list_virtual_mfa_devices, paginate: true, result_path: VirtualMFADevices, resource_type: virtual_mfa_device, id_field: SerialNumber}
+  - {api: list_saml_providers, result_path: SAMLProviderList, resource_type: saml_provider, id_field: Arn}
+  - {api: list_open_id_connect_providers, result_path: OpenIDConnectProviderList, resource_type: oidc_provider, id_field: Arn}
+  - {api: generate_credential_report, resource_type: credential_report_row}
+  - {api: get_credential_report, resource_type: credential_report_row}
+  - {api: get_account_summary, setting: iam_account_summary}
+  - {api: get_account_password_policy, setting: iam_password_policy}

@@ -1,0 +1,8 @@
+service: wellarchitected
+client: wellarchitected
+scope: regional
+tier: 3
+apis:
+  - {api: list_workloads, result_path: WorkloadSummaries, resource_type: workload, id_field: WorkloadId, arn_field: WorkloadArn,
+     tags_from: list_tags_for_resource.Tags}
+  - {api: list_tags_for_resource, resource_type: workload, depends_on: {api: list_workloads, params: {WorkloadArn: WorkloadArn}}}

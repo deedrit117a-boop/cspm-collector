@@ -1,0 +1,7 @@
+service: rolesanywhere
+client: rolesanywhere
+scope: regional
+tier: 3
+apis:
+  - {api: list_trust_anchors, paginate: true, result_path: trustAnchors, resource_type: trust_anchor, id_field: trustAnchorId, arn_field: trustAnchorArn}
+  - {api: list_profiles, paginate: true, result_path: profiles, resource_type: profile, id_field: profileId, arn_field: profileArn}

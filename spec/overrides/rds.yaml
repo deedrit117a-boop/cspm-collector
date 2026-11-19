@@ -1,0 +1,28 @@
+# Snapshots: only manual ones (automated snapshots cannot be shared and would dominate the volume).
+# Parameter groups: only user-modified parameters (Source=user), not the full ~400 defaults.
+service: rds
+client: rds
+scope: regional
+apis:
+  - {api: describe_db_instances, paginate: true, result_path: DBInstances, resource_type: db_instance, id_field: DBInstanceIdentifier, arn_field: DBInstanceArn}
+  - {api: describe_db_clusters, paginate: true, result_path: DBClusters, resource_type: db_cluster, id_field: DBClusterIdentifier, arn_field: DBClusterArn}
+  - {api: describe_db_snapshots, paginate: true, result_path: DBSnapshots, resource_type: db_snapshot, id_field: DBSnapshotIdentifier,
+     arn_field: DBSnapshotArn, parameters: {SnapshotType: manual}}
+  - {api: describe_db_snapshot_attributes, resource_type: db_snapshot,
+     depends_on: {api: describe_db_snapshots, params: {DBSnapshotIdentifier: DBSnapshotIdentifier}}}
+  - {api: describe_db_cluster_snapshots, paginate: true, result_path: DBClusterSnapshots, resource_type: db_cluster_snapshot,
+     id_field: DBClusterSnapshotIdentifier, arn_field: DBClusterSnapshotArn, parameters: {SnapshotType: manual}}
+  - {api: describe_db_cluster_snapshot_attributes, resource_type: db_cluster_snapshot,
+     depends_on: {api: describe_db_cluster_snapshots, params: {DBClusterSnapshotIdentifier: DBClusterSnapshotIdentifier}}}
+  - {api: describe_db_parameter_groups, paginate: true, result_path: DBParameterGroups, resource_type: db_parameter_group,
+     id_field: DBParameterGroupName, arn_field: DBParameterGroupArn}
+  - {api: describe_db_parameters, paginate: true, resource_type: db_parameter_group, parameters: {Source: user},
+     depends_on: {api: describe_db_parameter_groups, params: {DBParameterGroupName: DBParameterGroupName}}}
+  - {api: describe_db_cluster_parameter_groups, paginate: true, result_path: DBClusterParameterGroups, resource_type: db_cluster_parameter_group,
+     id_field: DBClusterParameterGroupName, arn_field: DBClusterParameterGroupArn}
+  - {api: describe_db_cluster_parameters, paginate: true, resource_type: db_cluster_parameter_group, parameters: {Source: user},
+     depends_on: {api: describe_db_cluster_parameter_groups, params: {DBClusterParameterGroupName: DBClusterParameterGroupName}}}
+  - {api: describe_db_subnet_groups, paginate: true, result_path: DBSubnetGroups, resource_type: db_subnet_group, id_field: DBSubnetGroupName, arn_field: DBSubnetGroupArn}
+  - {api: describe_event_subscriptions, paginate: true, result_path: EventSubscriptionsList, resource_type: event_subscription, id_field: CustSubscriptionId, arn_field: EventSubscriptionArn}
+  - {api: describe_db_proxies, paginate: true, result_path: DBProxies, resource_type: db_proxy, id_field: DBProxyName, arn_field: DBProxyArn}
+  - {api: describe_certificates, paginate: true, result_path: Certificates, resource_type: db_certificate, id_field: CertificateIdentifier, arn_field: CertificateArn}

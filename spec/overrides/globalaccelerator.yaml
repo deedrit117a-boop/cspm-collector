@@ -1,0 +1,15 @@
+# The Global Accelerator API is served from us-west-2 only. Listeners and endpoint groups are documents of their own.
+service: globalaccelerator
+client: globalaccelerator
+scope: global
+api_region: us-west-2
+tier: 3
+apis:
+  - {api: list_accelerators, paginate: true, result_path: Accelerators, resource_type: accelerator, id_field: AcceleratorArn,
+     arn_field: AcceleratorArn, tags_from: list_tags_for_resource.Tags}
+  - {api: list_tags_for_resource, resource_type: accelerator, depends_on: {api: list_accelerators, params: {ResourceArn: AcceleratorArn}}}
+  - {api: list_listeners, paginate: true, result_path: Listeners, resource_type: listener, id_field: ListenerArn, arn_field: ListenerArn,
+     as_resource: true, inherit: {accelerator_arn: AcceleratorArn}, depends_on: {api: list_accelerators, params: {AcceleratorArn: AcceleratorArn}}}
+  - {api: list_endpoint_groups, paginate: true, result_path: EndpointGroups, resource_type: endpoint_group, id_field: EndpointGroupArn,
+     arn_field: EndpointGroupArn, as_resource: true, inherit: {listener_arn: ListenerArn},
+     depends_on: {api: list_listeners, params: {ListenerArn: ListenerArn}}}

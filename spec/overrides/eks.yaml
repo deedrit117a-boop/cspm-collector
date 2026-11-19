@@ -1,0 +1,11 @@
+# Node groups need (cluster, nodegroup) together: the eks collector describes them and stores them separately.
+service: eks
+client: eks
+scope: regional
+tier: 2
+collector: eks
+apis:
+  - {api: list_clusters, paginate: true, result_path: clusters, resource_type: cluster, id_field: Value,
+     arn_from: describe_cluster.cluster.arn, tags_from: describe_cluster.cluster.tags}
+  - {api: describe_cluster, resource_type: cluster, depends_on: {api: list_clusters, params: {name: Value}}}
+  - {api: list_addons, paginate: true, resource_type: cluster, depends_on: {api: list_clusters, params: {clusterName: Value}}}

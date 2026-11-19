@@ -1,0 +1,31 @@
+# Hierarchy: load balancer -> listener -> rule. Listeners and rules are documents of their own (as_resource) that
+# point back with load_balancer_arn / listener_arn / parent. Target groups are listed region-wide and link to
+# their load balancers through LoadBalancerArns; target health is kept with the target group.
+service: elbv2
+client: elbv2
+scope: regional
+tier: 1
+apis:
+  - {api: describe_load_balancers, paginate: true, result_path: LoadBalancers, resource_type: load_balancer,
+     id_field: LoadBalancerArn, arn_field: LoadBalancerArn, tags_from: lb_tags.TagDescriptions.0.Tags}
+  - {api: describe_load_balancer_attributes, resource_type: load_balancer,
+     depends_on: {api: describe_load_balancers, params: {LoadBalancerArn: LoadBalancerArn}}}
+  - {api: describe_tags, alias: lb_tags, resource_type: load_balancer,
+     depends_on: {api: describe_load_balancers, params: {"ResourceArns[]": LoadBalancerArn}}}
+  - {api: describe_listeners, paginate: true, result_path: Listeners, resource_type: listener, id_field: ListenerArn,
+     arn_field: ListenerArn, as_resource: true, inherit: {load_balancer_arn: LoadBalancerArn},
+     depends_on: {api: describe_load_balancers, params: {LoadBalancerArn: LoadBalancerArn}}}
+  - {api: describe_listener_certificates, paginate: true, resource_type: listener,
+     depends_on: {api: describe_listeners, params: {ListenerArn: ListenerArn}}}
+  - {api: describe_rules, result_path: Rules, resource_type: listener_rule, id_field: RuleArn, arn_field: RuleArn,
+     as_resource: true, inherit: {listener_arn: ListenerArn, load_balancer_arn: LoadBalancerArn},
+     depends_on: {api: describe_listeners, params: {ListenerArn: ListenerArn}}}
+  - {api: describe_target_groups, paginate: true, result_path: TargetGroups, resource_type: target_group,
+     id_field: TargetGroupArn, arn_field: TargetGroupArn, tags_from: tg_tags.TagDescriptions.0.Tags}
+  - {api: describe_target_group_attributes, resource_type: target_group,
+     depends_on: {api: describe_target_groups, params: {TargetGroupArn: TargetGroupArn}}}
+  - {api: describe_target_health, resource_type: target_group,
+     depends_on: {api: describe_target_groups, params: {TargetGroupArn: TargetGroupArn}}}
+  - {api: describe_tags, alias: tg_tags, resource_type: target_group,
+     depends_on: {api: describe_target_groups, params: {"ResourceArns[]": TargetGroupArn}}}
+  - {api: describe_ssl_policies, result_path: SslPolicies, resource_type: ssl_policy, id_field: Name}

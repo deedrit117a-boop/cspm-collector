@@ -1,0 +1,11 @@
+# Lightsail pages with pageToken/nextPageToken (handled by the generic manual pager).
+service: lightsail
+client: lightsail
+scope: regional
+tier: 3
+apis:
+  - {api: get_instances, result_path: instances, resource_type: instance, id_field: name, arn_field: arn}
+  - {api: get_instance_port_states, resource_type: instance, depends_on: {api: get_instances, params: {instanceName: name}}}
+  - {api: get_relational_databases, result_path: relationalDatabases, resource_type: relational_database, id_field: name, arn_field: arn}
+  - {api: get_static_ips, result_path: staticIps, resource_type: static_ip, id_field: name, arn_field: arn}
+  - {api: get_load_balancers, result_path: loadBalancers, resource_type: load_balancer, id_field: name, arn_field: arn}

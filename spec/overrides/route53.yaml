@@ -1,0 +1,20 @@
+# Records are stored one document per record set (never one document per zone), with every routing policy
+# field kept (SetIdentifier, Weight, Failover, Region, GeoLocation, HealthCheckId, AliasTarget, TTL, ...).
+service: route53
+client: route53
+scope: global
+tier: 1
+collector: route53
+apis:
+  - {api: list_hosted_zones, paginate: true, result_path: HostedZones, resource_type: hosted_zone, id_field: Id}
+  - {api: get_hosted_zone, resource_type: hosted_zone, depends_on: {api: list_hosted_zones, params: {Id: Id}}}
+  - {api: list_resource_record_sets, paginate: true, result_path: ResourceRecordSets, resource_type: record_set,
+     id_field: "Name+Type+SetIdentifier", scope_id_to_parent: true, as_resource: true, inherit: {hosted_zone_name: Name},
+     depends_on: {api: list_hosted_zones, params: {HostedZoneId: Id}}}
+  - {api: list_health_checks, paginate: true, result_path: HealthChecks, resource_type: health_check, id_field: Id}
+  - {api: get_health_check_status, resource_type: health_check, opt_in_flag: "--collect-health-check-status",
+     depends_on: {api: list_health_checks, params: {HealthCheckId: Id}}}
+  # registered domains live in route53domains (us-east-1 only)
+  - {api: list_domains, client: route53domains, paginate: true, result_path: Domains, resource_type: domain, id_field: DomainName}
+  - {api: get_domain_detail, client: route53domains, resource_type: domain,
+     depends_on: {api: list_domains, params: {DomainName: DomainName}}}

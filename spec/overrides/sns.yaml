@@ -1,0 +1,9 @@
+service: sns
+client: sns
+scope: regional
+apis:
+  - {api: list_topics, paginate: true, result_path: Topics, resource_type: topic, id_field: TopicArn, arn_field: TopicArn,
+     tags_from: list_tags_for_resource.Tags}
+  - {api: get_topic_attributes, resource_type: topic, depends_on: {api: list_topics, params: {TopicArn: TopicArn}}}
+  - {api: list_subscriptions_by_topic, paginate: true, resource_type: topic, depends_on: {api: list_topics, params: {TopicArn: TopicArn}}}
+  - {api: list_tags_for_resource, resource_type: topic, depends_on: {api: list_topics, params: {ResourceArn: TopicArn}}}

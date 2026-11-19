@@ -1,0 +1,12 @@
+# Only the aws:elasticbeanstalk:application:environment option values (the environment variables) are masked.
+service: elasticbeanstalk
+client: elasticbeanstalk
+scope: regional
+tier: 3
+apis:
+  - {api: describe_environments, result_path: Environments, resource_type: environment, id_field: EnvironmentName, arn_field: EnvironmentArn,
+     tags_from: list_tags_for_resource.ResourceTags}
+  - {api: describe_configuration_settings, resource_type: environment,
+     depends_on: {api: describe_environments, params: {ApplicationName: ApplicationName, EnvironmentName: EnvironmentName}},
+     mask: ["pairs:ConfigurationSettings[].OptionSettings|OptionName|Value|Namespace=aws:elasticbeanstalk:application:environment"]}
+  - {api: list_tags_for_resource, resource_type: environment, depends_on: {api: describe_environments, params: {ResourceArn: EnvironmentArn}}}

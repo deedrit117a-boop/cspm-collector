@@ -1,0 +1,17 @@
+# get_distribution_config adds the ETag and the full DistributionConfig (Aliases, Origins, OriginGroups,
+# CacheBehaviors, WebACLId, ViewerCertificate, Logging). The list item already carries a summary.
+service: cloudfront
+client: cloudfront
+scope: global
+tier: 1
+apis:
+  - {api: list_distributions, paginate: true, result_path: "DistributionList.Items", resource_type: distribution,
+     id_field: Id, arn_field: ARN, tags_from: list_tags_for_resource.Tags.Items,
+     change_marker: LastModifiedTime}
+  - {api: get_distribution_config, resource_type: distribution, depends_on: {api: list_distributions, params: {Id: Id}}}
+  - {api: list_tags_for_resource, resource_type: distribution, depends_on: {api: list_distributions, params: {Resource: ARN}}}
+  - {api: list_origin_access_controls, paginate: true, result_path: "OriginAccessControlList.Items", resource_type: origin_access_control, id_field: Id}
+  - {api: list_cloud_front_origin_access_identities, paginate: true, result_path: "CloudFrontOriginAccessIdentityList.Items",
+     resource_type: origin_access_identity, id_field: Id}
+  - {api: list_field_level_encryption_configs, result_path: "FieldLevelEncryptionList.Items",
+     resource_type: field_level_encryption_config, id_field: Id}

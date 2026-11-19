@@ -1,0 +1,12 @@
+service: codeartifact
+client: codeartifact
+scope: regional
+tier: 3
+apis:
+  - {api: list_domains, paginate: true, result_path: domains, resource_type: domain, id_field: name, arn_field: arn}
+  - {api: get_domain_permissions_policy, resource_type: domain, depends_on: {api: list_domains, params: {domain: name}}}
+  - {api: list_repositories, paginate: true, result_path: repositories, resource_type: repository, id_field: arn, arn_field: arn,
+     tags_from: list_tags_for_resource.tags}
+  - {api: get_repository_permissions_policy, resource_type: repository,
+     depends_on: {api: list_repositories, params: {domain: domainName, repository: name}}}
+  - {api: list_tags_for_resource, resource_type: repository, depends_on: {api: list_repositories, params: {resourceArn: arn}}}

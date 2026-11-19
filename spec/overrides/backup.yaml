@@ -1,0 +1,15 @@
+# Recovery points are not listed (one call per vault, thousands of items); add list_recovery_points_by_backup_vault
+# behind an opt-in flag if a rule needs them.
+service: backup
+client: backup
+scope: regional
+tier: 2
+apis:
+  - {api: list_backup_vaults, paginate: true, result_path: BackupVaultList, resource_type: backup_vault, id_field: BackupVaultName,
+     arn_field: BackupVaultArn, tags_from: list_tags.Tags}
+  - {api: get_backup_vault_access_policy, resource_type: backup_vault, depends_on: {api: list_backup_vaults, params: {BackupVaultName: BackupVaultName}}}
+  - {api: list_tags, resource_type: backup_vault, depends_on: {api: list_backup_vaults, params: {ResourceArn: BackupVaultArn}}}
+  - {api: list_backup_plans, paginate: true, result_path: BackupPlansList, resource_type: backup_plan, id_field: BackupPlanId, arn_field: BackupPlanArn}
+  - {api: get_backup_plan, resource_type: backup_plan, depends_on: {api: list_backup_plans, params: {BackupPlanId: BackupPlanId}}}
+  - {api: list_backup_selections, paginate: true, resource_type: backup_plan, depends_on: {api: list_backup_plans, params: {BackupPlanId: BackupPlanId}}}
+  - {api: list_report_plans, result_path: ReportPlans, resource_type: report_plan, id_field: ReportPlanName, arn_field: ReportPlanArn}

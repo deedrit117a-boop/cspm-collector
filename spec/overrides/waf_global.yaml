@@ -1,0 +1,9 @@
+# WAF Classic for CloudFront (global endpoint, us-east-1).
+service: waf_global
+client: waf
+scope: global
+tier: 1
+apis:
+  - {api: list_web_acls, result_path: WebACLs, resource_type: web_acl, id_field: WebACLId}
+  - {api: get_web_acl, resource_type: web_acl, depends_on: {api: list_web_acls, params: {WebACLId: WebACLId}}}
+  - {api: list_rules, result_path: Rules, resource_type: rule, id_field: RuleId}

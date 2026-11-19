@@ -1,0 +1,6648 @@
+spec_version: 2026.10.21-696a804e
+prowler_version: 5.46.0
+source_hash: 696a804ecb991812424b809160d94d64311246dea3d012f4164bfc25f2106667
+services:
+- service: accessanalyzer
+  client: accessanalyzer
+  scope: regional
+  enabled: true
+  tier: 1
+  collector: generic
+  rule_count: 2
+  enablement_api: list_analyzers
+  apis:
+  - api: list_analyzers
+    paginate: true
+    parameters: {}
+    result_path: analyzers
+    resource_type: analyzer
+    id_field: arn
+    arn_field: arn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_findings
+    paginate: true
+    parameters:
+      filter:
+        status:
+          eq:
+          - ACTIVE
+    resource_type: analyzer
+    depends_on:
+      api: list_analyzers
+      params:
+        analyzerArn: arn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: account
+  client: account
+  scope: global
+  enabled: true
+  tier: 1
+  collector: generic
+  rule_count: 4
+  apis:
+  - api: get_contact_information
+    paginate: false
+    parameters: {}
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    setting: account_contact_information
+    mask: []
+    needs_review: false
+  - api: get_alternate_contact
+    alias: alt_contact_billing
+    paginate: false
+    parameters:
+      AlternateContactType: BILLING
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    setting: account_alternate_contact_billing
+    mask: []
+    needs_review: false
+  - api: get_alternate_contact
+    alias: alt_contact_operations
+    paginate: false
+    parameters:
+      AlternateContactType: OPERATIONS
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    setting: account_alternate_contact_operations
+    mask: []
+    needs_review: false
+  - api: get_alternate_contact
+    alias: alt_contact_security
+    paginate: false
+    parameters:
+      AlternateContactType: SECURITY
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    setting: account_alternate_contact_security
+    mask: []
+    needs_review: false
+  - api: list_regions
+    paginate: true
+    parameters: {}
+    result_path: Regions
+    resource_type: region
+    id_field: RegionName
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: acm
+  client: acm
+  scope: regional
+  enabled: true
+  tier: 1
+  collector: generic
+  rule_count: 3
+  apis:
+  - api: list_certificates
+    paginate: true
+    parameters:
+      Includes:
+        keyTypes:
+        - RSA_1024
+        - RSA_2048
+        - RSA_3072
+        - RSA_4096
+        - EC_prime256v1
+        - EC_secp384r1
+        - EC_secp521r1
+    result_path: CertificateSummaryList
+    resource_type: certificate
+    id_field: CertificateArn
+    arn_field: CertificateArn
+    tags_from: list_tags_for_certificate.Tags
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_certificate
+    paginate: false
+    parameters: {}
+    resource_type: certificate
+    depends_on:
+      api: list_certificates
+      params:
+        CertificateArn: CertificateArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_tags_for_certificate
+    paginate: false
+    parameters: {}
+    resource_type: certificate
+    depends_on:
+      api: list_certificates
+      params:
+        CertificateArn: CertificateArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: acmpca
+  client: acm-pca
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 0
+  apis:
+  - api: list_certificate_authorities
+    paginate: true
+    parameters: {}
+    result_path: CertificateAuthorities
+    resource_type: certificate_authority
+    id_field: Arn
+    arn_field: Arn
+    tags_from: list_tags.Tags
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_tags
+    paginate: true
+    parameters: {}
+    resource_type: certificate_authority
+    depends_on:
+      api: list_certificate_authorities
+      params:
+        CertificateAuthorityArn: Arn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: amplify
+  client: amplify
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 0
+  apis:
+  - api: list_apps
+    paginate: false
+    parameters: {}
+    result_path: apps
+    resource_type: app
+    id_field: appId
+    arn_field: appArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask:
+    - map:environmentVariables
+    - value:basicAuthCredentials
+    needs_review: false
+  - api: list_branches
+    paginate: false
+    parameters: {}
+    resource_type: app
+    depends_on:
+      api: list_apps
+      params:
+        appId: appId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask:
+    - map:branches[].environmentVariables
+    - value:branches[].basicAuthCredentials
+    needs_review: false
+- service: apigateway
+  client: apigateway
+  scope: regional
+  enabled: true
+  tier: 1
+  collector: generic
+  rule_count: 9
+  apis:
+  - api: get_rest_apis
+    paginate: true
+    parameters: {}
+    result_path: items
+    resource_type: rest_api
+    id_field: id
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_stages
+    paginate: false
+    parameters: {}
+    resource_type: rest_api
+    depends_on:
+      api: get_rest_apis
+      params:
+        restApiId: id
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_authorizers
+    paginate: false
+    parameters: {}
+    resource_type: rest_api
+    depends_on:
+      api: get_rest_apis
+      params:
+        restApiId: id
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_domain_names
+    paginate: true
+    parameters: {}
+    result_path: items
+    resource_type: domain_name
+    id_field: domainName
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_base_path_mappings
+    paginate: true
+    parameters: {}
+    resource_type: domain_name
+    depends_on:
+      api: get_domain_names
+      params:
+        domainName: domainName
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: apigatewayv2
+  client: apigatewayv2
+  scope: regional
+  enabled: true
+  tier: 1
+  collector: generic
+  rule_count: 2
+  apis:
+  - api: get_apis
+    paginate: false
+    parameters: {}
+    result_path: Items
+    resource_type: api
+    id_field: ApiId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_stages
+    paginate: false
+    parameters: {}
+    resource_type: api
+    depends_on:
+      api: get_apis
+      params:
+        ApiId: ApiId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_authorizers
+    paginate: false
+    parameters: {}
+    resource_type: api
+    depends_on:
+      api: get_apis
+      params:
+        ApiId: ApiId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_integrations
+    paginate: false
+    parameters: {}
+    resource_type: api
+    depends_on:
+      api: get_apis
+      params:
+        ApiId: ApiId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_routes
+    paginate: false
+    parameters: {}
+    resource_type: api
+    depends_on:
+      api: get_apis
+      params:
+        ApiId: ApiId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_domain_names
+    paginate: false
+    parameters: {}
+    result_path: Items
+    resource_type: domain_name
+    id_field: DomainName
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_api_mappings
+    paginate: false
+    parameters: {}
+    resource_type: domain_name
+    depends_on:
+      api: get_domain_names
+      params:
+        DomainName: DomainName
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: appstream
+  client: appstream
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 4
+  apis:
+  - api: describe_fleets
+    paginate: false
+    parameters: {}
+    result_path: Fleets
+    resource_type: fleet
+    id_field: Name
+    arn_field: Arn
+    tags_from: tags_fleet.Tags
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_tags_for_resource
+    alias: tags_fleet
+    paginate: false
+    parameters: {}
+    resource_type: fleet
+    depends_on:
+      api: describe_fleets
+      params:
+        ResourceArn: Arn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_stacks
+    paginate: false
+    parameters: {}
+    result_path: Stacks
+    resource_type: stack
+    id_field: Name
+    arn_field: Arn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: appsync
+  client: appsync
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 0
+  apis:
+  - api: list_graphql_apis
+    paginate: false
+    parameters: {}
+    result_path: graphqlApis
+    resource_type: graphql_api
+    id_field: apiId
+    arn_field: arn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: athena
+  client: athena
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 3
+  apis:
+  - api: list_work_groups
+    paginate: false
+    parameters: {}
+    result_path: WorkGroups
+    resource_type: work_group
+    id_field: Name
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_work_group
+    paginate: false
+    parameters: {}
+    resource_type: work_group
+    depends_on:
+      api: list_work_groups
+      params:
+        WorkGroup: Name
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_data_catalogs
+    paginate: true
+    parameters: {}
+    result_path: DataCatalogsSummary
+    resource_type: data_catalog
+    id_field: CatalogName
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: autoscaling
+  client: autoscaling
+  scope: regional
+  enabled: true
+  tier: 1
+  collector: autoscaling
+  rule_count: 6
+  apis:
+  - api: describe_auto_scaling_groups
+    paginate: true
+    parameters: {}
+    result_path: AutoScalingGroups
+    resource_type: auto_scaling_group
+    id_field: AutoScalingGroupName
+    arn_field: AutoScalingGroupARN
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_launch_configurations
+    paginate: true
+    parameters: {}
+    result_path: LaunchConfigurations
+    resource_type: launch_configuration
+    id_field: LaunchConfigurationName
+    arn_field: LaunchConfigurationARN
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_policies
+    paginate: true
+    parameters: {}
+    result_path: ScalingPolicies
+    resource_type: scaling_policy
+    id_field: PolicyARN
+    arn_field: PolicyARN
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: awslambda
+  client: lambda
+  scope: regional
+  enabled: true
+  tier: 1
+  collector: lambda
+  rule_count: 9
+  apis:
+  - api: list_functions
+    paginate: true
+    parameters: {}
+    result_path: Functions
+    resource_type: function
+    id_field: FunctionName
+    arn_field: FunctionArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    change_marker: LastModified
+    needs_review: false
+  - api: get_function
+    paginate: false
+    parameters: {}
+    resource_type: function
+    depends_on:
+      api: list_functions
+      params:
+        FunctionName: FunctionName
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_policy
+    paginate: false
+    parameters: {}
+    resource_type: function
+    depends_on:
+      api: list_functions
+      params:
+        FunctionName: FunctionName
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_function_url_config
+    paginate: false
+    parameters: {}
+    resource_type: function
+    depends_on:
+      api: list_functions
+      params:
+        FunctionName: FunctionName
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: backup
+  client: backup
+  scope: regional
+  enabled: true
+  tier: 2
+  collector: generic
+  rule_count: 5
+  apis:
+  - api: list_backup_vaults
+    paginate: true
+    parameters: {}
+    result_path: BackupVaultList
+    resource_type: backup_vault
+    id_field: BackupVaultName
+    arn_field: BackupVaultArn
+    tags_from: list_tags.Tags
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_backup_vault_access_policy
+    paginate: false
+    parameters: {}
+    resource_type: backup_vault
+    depends_on:
+      api: list_backup_vaults
+      params:
+        BackupVaultName: BackupVaultName
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_tags
+    paginate: false
+    parameters: {}
+    resource_type: backup_vault
+    depends_on:
+      api: list_backup_vaults
+      params:
+        ResourceArn: BackupVaultArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_backup_plans
+    paginate: true
+    parameters: {}
+    result_path: BackupPlansList
+    resource_type: backup_plan
+    id_field: BackupPlanId
+    arn_field: BackupPlanArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_backup_plan
+    paginate: false
+    parameters: {}
+    resource_type: backup_plan
+    depends_on:
+      api: list_backup_plans
+      params:
+        BackupPlanId: BackupPlanId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_backup_selections
+    paginate: true
+    parameters: {}
+    resource_type: backup_plan
+    depends_on:
+      api: list_backup_plans
+      params:
+        BackupPlanId: BackupPlanId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_report_plans
+    paginate: false
+    parameters: {}
+    result_path: ReportPlans
+    resource_type: report_plan
+    id_field: ReportPlanName
+    arn_field: ReportPlanArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: batch
+  client: batch
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 0
+  apis:
+  - api: describe_compute_environments
+    paginate: true
+    parameters: {}
+    result_path: computeEnvironments
+    resource_type: compute_environment
+    id_field: computeEnvironmentName
+    arn_field: computeEnvironmentArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_job_queues
+    paginate: true
+    parameters: {}
+    result_path: jobQueues
+    resource_type: job_queue
+    id_field: jobQueueName
+    arn_field: jobQueueArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_job_definitions
+    paginate: true
+    parameters:
+      status: ACTIVE
+    result_path: jobDefinitions
+    resource_type: job_definition
+    id_field: jobDefinitionArn
+    arn_field: jobDefinitionArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask:
+    - pairs:containerProperties.environment|name|value
+    needs_review: false
+- service: bedrock
+  client: bedrock
+  scope: regional
+  enabled: true
+  tier: 2
+  collector: generic
+  rule_count: 10
+  apis:
+  - api: get_model_invocation_logging_configuration
+    paginate: false
+    parameters: {}
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    setting: bedrock_invocation_logging
+    mask: []
+    needs_review: false
+  - api: list_custom_models
+    paginate: true
+    parameters: {}
+    result_path: modelSummaries
+    resource_type: custom_model
+    id_field: modelArn
+    arn_field: modelArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_custom_model
+    paginate: false
+    parameters: {}
+    resource_type: custom_model
+    depends_on:
+      api: list_custom_models
+      params:
+        modelIdentifier: modelArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_guardrails
+    paginate: true
+    parameters: {}
+    result_path: guardrails
+    resource_type: guardrail
+    id_field: id
+    arn_field: arn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_guardrail
+    paginate: false
+    parameters: {}
+    resource_type: guardrail
+    depends_on:
+      api: list_guardrails
+      params:
+        guardrailIdentifier: id
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_agents
+    client: bedrock-agent
+    paginate: true
+    parameters: {}
+    result_path: agentSummaries
+    resource_type: agent
+    id_field: agentId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_agent
+    client: bedrock-agent
+    paginate: false
+    parameters: {}
+    resource_type: agent
+    arn_from: get_agent.agent.agentArn
+    depends_on:
+      api: list_agents
+      params:
+        agentId: agentId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_agent_aliases
+    client: bedrock-agent
+    paginate: true
+    parameters: {}
+    resource_type: agent
+    depends_on:
+      api: list_agents
+      params:
+        agentId: agentId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_knowledge_bases
+    client: bedrock-agent
+    paginate: true
+    parameters: {}
+    result_path: knowledgeBaseSummaries
+    resource_type: knowledge_base
+    id_field: knowledgeBaseId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_data_sources
+    client: bedrock-agent
+    paginate: true
+    parameters: {}
+    resource_type: knowledge_base
+    depends_on:
+      api: list_knowledge_bases
+      params:
+        knowledgeBaseId: knowledgeBaseId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: cloudformation
+  client: cloudformation
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 2
+  apis:
+  - api: describe_stacks
+    paginate: true
+    parameters: {}
+    result_path: Stacks
+    resource_type: stack
+    id_field: StackId
+    arn_field: StackId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask:
+    - spairs:Parameters|ParameterKey|ParameterValue
+    - spairs:Outputs|OutputKey|OutputValue
+    needs_review: false
+  - api: list_stack_sets
+    paginate: true
+    parameters: {}
+    result_path: Summaries
+    resource_type: stack_set
+    id_field: StackSetName
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: cloudfront
+  client: cloudfront
+  scope: global
+  enabled: true
+  tier: 1
+  collector: generic
+  rule_count: 14
+  apis:
+  - api: list_distributions
+    paginate: true
+    parameters: {}
+    result_path: DistributionList.Items
+    resource_type: distribution
+    id_field: Id
+    arn_field: ARN
+    tags_from: list_tags_for_resource.Tags.Items
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    change_marker: LastModifiedTime
+    needs_review: false
+  - api: get_distribution_config
+    paginate: false
+    parameters: {}
+    resource_type: distribution
+    depends_on:
+      api: list_distributions
+      params:
+        Id: Id
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_tags_for_resource
+    paginate: false
+    parameters: {}
+    resource_type: distribution
+    depends_on:
+      api: list_distributions
+      params:
+        Resource: ARN
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_origin_access_controls
+    paginate: true
+    parameters: {}
+    result_path: OriginAccessControlList.Items
+    resource_type: origin_access_control
+    id_field: Id
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_cloud_front_origin_access_identities
+    paginate: true
+    parameters: {}
+    result_path: CloudFrontOriginAccessIdentityList.Items
+    resource_type: origin_access_identity
+    id_field: Id
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_field_level_encryption_configs
+    paginate: false
+    parameters: {}
+    result_path: FieldLevelEncryptionList.Items
+    resource_type: field_level_encryption_config
+    id_field: Id
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: cloudtrail
+  client: cloudtrail
+  scope: regional
+  enabled: true
+  tier: 1
+  collector: generic
+  rule_count: 15
+  apis:
+  - api: describe_trails
+    paginate: false
+    parameters:
+      includeShadowTrails: false
+    result_path: trailList
+    resource_type: trail
+    id_field: TrailARN
+    arn_field: TrailARN
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_trail_status
+    paginate: false
+    parameters: {}
+    resource_type: trail
+    depends_on:
+      api: describe_trails
+      params:
+        Name: TrailARN
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_event_selectors
+    paginate: false
+    parameters: {}
+    resource_type: trail
+    depends_on:
+      api: describe_trails
+      params:
+        TrailName: TrailARN
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_insight_selectors
+    paginate: false
+    parameters: {}
+    resource_type: trail
+    depends_on:
+      api: describe_trails
+      params:
+        TrailName: TrailARN
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_tags
+    paginate: true
+    parameters: {}
+    resource_type: trail
+    depends_on:
+      api: describe_trails
+      params:
+        ResourceIdList[]: TrailARN
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: cloudwatch
+  client: cloudwatch
+  scope: regional
+  enabled: true
+  tier: 1
+  collector: generic
+  rule_count: 22
+  apis:
+  - api: describe_alarms
+    paginate: true
+    parameters: {}
+    result_path: MetricAlarms
+    resource_type: alarm
+    id_field: AlarmName
+    arn_field: AlarmArn
+    tags_from: list_tags_for_resource.Tags
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_tags_for_resource
+    paginate: false
+    parameters: {}
+    resource_type: alarm
+    depends_on:
+      api: describe_alarms
+      params:
+        ResourceARN: AlarmArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_metric_filters
+    client: logs
+    paginate: true
+    parameters: {}
+    result_path: metricFilters
+    resource_type: metric_filter
+    id_field: logGroupName+filterName
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_log_groups
+    client: logs
+    paginate: true
+    parameters: {}
+    result_path: logGroups
+    resource_type: log_group
+    id_field: logGroupName
+    arn_field: arn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: codeartifact
+  client: codeartifact
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 1
+  apis:
+  - api: list_domains
+    paginate: true
+    parameters: {}
+    result_path: domains
+    resource_type: domain
+    id_field: name
+    arn_field: arn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_domain_permissions_policy
+    paginate: false
+    parameters: {}
+    resource_type: domain
+    depends_on:
+      api: list_domains
+      params:
+        domain: name
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_repositories
+    paginate: true
+    parameters: {}
+    result_path: repositories
+    resource_type: repository
+    id_field: arn
+    arn_field: arn
+    tags_from: list_tags_for_resource.tags
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_repository_permissions_policy
+    paginate: false
+    parameters: {}
+    resource_type: repository
+    depends_on:
+      api: list_repositories
+      params:
+        domain: domainName
+        repository: name
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_tags_for_resource
+    paginate: false
+    parameters: {}
+    resource_type: repository
+    depends_on:
+      api: list_repositories
+      params:
+        resourceArn: arn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: codebuild
+  client: codebuild
+  scope: regional
+  enabled: true
+  tier: 2
+  collector: generic
+  rule_count: 6
+  apis:
+  - api: list_projects
+    paginate: true
+    parameters: {}
+    result_path: projects
+    resource_type: project
+    id_field: Value
+    tags_from: batch_get_projects.projects.0.tags
+    arn_from: batch_get_projects.projects.0.arn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: batch_get_projects
+    paginate: false
+    parameters: {}
+    resource_type: project
+    depends_on:
+      api: list_projects
+      params:
+        names[]: Value
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask:
+    - pairs:projects[].environment.environmentVariables|name|value
+    needs_review: false
+  - api: list_report_groups
+    paginate: true
+    parameters: {}
+    result_path: reportGroups
+    resource_type: report_group
+    id_field: Value
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: batch_get_report_groups
+    paginate: false
+    parameters: {}
+    resource_type: report_group
+    depends_on:
+      api: list_report_groups
+      params:
+        reportGroupArns[]: Value
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_source_credentials
+    paginate: false
+    parameters: {}
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    setting: codebuild_source_credentials
+    mask: []
+    needs_review: false
+- service: codecommit
+  client: codecommit
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 0
+  apis:
+  - api: list_repositories
+    paginate: true
+    parameters: {}
+    result_path: repositories
+    resource_type: repository
+    id_field: repositoryName
+    arn_from: get_repository.repositoryMetadata.Arn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_repository
+    paginate: false
+    parameters: {}
+    resource_type: repository
+    depends_on:
+      api: list_repositories
+      params:
+        repositoryName: repositoryName
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: codepipeline
+  client: codepipeline
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 0
+  apis:
+  - api: list_pipelines
+    paginate: true
+    parameters: {}
+    result_path: pipelines
+    resource_type: pipeline
+    id_field: name
+    arn_from: get_pipeline.metadata.pipelineArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_pipeline
+    paginate: false
+    parameters: {}
+    resource_type: pipeline
+    depends_on:
+      api: list_pipelines
+      params:
+        name: name
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: cognito
+  client: cognito-idp
+  scope: regional
+  enabled: true
+  tier: 2
+  collector: generic
+  rule_count: 16
+  apis:
+  - api: list_user_pools
+    paginate: true
+    parameters:
+      MaxResults: 60
+    result_path: UserPools
+    resource_type: user_pool
+    id_field: Id
+    arn_from: describe_user_pool.UserPool.Arn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_user_pool
+    paginate: false
+    parameters: {}
+    resource_type: user_pool
+    depends_on:
+      api: list_user_pools
+      params:
+        UserPoolId: Id
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_user_pool_mfa_config
+    paginate: false
+    parameters: {}
+    resource_type: user_pool
+    depends_on:
+      api: list_user_pools
+      params:
+        UserPoolId: Id
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_risk_configuration
+    paginate: false
+    parameters: {}
+    resource_type: user_pool
+    depends_on:
+      api: list_user_pools
+      params:
+        UserPoolId: Id
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_user_pool_clients
+    paginate: true
+    parameters:
+      MaxResults: 60
+    resource_type: user_pool
+    depends_on:
+      api: list_user_pools
+      params:
+        UserPoolId: Id
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_identity_pools
+    client: cognito-identity
+    paginate: false
+    parameters:
+      MaxResults: 60
+    result_path: IdentityPools
+    resource_type: identity_pool
+    id_field: IdentityPoolId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_identity_pool
+    client: cognito-identity
+    paginate: false
+    parameters: {}
+    resource_type: identity_pool
+    depends_on:
+      api: list_identity_pools
+      params:
+        IdentityPoolId: IdentityPoolId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_identity_pool_roles
+    client: cognito-identity
+    paginate: false
+    parameters: {}
+    resource_type: identity_pool
+    depends_on:
+      api: list_identity_pools
+      params:
+        IdentityPoolId: IdentityPoolId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: config
+  client: config
+  scope: regional
+  enabled: true
+  tier: 1
+  collector: generic
+  rule_count: 2
+  enablement_api: describe_configuration_recorders
+  apis:
+  - api: describe_configuration_recorders
+    paginate: false
+    parameters: {}
+    result_path: ConfigurationRecorders
+    resource_type: recorder
+    id_field: name
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_configuration_recorder_status
+    paginate: false
+    parameters: {}
+    result_path: ConfigurationRecordersStatus
+    resource_type: recorder_status
+    id_field: name
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_delivery_channels
+    paginate: false
+    parameters: {}
+    result_path: DeliveryChannels
+    resource_type: delivery_channel
+    id_field: name
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: datapipeline
+  client: datapipeline
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 0
+  apis:
+  - api: list_pipelines
+    paginate: true
+    parameters: {}
+    result_path: pipelineIdList
+    resource_type: pipeline
+    id_field: id
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_pipelines
+    paginate: false
+    parameters: {}
+    resource_type: pipeline
+    depends_on:
+      api: list_pipelines
+      params:
+        pipelineIds[]: id
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_pipeline_definition
+    paginate: false
+    parameters: {}
+    resource_type: pipeline
+    depends_on:
+      api: list_pipelines
+      params:
+        pipelineId: id
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask:
+    - spairs:pipelineObjects[].fields|key|stringValue
+    - spairs:parameterValues|id|stringValue
+    needs_review: false
+- service: datasync
+  client: datasync
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 1
+  apis:
+  - api: list_tasks
+    paginate: true
+    parameters: {}
+    result_path: Tasks
+    resource_type: task
+    id_field: TaskArn
+    arn_field: TaskArn
+    tags_from: list_tags_for_resource.Tags
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_task
+    paginate: false
+    parameters: {}
+    resource_type: task
+    depends_on:
+      api: list_tasks
+      params:
+        TaskArn: TaskArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_tags_for_resource
+    paginate: true
+    parameters: {}
+    resource_type: task
+    depends_on:
+      api: list_tasks
+      params:
+        ResourceArn: TaskArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: directconnect
+  client: directconnect
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 2
+  apis:
+  - api: describe_connections
+    paginate: false
+    parameters: {}
+    result_path: connections
+    resource_type: connection
+    id_field: connectionId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_virtual_interfaces
+    paginate: false
+    parameters: {}
+    result_path: virtualInterfaces
+    resource_type: virtual_interface
+    id_field: virtualInterfaceId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask:
+    - value:authKey
+    needs_review: false
+  - api: describe_direct_connect_gateways
+    paginate: false
+    parameters: {}
+    result_path: directConnectGateways
+    resource_type: direct_connect_gateway
+    id_field: directConnectGatewayId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: directoryservice
+  client: ds
+  scope: regional
+  enabled: true
+  tier: 2
+  collector: generic
+  rule_count: 6
+  apis:
+  - api: describe_directories
+    paginate: true
+    parameters: {}
+    result_path: DirectoryDescriptions
+    resource_type: directory
+    id_field: DirectoryId
+    tags_from: list_tags_for_resource.Tags
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_event_topics
+    paginate: false
+    parameters: {}
+    resource_type: directory
+    depends_on:
+      api: describe_directories
+      params:
+        DirectoryId: DirectoryId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_log_subscriptions
+    paginate: true
+    parameters: {}
+    resource_type: directory
+    depends_on:
+      api: describe_directories
+      params:
+        DirectoryId: DirectoryId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_certificates
+    paginate: true
+    parameters: {}
+    resource_type: directory
+    depends_on:
+      api: describe_directories
+      params:
+        DirectoryId: DirectoryId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_snapshot_limits
+    paginate: false
+    parameters: {}
+    resource_type: directory
+    depends_on:
+      api: describe_directories
+      params:
+        DirectoryId: DirectoryId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_tags_for_resource
+    paginate: true
+    parameters: {}
+    resource_type: directory
+    depends_on:
+      api: describe_directories
+      params:
+        ResourceId: DirectoryId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: dlm
+  client: dlm
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 1
+  apis:
+  - api: get_lifecycle_policies
+    paginate: false
+    parameters: {}
+    result_path: Policies
+    resource_type: lifecycle_policy
+    id_field: PolicyId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_lifecycle_policy
+    paginate: false
+    parameters: {}
+    resource_type: lifecycle_policy
+    arn_from: get_lifecycle_policy.Policy.PolicyArn
+    depends_on:
+      api: get_lifecycle_policies
+      params:
+        PolicyId: PolicyId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: dms
+  client: dms
+  scope: regional
+  enabled: true
+  tier: 2
+  collector: generic
+  rule_count: 6
+  apis:
+  - api: describe_endpoints
+    paginate: true
+    parameters: {}
+    result_path: Endpoints
+    resource_type: endpoint
+    id_field: EndpointIdentifier
+    arn_field: EndpointArn
+    tags_from: tags_endpoint.TagList
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_tags_for_resource
+    alias: tags_endpoint
+    paginate: false
+    parameters: {}
+    resource_type: endpoint
+    depends_on:
+      api: describe_endpoints
+      params:
+        ResourceArn: EndpointArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_replication_instances
+    paginate: true
+    parameters: {}
+    result_path: ReplicationInstances
+    resource_type: replication_instance
+    id_field: ReplicationInstanceIdentifier
+    arn_field: ReplicationInstanceArn
+    tags_from: tags_instance.TagList
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_tags_for_resource
+    alias: tags_instance
+    paginate: false
+    parameters: {}
+    resource_type: replication_instance
+    depends_on:
+      api: describe_replication_instances
+      params:
+        ResourceArn: ReplicationInstanceArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_replication_tasks
+    paginate: true
+    parameters: {}
+    result_path: ReplicationTasks
+    resource_type: replication_task
+    id_field: ReplicationTaskIdentifier
+    arn_field: ReplicationTaskArn
+    tags_from: tags_task.TagList
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_tags_for_resource
+    alias: tags_task
+    paginate: false
+    parameters: {}
+    resource_type: replication_task
+    depends_on:
+      api: describe_replication_tasks
+      params:
+        ResourceArn: ReplicationTaskArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: documentdb
+  client: docdb
+  scope: regional
+  enabled: true
+  tier: 2
+  collector: generic
+  rule_count: 6
+  apis:
+  - api: describe_db_clusters
+    paginate: true
+    parameters:
+      Filters:
+      - Name: engine
+        Values:
+        - docdb
+    result_path: DBClusters
+    resource_type: db_cluster
+    id_field: DBClusterIdentifier
+    arn_field: DBClusterArn
+    tags_from: list_tags_for_resource.TagList
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_tags_for_resource
+    paginate: false
+    parameters: {}
+    resource_type: db_cluster
+    depends_on:
+      api: describe_db_clusters
+      params:
+        ResourceName: DBClusterArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_db_instances
+    paginate: true
+    parameters:
+      Filters:
+      - Name: engine
+        Values:
+        - docdb
+    result_path: DBInstances
+    resource_type: db_instance
+    id_field: DBInstanceIdentifier
+    arn_field: DBInstanceArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_db_cluster_snapshots
+    paginate: true
+    parameters:
+      SnapshotType: manual
+    result_path: DBClusterSnapshots
+    resource_type: db_cluster_snapshot
+    id_field: DBClusterSnapshotIdentifier
+    arn_field: DBClusterSnapshotArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_db_cluster_snapshot_attributes
+    paginate: false
+    parameters: {}
+    resource_type: db_cluster_snapshot
+    depends_on:
+      api: describe_db_cluster_snapshots
+      params:
+        DBClusterSnapshotIdentifier: DBClusterSnapshotIdentifier
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: drs
+  client: drs
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 1
+  apis:
+  - api: describe_source_servers
+    paginate: true
+    parameters: {}
+    result_path: items
+    resource_type: source_server
+    id_field: sourceServerID
+    arn_field: arn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_jobs
+    paginate: true
+    parameters: {}
+    result_path: items
+    resource_type: job
+    id_field: jobID
+    arn_field: arn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: dynamodb
+  client: dynamodb
+  scope: regional
+  enabled: true
+  tier: 2
+  collector: dynamodb
+  rule_count: 9
+  apis:
+  - api: list_tables
+    paginate: true
+    parameters: {}
+    result_path: TableNames
+    resource_type: table
+    id_field: Value
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_table
+    paginate: false
+    parameters: {}
+    resource_type: table
+    depends_on:
+      api: list_tables
+      params:
+        TableName: Value
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_continuous_backups
+    paginate: false
+    parameters: {}
+    resource_type: table
+    depends_on:
+      api: list_tables
+      params:
+        TableName: Value
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_kinesis_streaming_destination
+    paginate: false
+    parameters: {}
+    resource_type: table
+    depends_on:
+      api: list_tables
+      params:
+        TableName: Value
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_clusters
+    client: dax
+    paginate: false
+    parameters: {}
+    result_path: Clusters
+    resource_type: dax_cluster
+    id_field: ClusterName
+    arn_field: ClusterArn
+    tags_from: list_tags.Tags
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_tags
+    client: dax
+    paginate: false
+    parameters: {}
+    resource_type: dax_cluster
+    depends_on:
+      api: describe_clusters
+      params:
+        ResourceName: ClusterArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: ec2
+  client: ec2
+  scope: regional
+  enabled: true
+  tier: 1
+  collector: ec2
+  rule_count: 71
+  apis:
+  - api: describe_instances
+    paginate: true
+    parameters: {}
+    result_path: Reservations[].Instances
+    resource_type: instance
+    id_field: InstanceId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_instance_attribute
+    paginate: false
+    parameters:
+      Attribute: userData
+    resource_type: instance
+    depends_on:
+      api: describe_instances
+      params:
+        InstanceId: InstanceId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    opt_in_flag: --collect-userdata
+    needs_review: false
+  - api: describe_security_groups
+    paginate: true
+    parameters: {}
+    result_path: SecurityGroups
+    resource_type: security_group
+    id_field: GroupId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_security_group_rules
+    paginate: true
+    parameters: {}
+    result_path: SecurityGroupRules
+    resource_type: security_group_rule
+    id_field: SecurityGroupRuleId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_network_interfaces
+    paginate: true
+    parameters: {}
+    result_path: NetworkInterfaces
+    resource_type: network_interface
+    id_field: NetworkInterfaceId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_addresses
+    paginate: false
+    parameters: {}
+    result_path: Addresses
+    resource_type: elastic_ip
+    id_field: AllocationId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_volumes
+    paginate: true
+    parameters: {}
+    result_path: Volumes
+    resource_type: volume
+    id_field: VolumeId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_snapshots
+    paginate: true
+    parameters:
+      OwnerIds:
+      - self
+    result_path: Snapshots
+    resource_type: snapshot
+    id_field: SnapshotId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_snapshot_attribute
+    paginate: false
+    parameters:
+      Attribute: createVolumePermission
+    resource_type: snapshot
+    depends_on:
+      api: describe_snapshots
+      params:
+        SnapshotId: SnapshotId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_images
+    paginate: false
+    parameters:
+      Owners:
+      - self
+    result_path: Images
+    resource_type: image
+    id_field: ImageId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_launch_templates
+    paginate: true
+    parameters: {}
+    result_path: LaunchTemplates
+    resource_type: launch_template
+    id_field: LaunchTemplateId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_launch_template_versions
+    paginate: true
+    parameters: {}
+    resource_type: launch_template
+    depends_on:
+      api: describe_launch_templates
+      params:
+        LaunchTemplateId: LaunchTemplateId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_managed_prefix_lists
+    paginate: true
+    parameters: {}
+    result_path: PrefixLists
+    resource_type: prefix_list
+    id_field: PrefixListId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_key_pairs
+    paginate: false
+    parameters: {}
+    result_path: KeyPairs
+    resource_type: key_pair
+    id_field: KeyPairId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_ebs_encryption_by_default
+    paginate: false
+    parameters: {}
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    setting: ebs_encryption_by_default
+    mask: []
+    needs_review: false
+  - api: get_ebs_default_kms_key_id
+    paginate: false
+    parameters: {}
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    setting: ebs_default_kms_key_id
+    mask: []
+    needs_review: false
+  - api: get_snapshot_block_public_access_state
+    paginate: false
+    parameters: {}
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    setting: snapshot_block_public_access
+    mask: []
+    needs_review: false
+  - api: get_image_block_public_access_state
+    paginate: false
+    parameters: {}
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    setting: image_block_public_access
+    mask: []
+    needs_review: false
+  - api: get_serial_console_access_status
+    paginate: false
+    parameters: {}
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    setting: serial_console_access
+    mask: []
+    needs_review: false
+  - api: get_instance_metadata_defaults
+    paginate: false
+    parameters: {}
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    setting: instance_metadata_defaults
+    mask: []
+    needs_review: false
+- service: ecr
+  client: ecr
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 4
+  apis:
+  - api: get_registry_scanning_configuration
+    paginate: false
+    parameters: {}
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    setting: ecr_registry_scanning_configuration
+    mask: []
+    needs_review: false
+  - api: describe_repositories
+    paginate: true
+    parameters: {}
+    result_path: repositories
+    resource_type: repository
+    id_field: repositoryName
+    arn_field: repositoryArn
+    tags_from: list_tags_for_resource.tags
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_repository_policy
+    paginate: false
+    parameters: {}
+    resource_type: repository
+    depends_on:
+      api: describe_repositories
+      params:
+        repositoryName: repositoryName
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_lifecycle_policy
+    paginate: false
+    parameters: {}
+    resource_type: repository
+    depends_on:
+      api: describe_repositories
+      params:
+        repositoryName: repositoryName
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_tags_for_resource
+    paginate: false
+    parameters: {}
+    resource_type: repository
+    depends_on:
+      api: describe_repositories
+      params:
+        resourceArn: repositoryArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_images
+    paginate: true
+    parameters: {}
+    resource_type: repository
+    depends_on:
+      api: describe_repositories
+      params:
+        repositoryName: repositoryName
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    opt_in_flag: --collect-ecr-images
+    needs_review: false
+- service: ecs
+  client: ecs
+  scope: regional
+  enabled: true
+  tier: 2
+  collector: ecs
+  rule_count: 11
+  apis:
+  - api: list_clusters
+    paginate: true
+    parameters: {}
+    result_path: clusterArns
+    resource_type: cluster
+    id_field: Value
+    arn_field: Value
+    tags_from: describe_clusters.clusters.0.tags
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_clusters
+    paginate: false
+    parameters:
+      include:
+      - TAGS
+      - SETTINGS
+      - CONFIGURATIONS
+    resource_type: cluster
+    depends_on:
+      api: list_clusters
+      params:
+        clusters[]: Value
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_task_definitions
+    paginate: true
+    parameters:
+      status: ACTIVE
+      sort: DESC
+    result_path: taskDefinitionArns
+    resource_type: task_definition
+    id_field: Value
+    arn_field: Value
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_task_definition
+    paginate: false
+    parameters:
+      include:
+      - TAGS
+    resource_type: task_definition
+    depends_on:
+      api: list_task_definitions
+      params:
+        taskDefinition: Value
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask:
+    - pairs:taskDefinition.containerDefinitions[].environment|name|value
+    needs_review: false
+- service: efs
+  client: efs
+  scope: regional
+  enabled: true
+  tier: 1
+  collector: generic
+  rule_count: 6
+  apis:
+  - api: describe_file_systems
+    paginate: true
+    parameters: {}
+    result_path: FileSystems
+    resource_type: file_system
+    id_field: FileSystemId
+    arn_field: FileSystemArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_file_system_policy
+    paginate: false
+    parameters: {}
+    resource_type: file_system
+    depends_on:
+      api: describe_file_systems
+      params:
+        FileSystemId: FileSystemId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_mount_targets
+    paginate: true
+    parameters: {}
+    resource_type: file_system
+    depends_on:
+      api: describe_file_systems
+      params:
+        FileSystemId: FileSystemId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_backup_policy
+    paginate: false
+    parameters: {}
+    resource_type: file_system
+    depends_on:
+      api: describe_file_systems
+      params:
+        FileSystemId: FileSystemId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: eks
+  client: eks
+  scope: regional
+  enabled: true
+  tier: 2
+  collector: eks
+  rule_count: 6
+  apis:
+  - api: list_clusters
+    paginate: true
+    parameters: {}
+    result_path: clusters
+    resource_type: cluster
+    id_field: Value
+    tags_from: describe_cluster.cluster.tags
+    arn_from: describe_cluster.cluster.arn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_cluster
+    paginate: false
+    parameters: {}
+    resource_type: cluster
+    depends_on:
+      api: list_clusters
+      params:
+        name: Value
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_addons
+    paginate: true
+    parameters: {}
+    resource_type: cluster
+    depends_on:
+      api: list_clusters
+      params:
+        clusterName: Value
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: elasticache
+  client: elasticache
+  scope: regional
+  enabled: true
+  tier: 2
+  collector: generic
+  rule_count: 8
+  apis:
+  - api: describe_cache_clusters
+    paginate: true
+    parameters:
+      ShowCacheNodeInfo: true
+    result_path: CacheClusters
+    resource_type: cache_cluster
+    id_field: CacheClusterId
+    arn_field: ARN
+    tags_from: tags_cluster.TagList
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_tags_for_resource
+    alias: tags_cluster
+    paginate: false
+    parameters: {}
+    resource_type: cache_cluster
+    depends_on:
+      api: describe_cache_clusters
+      params:
+        ResourceName: ARN
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_replication_groups
+    paginate: true
+    parameters: {}
+    result_path: ReplicationGroups
+    resource_type: replication_group
+    id_field: ReplicationGroupId
+    arn_field: ARN
+    tags_from: tags_group.TagList
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_tags_for_resource
+    alias: tags_group
+    paginate: false
+    parameters: {}
+    resource_type: replication_group
+    depends_on:
+      api: describe_replication_groups
+      params:
+        ResourceName: ARN
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_cache_subnet_groups
+    paginate: true
+    parameters: {}
+    result_path: CacheSubnetGroups
+    resource_type: cache_subnet_group
+    id_field: CacheSubnetGroupName
+    arn_field: ARN
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: elasticbeanstalk
+  client: elasticbeanstalk
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 3
+  apis:
+  - api: describe_environments
+    paginate: false
+    parameters: {}
+    result_path: Environments
+    resource_type: environment
+    id_field: EnvironmentName
+    arn_field: EnvironmentArn
+    tags_from: list_tags_for_resource.ResourceTags
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_configuration_settings
+    paginate: false
+    parameters: {}
+    resource_type: environment
+    depends_on:
+      api: describe_environments
+      params:
+        ApplicationName: ApplicationName
+        EnvironmentName: EnvironmentName
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask:
+    - pairs:ConfigurationSettings[].OptionSettings|OptionName|Value|Namespace=aws:elasticbeanstalk:application:environment
+    needs_review: false
+  - api: list_tags_for_resource
+    paginate: false
+    parameters: {}
+    resource_type: environment
+    depends_on:
+      api: describe_environments
+      params:
+        ResourceArn: EnvironmentArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: elb
+  client: elb
+  scope: regional
+  enabled: true
+  tier: 1
+  collector: generic
+  rule_count: 9
+  apis:
+  - api: describe_load_balancers
+    paginate: true
+    parameters: {}
+    result_path: LoadBalancerDescriptions
+    resource_type: load_balancer
+    id_field: LoadBalancerName
+    tags_from: lb_tags.TagDescriptions.0.Tags
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_load_balancer_attributes
+    paginate: false
+    parameters: {}
+    resource_type: load_balancer
+    depends_on:
+      api: describe_load_balancers
+      params:
+        LoadBalancerName: LoadBalancerName
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_load_balancer_policies
+    paginate: false
+    parameters: {}
+    resource_type: load_balancer
+    depends_on:
+      api: describe_load_balancers
+      params:
+        LoadBalancerName: LoadBalancerName
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_instance_health
+    paginate: false
+    parameters: {}
+    resource_type: load_balancer
+    depends_on:
+      api: describe_load_balancers
+      params:
+        LoadBalancerName: LoadBalancerName
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_tags
+    alias: lb_tags
+    paginate: false
+    parameters: {}
+    resource_type: load_balancer
+    depends_on:
+      api: describe_load_balancers
+      params:
+        LoadBalancerNames[]: LoadBalancerName
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: elbv2
+  client: elbv2
+  scope: regional
+  enabled: true
+  tier: 1
+  collector: generic
+  rule_count: 12
+  apis:
+  - api: describe_load_balancers
+    paginate: true
+    parameters: {}
+    result_path: LoadBalancers
+    resource_type: load_balancer
+    id_field: LoadBalancerArn
+    arn_field: LoadBalancerArn
+    tags_from: lb_tags.TagDescriptions.0.Tags
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_load_balancer_attributes
+    paginate: false
+    parameters: {}
+    resource_type: load_balancer
+    depends_on:
+      api: describe_load_balancers
+      params:
+        LoadBalancerArn: LoadBalancerArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_tags
+    alias: lb_tags
+    paginate: false
+    parameters: {}
+    resource_type: load_balancer
+    depends_on:
+      api: describe_load_balancers
+      params:
+        ResourceArns[]: LoadBalancerArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_listeners
+    paginate: true
+    parameters: {}
+    result_path: Listeners
+    resource_type: listener
+    id_field: ListenerArn
+    arn_field: ListenerArn
+    depends_on:
+      api: describe_load_balancers
+      params:
+        LoadBalancerArn: LoadBalancerArn
+    as_resource: true
+    inherit:
+      load_balancer_arn: LoadBalancerArn
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_listener_certificates
+    paginate: true
+    parameters: {}
+    resource_type: listener
+    depends_on:
+      api: describe_listeners
+      params:
+        ListenerArn: ListenerArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_rules
+    paginate: false
+    parameters: {}
+    result_path: Rules
+    resource_type: listener_rule
+    id_field: RuleArn
+    arn_field: RuleArn
+    depends_on:
+      api: describe_listeners
+      params:
+        ListenerArn: ListenerArn
+    as_resource: true
+    inherit:
+      listener_arn: ListenerArn
+      load_balancer_arn: LoadBalancerArn
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_target_groups
+    paginate: true
+    parameters: {}
+    result_path: TargetGroups
+    resource_type: target_group
+    id_field: TargetGroupArn
+    arn_field: TargetGroupArn
+    tags_from: tg_tags.TagDescriptions.0.Tags
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_target_group_attributes
+    paginate: false
+    parameters: {}
+    resource_type: target_group
+    depends_on:
+      api: describe_target_groups
+      params:
+        TargetGroupArn: TargetGroupArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_target_health
+    paginate: false
+    parameters: {}
+    resource_type: target_group
+    depends_on:
+      api: describe_target_groups
+      params:
+        TargetGroupArn: TargetGroupArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_tags
+    alias: tg_tags
+    paginate: false
+    parameters: {}
+    resource_type: target_group
+    depends_on:
+      api: describe_target_groups
+      params:
+        ResourceArns[]: TargetGroupArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_ssl_policies
+    paginate: false
+    parameters: {}
+    result_path: SslPolicies
+    resource_type: ssl_policy
+    id_field: Name
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: emr
+  client: emr
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 3
+  apis:
+  - api: get_block_public_access_configuration
+    paginate: false
+    parameters: {}
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    setting: emr_block_public_access
+    mask: []
+    needs_review: false
+  - api: list_clusters
+    paginate: true
+    parameters: {}
+    result_path: Clusters
+    resource_type: cluster
+    id_field: Id
+    arn_field: ClusterArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_cluster
+    paginate: false
+    parameters: {}
+    resource_type: cluster
+    depends_on:
+      api: list_clusters
+      params:
+        ClusterId: Id
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask:
+    - smap:Cluster.Configurations[].Properties
+    needs_review: false
+- service: eventbridge
+  client: events
+  scope: regional
+  enabled: true
+  tier: 1
+  collector: generic
+  rule_count: 4
+  apis:
+  - api: list_event_buses
+    paginate: false
+    parameters: {}
+    result_path: EventBuses
+    resource_type: event_bus
+    id_field: Name
+    arn_field: Arn
+    tags_from: list_tags_for_resource.Tags
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_event_bus
+    paginate: false
+    parameters: {}
+    resource_type: event_bus
+    depends_on:
+      api: list_event_buses
+      params:
+        Name: Name
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_rules
+    paginate: false
+    parameters: {}
+    resource_type: event_bus
+    depends_on:
+      api: list_event_buses
+      params:
+        EventBusName: Name
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_tags_for_resource
+    paginate: false
+    parameters: {}
+    resource_type: event_bus
+    depends_on:
+      api: list_event_buses
+      params:
+        ResourceARN: Arn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: firehose
+  client: firehose
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 0
+  apis:
+  - api: list_delivery_streams
+    paginate: false
+    parameters:
+      Limit: 100
+    result_path: DeliveryStreamNames
+    resource_type: delivery_stream
+    id_field: Value
+    tags_from: list_tags_for_delivery_stream.Tags
+    arn_from: describe_delivery_stream.DeliveryStreamDescription.DeliveryStreamARN
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_delivery_stream
+    paginate: false
+    parameters: {}
+    resource_type: delivery_stream
+    depends_on:
+      api: list_delivery_streams
+      params:
+        DeliveryStreamName: Value
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_tags_for_delivery_stream
+    paginate: false
+    parameters: {}
+    resource_type: delivery_stream
+    depends_on:
+      api: list_delivery_streams
+      params:
+        DeliveryStreamName: Value
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: fms
+  client: fms
+  scope: global
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 1
+  apis:
+  - api: get_admin_account
+    paginate: false
+    parameters: {}
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    setting: fms_admin_account
+    mask: []
+    needs_review: false
+  - api: list_policies
+    paginate: true
+    parameters: {}
+    result_path: PolicyList
+    resource_type: policy
+    id_field: PolicyId
+    arn_field: PolicyArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_compliance_status
+    paginate: true
+    parameters: {}
+    resource_type: policy
+    depends_on:
+      api: list_policies
+      params:
+        PolicyId: PolicyId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: fsx
+  client: fsx
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 3
+  apis:
+  - api: describe_file_systems
+    paginate: true
+    parameters: {}
+    result_path: FileSystems
+    resource_type: file_system
+    id_field: FileSystemId
+    arn_field: ResourceARN
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: glacier
+  client: glacier
+  scope: regional
+  enabled: true
+  tier: 1
+  collector: generic
+  rule_count: 1
+  apis:
+  - api: list_vaults
+    paginate: true
+    parameters:
+      accountId: '-'
+    result_path: VaultList
+    resource_type: vault
+    id_field: VaultName
+    arn_field: VaultARN
+    tags_from: list_tags_for_vault.Tags
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_vault_access_policy
+    paginate: false
+    parameters:
+      accountId: '-'
+    resource_type: vault
+    depends_on:
+      api: list_vaults
+      params:
+        vaultName: VaultName
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_tags_for_vault
+    paginate: false
+    parameters:
+      accountId: '-'
+    resource_type: vault
+    depends_on:
+      api: list_vaults
+      params:
+        vaultName: VaultName
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: globalaccelerator
+  client: globalaccelerator
+  scope: global
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 0
+  api_region: us-west-2
+  apis:
+  - api: list_accelerators
+    paginate: true
+    parameters: {}
+    result_path: Accelerators
+    resource_type: accelerator
+    id_field: AcceleratorArn
+    arn_field: AcceleratorArn
+    tags_from: list_tags_for_resource.Tags
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_tags_for_resource
+    paginate: false
+    parameters: {}
+    resource_type: accelerator
+    depends_on:
+      api: list_accelerators
+      params:
+        ResourceArn: AcceleratorArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_listeners
+    paginate: true
+    parameters: {}
+    result_path: Listeners
+    resource_type: listener
+    id_field: ListenerArn
+    arn_field: ListenerArn
+    depends_on:
+      api: list_accelerators
+      params:
+        AcceleratorArn: AcceleratorArn
+    as_resource: true
+    inherit:
+      accelerator_arn: AcceleratorArn
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_endpoint_groups
+    paginate: true
+    parameters: {}
+    result_path: EndpointGroups
+    resource_type: endpoint_group
+    id_field: EndpointGroupArn
+    arn_field: EndpointGroupArn
+    depends_on:
+      api: list_listeners
+      params:
+        ListenerArn: ListenerArn
+    as_resource: true
+    inherit:
+      listener_arn: ListenerArn
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: glue
+  client: glue
+  scope: regional
+  enabled: true
+  tier: 2
+  collector: generic
+  rule_count: 12
+  apis:
+  - api: get_connections
+    paginate: true
+    parameters:
+      HidePassword: true
+    result_path: ConnectionList
+    resource_type: connection
+    id_field: Name
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask:
+    - map:ConnectionProperties
+    needs_review: false
+  - api: get_jobs
+    paginate: true
+    parameters: {}
+    result_path: Jobs
+    resource_type: job
+    id_field: Name
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask:
+    - smap:DefaultArguments
+    needs_review: false
+  - api: get_dev_endpoints
+    paginate: true
+    parameters: {}
+    result_path: DevEndpoints
+    resource_type: dev_endpoint
+    id_field: EndpointName
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_ml_transforms
+    paginate: false
+    parameters: {}
+    result_path: Transforms
+    resource_type: ml_transform
+    id_field: TransformId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_security_configurations
+    paginate: true
+    parameters: {}
+    result_path: SecurityConfigurations
+    resource_type: security_configuration
+    id_field: Name
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_data_catalog_encryption_settings
+    paginate: false
+    parameters: {}
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    setting: glue_catalog_encryption
+    mask: []
+    needs_review: false
+  - api: get_resource_policy
+    paginate: false
+    parameters: {}
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    setting: glue_resource_policy
+    mask: []
+    needs_review: false
+- service: guardduty
+  client: guardduty
+  scope: regional
+  enabled: true
+  tier: 1
+  collector: generic
+  rule_count: 9
+  enablement_api: list_detectors
+  apis:
+  - api: list_detectors
+    paginate: true
+    parameters: {}
+    result_path: DetectorIds
+    resource_type: detector
+    id_field: Value
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_detector
+    paginate: false
+    parameters: {}
+    resource_type: detector
+    depends_on:
+      api: list_detectors
+      params:
+        DetectorId: Value
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: iam
+  client: iam
+  scope: global
+  enabled: true
+  tier: 1
+  collector: iam
+  rule_count: 45
+  apis:
+  - api: list_users
+    paginate: true
+    parameters: {}
+    result_path: Users
+    resource_type: user
+    id_field: UserName
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_user
+    paginate: false
+    parameters: {}
+    resource_type: user
+    depends_on:
+      api: list_users
+      params:
+        UserName: UserName
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_mfa_devices
+    paginate: false
+    parameters: {}
+    resource_type: user
+    depends_on:
+      api: list_users
+      params:
+        UserName: UserName
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_access_keys
+    paginate: false
+    parameters: {}
+    resource_type: user
+    depends_on:
+      api: list_users
+      params:
+        UserName: UserName
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_attached_user_policies
+    paginate: false
+    parameters: {}
+    resource_type: user
+    depends_on:
+      api: list_users
+      params:
+        UserName: UserName
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_user_policies
+    paginate: false
+    parameters: {}
+    resource_type: user
+    depends_on:
+      api: list_users
+      params:
+        UserName: UserName
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_groups_for_user
+    paginate: false
+    parameters: {}
+    resource_type: user
+    depends_on:
+      api: list_users
+      params:
+        UserName: UserName
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_login_profile
+    paginate: false
+    parameters: {}
+    resource_type: user
+    depends_on:
+      api: list_users
+      params:
+        UserName: UserName
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_roles
+    paginate: true
+    parameters: {}
+    result_path: Roles
+    resource_type: role
+    id_field: RoleName
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_role
+    paginate: false
+    parameters: {}
+    resource_type: role
+    depends_on:
+      api: list_roles
+      params:
+        RoleName: RoleName
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_attached_role_policies
+    paginate: false
+    parameters: {}
+    resource_type: role
+    depends_on:
+      api: list_roles
+      params:
+        RoleName: RoleName
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_role_policies
+    paginate: false
+    parameters: {}
+    resource_type: role
+    depends_on:
+      api: list_roles
+      params:
+        RoleName: RoleName
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_instance_profiles_for_role
+    paginate: false
+    parameters: {}
+    resource_type: role
+    depends_on:
+      api: list_roles
+      params:
+        RoleName: RoleName
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_groups
+    paginate: true
+    parameters: {}
+    result_path: Groups
+    resource_type: group
+    id_field: GroupName
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_group
+    paginate: false
+    parameters: {}
+    resource_type: group
+    depends_on:
+      api: list_groups
+      params:
+        GroupName: GroupName
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_attached_group_policies
+    paginate: false
+    parameters: {}
+    resource_type: group
+    depends_on:
+      api: list_groups
+      params:
+        GroupName: GroupName
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_group_policies
+    paginate: false
+    parameters: {}
+    resource_type: group
+    depends_on:
+      api: list_groups
+      params:
+        GroupName: GroupName
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_policies
+    paginate: true
+    parameters:
+      Scope: Local
+    result_path: Policies
+    resource_type: policy
+    id_field: Arn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_policy_version
+    paginate: false
+    parameters: {}
+    resource_type: policy
+    depends_on:
+      api: list_policies
+      params:
+        PolicyArn: Arn
+        VersionId: DefaultVersionId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_entities_for_policy
+    paginate: false
+    parameters: {}
+    resource_type: policy
+    depends_on:
+      api: list_policies
+      params:
+        PolicyArn: Arn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_instance_profiles
+    paginate: true
+    parameters: {}
+    result_path: InstanceProfiles
+    resource_type: instance_profile
+    id_field: InstanceProfileName
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_server_certificates
+    paginate: true
+    parameters: {}
+    result_path: ServerCertificateMetadataList
+    resource_type: server_certificate
+    id_field: ServerCertificateName
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_virtual_mfa_devices
+    paginate: true
+    parameters: {}
+    result_path: VirtualMFADevices
+    resource_type: virtual_mfa_device
+    id_field: SerialNumber
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_saml_providers
+    paginate: false
+    parameters: {}
+    result_path: SAMLProviderList
+    resource_type: saml_provider
+    id_field: Arn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_open_id_connect_providers
+    paginate: false
+    parameters: {}
+    result_path: OpenIDConnectProviderList
+    resource_type: oidc_provider
+    id_field: Arn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: generate_credential_report
+    paginate: false
+    parameters: {}
+    resource_type: credential_report_row
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_credential_report
+    paginate: false
+    parameters: {}
+    resource_type: credential_report_row
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_account_summary
+    paginate: false
+    parameters: {}
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    setting: iam_account_summary
+    mask: []
+    needs_review: false
+  - api: get_account_password_policy
+    paginate: false
+    parameters: {}
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    setting: iam_password_policy
+    mask: []
+    needs_review: false
+- service: inspector2
+  client: inspector2
+  scope: regional
+  enabled: true
+  tier: 1
+  collector: generic
+  rule_count: 2
+  apis:
+  - api: batch_get_account_status
+    paginate: false
+    parameters: {}
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    setting: inspector2_account_status
+    mask: []
+    needs_review: false
+- service: kafka
+  client: kafka
+  scope: regional
+  enabled: true
+  tier: 2
+  collector: generic
+  rule_count: 8
+  apis:
+  - api: list_clusters_v2
+    paginate: true
+    parameters: {}
+    result_path: ClusterInfoList
+    resource_type: cluster
+    id_field: ClusterArn
+    arn_field: ClusterArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_kafka_versions
+    paginate: true
+    parameters: {}
+    result_path: KafkaVersions
+    resource_type: kafka_version
+    id_field: Version
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_connectors
+    client: kafkaconnect
+    paginate: true
+    parameters: {}
+    result_path: connectors
+    resource_type: connector
+    id_field: connectorArn
+    arn_field: connectorArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_connector
+    client: kafkaconnect
+    paginate: false
+    parameters: {}
+    resource_type: connector
+    depends_on:
+      api: list_connectors
+      params:
+        connectorArn: connectorArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask:
+    - smap:connectorConfiguration
+    needs_review: false
+- service: kinesis
+  client: kinesis
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 1
+  apis:
+  - api: list_streams
+    paginate: true
+    parameters: {}
+    result_path: StreamNames
+    resource_type: stream
+    id_field: Value
+    tags_from: list_tags_for_stream.Tags
+    arn_from: describe_stream_summary.StreamDescriptionSummary.StreamARN
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_stream_summary
+    paginate: false
+    parameters: {}
+    resource_type: stream
+    depends_on:
+      api: list_streams
+      params:
+        StreamName: Value
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_tags_for_stream
+    paginate: false
+    parameters: {}
+    resource_type: stream
+    depends_on:
+      api: list_streams
+      params:
+        StreamName: Value
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: kms
+  client: kms
+  scope: regional
+  enabled: true
+  tier: 1
+  collector: generic
+  rule_count: 5
+  apis:
+  - api: list_keys
+    paginate: true
+    parameters: {}
+    result_path: Keys
+    resource_type: key
+    id_field: KeyId
+    arn_field: KeyArn
+    tags_from: list_resource_tags.Tags
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_key
+    paginate: false
+    parameters: {}
+    resource_type: key
+    depends_on:
+      api: list_keys
+      params:
+        KeyId: KeyId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_key_rotation_status
+    paginate: false
+    parameters: {}
+    resource_type: key
+    depends_on:
+      api: list_keys
+      params:
+        KeyId: KeyId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_key_policy
+    paginate: false
+    parameters:
+      PolicyName: default
+    resource_type: key
+    depends_on:
+      api: list_keys
+      params:
+        KeyId: KeyId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_grants
+    paginate: true
+    parameters: {}
+    resource_type: key
+    depends_on:
+      api: list_keys
+      params:
+        KeyId: KeyId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_resource_tags
+    paginate: true
+    parameters: {}
+    resource_type: key
+    depends_on:
+      api: list_keys
+      params:
+        KeyId: KeyId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_aliases
+    paginate: true
+    parameters: {}
+    result_path: Aliases
+    resource_type: alias
+    id_field: AliasName
+    arn_field: AliasArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: lightsail
+  client: lightsail
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 4
+  apis:
+  - api: get_instances
+    paginate: false
+    parameters: {}
+    result_path: instances
+    resource_type: instance
+    id_field: name
+    arn_field: arn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_instance_port_states
+    paginate: false
+    parameters: {}
+    resource_type: instance
+    depends_on:
+      api: get_instances
+      params:
+        instanceName: name
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_relational_databases
+    paginate: false
+    parameters: {}
+    result_path: relationalDatabases
+    resource_type: relational_database
+    id_field: name
+    arn_field: arn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_static_ips
+    paginate: false
+    parameters: {}
+    result_path: staticIps
+    resource_type: static_ip
+    id_field: name
+    arn_field: arn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_load_balancers
+    paginate: false
+    parameters: {}
+    result_path: loadBalancers
+    resource_type: load_balancer
+    id_field: name
+    arn_field: arn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: macie
+  client: macie2
+  scope: regional
+  enabled: true
+  tier: 1
+  collector: generic
+  rule_count: 2
+  enablement_api: get_macie_session
+  apis:
+  - api: get_macie_session
+    paginate: false
+    parameters: {}
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    setting: macie_session
+    mask: []
+    needs_review: false
+- service: memorydb
+  client: memorydb
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 0
+  apis:
+  - api: describe_clusters
+    paginate: true
+    parameters: {}
+    result_path: Clusters
+    resource_type: cluster
+    id_field: Name
+    arn_field: ARN
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: mq
+  client: mq
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 4
+  apis:
+  - api: list_brokers
+    paginate: true
+    parameters: {}
+    result_path: BrokerSummaries
+    resource_type: broker
+    id_field: BrokerId
+    arn_field: BrokerArn
+    tags_from: describe_broker.Tags
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_broker
+    paginate: false
+    parameters: {}
+    resource_type: broker
+    depends_on:
+      api: list_brokers
+      params:
+        BrokerId: BrokerId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: neptune
+  client: neptune
+  scope: regional
+  enabled: true
+  tier: 2
+  collector: generic
+  rule_count: 10
+  apis:
+  - api: describe_db_clusters
+    paginate: true
+    parameters:
+      Filters:
+      - Name: engine
+        Values:
+        - neptune
+    result_path: DBClusters
+    resource_type: db_cluster
+    id_field: DBClusterIdentifier
+    arn_field: DBClusterArn
+    tags_from: list_tags_for_resource.TagList
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_tags_for_resource
+    paginate: false
+    parameters: {}
+    resource_type: db_cluster
+    depends_on:
+      api: describe_db_clusters
+      params:
+        ResourceName: DBClusterArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_db_instances
+    paginate: true
+    parameters:
+      Filters:
+      - Name: engine
+        Values:
+        - neptune
+    result_path: DBInstances
+    resource_type: db_instance
+    id_field: DBInstanceIdentifier
+    arn_field: DBInstanceArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_db_cluster_snapshots
+    paginate: true
+    parameters:
+      SnapshotType: manual
+    result_path: DBClusterSnapshots
+    resource_type: db_cluster_snapshot
+    id_field: DBClusterSnapshotIdentifier
+    arn_field: DBClusterSnapshotArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_db_cluster_snapshot_attributes
+    paginate: false
+    parameters: {}
+    resource_type: db_cluster_snapshot
+    depends_on:
+      api: describe_db_cluster_snapshots
+      params:
+        DBClusterSnapshotIdentifier: DBClusterSnapshotIdentifier
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_db_subnet_groups
+    paginate: true
+    parameters: {}
+    result_path: DBSubnetGroups
+    resource_type: db_subnet_group
+    id_field: DBSubnetGroupName
+    arn_field: DBSubnetGroupArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: networkfirewall
+  client: network-firewall
+  scope: regional
+  enabled: true
+  tier: 2
+  collector: generic
+  rule_count: 7
+  apis:
+  - api: list_firewalls
+    paginate: true
+    parameters: {}
+    result_path: Firewalls
+    resource_type: firewall
+    id_field: FirewallArn
+    arn_field: FirewallArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_firewall
+    paginate: false
+    parameters: {}
+    resource_type: firewall
+    depends_on:
+      api: list_firewalls
+      params:
+        FirewallArn: FirewallArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_logging_configuration
+    paginate: false
+    parameters: {}
+    resource_type: firewall
+    depends_on:
+      api: list_firewalls
+      params:
+        FirewallArn: FirewallArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_firewall_policies
+    paginate: true
+    parameters: {}
+    result_path: FirewallPolicies
+    resource_type: firewall_policy
+    id_field: Arn
+    arn_field: Arn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_firewall_policy
+    paginate: false
+    parameters: {}
+    resource_type: firewall_policy
+    depends_on:
+      api: list_firewall_policies
+      params:
+        FirewallPolicyArn: Arn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_rule_groups
+    paginate: true
+    parameters: {}
+    result_path: RuleGroups
+    resource_type: rule_group
+    id_field: Arn
+    arn_field: Arn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_rule_group
+    paginate: false
+    parameters: {}
+    resource_type: rule_group
+    depends_on:
+      api: list_rule_groups
+      params:
+        RuleGroupArn: Arn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: opensearch
+  client: opensearch
+  scope: regional
+  enabled: true
+  tier: 2
+  collector: opensearch
+  rule_count: 11
+  apis:
+  - api: list_domain_names
+    paginate: false
+    parameters: {}
+    result_path: DomainNames
+    resource_type: domain
+    id_field: DomainName
+    arn_from: describe_domain.DomainStatus.ARN
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_domain
+    paginate: false
+    parameters: {}
+    resource_type: domain
+    depends_on:
+      api: list_domain_names
+      params:
+        DomainName: DomainName
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_domain_config
+    paginate: false
+    parameters: {}
+    resource_type: domain
+    depends_on:
+      api: list_domain_names
+      params:
+        DomainName: DomainName
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: organizations
+  client: organizations
+  scope: global
+  enabled: true
+  tier: 1
+  collector: generic
+  rule_count: 5
+  enablement_api: describe_organization
+  apis:
+  - api: describe_organization
+    paginate: false
+    parameters: {}
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    setting: organizations_organization
+    mask: []
+    needs_review: false
+  - api: list_roots
+    paginate: true
+    parameters: {}
+    result_path: Roots
+    resource_type: organization_root
+    id_field: Id
+    arn_field: Arn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_accounts
+    paginate: true
+    parameters: {}
+    result_path: Accounts
+    resource_type: account
+    id_field: Id
+    arn_field: Arn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_delegated_administrators
+    paginate: true
+    parameters: {}
+    result_path: DelegatedAdministrators
+    resource_type: delegated_administrator
+    id_field: Id
+    arn_field: Arn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_policies
+    alias: list_policies_scp
+    paginate: true
+    parameters:
+      Filter: SERVICE_CONTROL_POLICY
+    result_path: Policies
+    resource_type: organization_policy
+    id_field: Id
+    arn_field: Arn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_policy
+    alias: describe_policy_scp
+    paginate: false
+    parameters: {}
+    resource_type: organization_policy
+    depends_on:
+      api: list_policies_scp
+      params:
+        PolicyId: Id
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_policies
+    alias: list_policies_tag
+    paginate: true
+    parameters:
+      Filter: TAG_POLICY
+    result_path: Policies
+    resource_type: organization_policy
+    id_field: Id
+    arn_field: Arn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_policy
+    alias: describe_policy_tag
+    paginate: false
+    parameters: {}
+    resource_type: organization_policy
+    depends_on:
+      api: list_policies_tag
+      params:
+        PolicyId: Id
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_policies
+    alias: list_policies_backup
+    paginate: true
+    parameters:
+      Filter: BACKUP_POLICY
+    result_path: Policies
+    resource_type: organization_policy
+    id_field: Id
+    arn_field: Arn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_policy
+    alias: describe_policy_backup
+    paginate: false
+    parameters: {}
+    resource_type: organization_policy
+    depends_on:
+      api: list_policies_backup
+      params:
+        PolicyId: Id
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_policies
+    alias: list_policies_ai_optout
+    paginate: true
+    parameters:
+      Filter: AISERVICES_OPT_OUT_POLICY
+    result_path: Policies
+    resource_type: organization_policy
+    id_field: Id
+    arn_field: Arn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_policy
+    alias: describe_policy_ai_optout
+    paginate: false
+    parameters: {}
+    resource_type: organization_policy
+    depends_on:
+      api: list_policies_ai_optout
+      params:
+        PolicyId: Id
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: rds
+  client: rds
+  scope: regional
+  enabled: true
+  tier: 1
+  collector: generic
+  rule_count: 34
+  apis:
+  - api: describe_db_instances
+    paginate: true
+    parameters: {}
+    result_path: DBInstances
+    resource_type: db_instance
+    id_field: DBInstanceIdentifier
+    arn_field: DBInstanceArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_db_clusters
+    paginate: true
+    parameters: {}
+    result_path: DBClusters
+    resource_type: db_cluster
+    id_field: DBClusterIdentifier
+    arn_field: DBClusterArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_db_snapshots
+    paginate: true
+    parameters:
+      SnapshotType: manual
+    result_path: DBSnapshots
+    resource_type: db_snapshot
+    id_field: DBSnapshotIdentifier
+    arn_field: DBSnapshotArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_db_snapshot_attributes
+    paginate: false
+    parameters: {}
+    resource_type: db_snapshot
+    depends_on:
+      api: describe_db_snapshots
+      params:
+        DBSnapshotIdentifier: DBSnapshotIdentifier
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_db_cluster_snapshots
+    paginate: true
+    parameters:
+      SnapshotType: manual
+    result_path: DBClusterSnapshots
+    resource_type: db_cluster_snapshot
+    id_field: DBClusterSnapshotIdentifier
+    arn_field: DBClusterSnapshotArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_db_cluster_snapshot_attributes
+    paginate: false
+    parameters: {}
+    resource_type: db_cluster_snapshot
+    depends_on:
+      api: describe_db_cluster_snapshots
+      params:
+        DBClusterSnapshotIdentifier: DBClusterSnapshotIdentifier
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_db_parameter_groups
+    paginate: true
+    parameters: {}
+    result_path: DBParameterGroups
+    resource_type: db_parameter_group
+    id_field: DBParameterGroupName
+    arn_field: DBParameterGroupArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_db_parameters
+    paginate: true
+    parameters:
+      Source: user
+    resource_type: db_parameter_group
+    depends_on:
+      api: describe_db_parameter_groups
+      params:
+        DBParameterGroupName: DBParameterGroupName
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_db_cluster_parameter_groups
+    paginate: true
+    parameters: {}
+    result_path: DBClusterParameterGroups
+    resource_type: db_cluster_parameter_group
+    id_field: DBClusterParameterGroupName
+    arn_field: DBClusterParameterGroupArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_db_cluster_parameters
+    paginate: true
+    parameters:
+      Source: user
+    resource_type: db_cluster_parameter_group
+    depends_on:
+      api: describe_db_cluster_parameter_groups
+      params:
+        DBClusterParameterGroupName: DBClusterParameterGroupName
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_db_subnet_groups
+    paginate: true
+    parameters: {}
+    result_path: DBSubnetGroups
+    resource_type: db_subnet_group
+    id_field: DBSubnetGroupName
+    arn_field: DBSubnetGroupArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_event_subscriptions
+    paginate: true
+    parameters: {}
+    result_path: EventSubscriptionsList
+    resource_type: event_subscription
+    id_field: CustSubscriptionId
+    arn_field: EventSubscriptionArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_db_proxies
+    paginate: true
+    parameters: {}
+    result_path: DBProxies
+    resource_type: db_proxy
+    id_field: DBProxyName
+    arn_field: DBProxyArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_certificates
+    paginate: true
+    parameters: {}
+    result_path: Certificates
+    resource_type: db_certificate
+    id_field: CertificateIdentifier
+    arn_field: CertificateArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: redshift
+  client: redshift
+  scope: regional
+  enabled: true
+  tier: 2
+  collector: generic
+  rule_count: 10
+  apis:
+  - api: describe_clusters
+    paginate: true
+    parameters: {}
+    result_path: Clusters
+    resource_type: cluster
+    id_field: ClusterIdentifier
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_logging_status
+    paginate: false
+    parameters: {}
+    resource_type: cluster
+    depends_on:
+      api: describe_clusters
+      params:
+        ClusterIdentifier: ClusterIdentifier
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_cluster_snapshots
+    paginate: true
+    parameters:
+      SnapshotType: manual
+    result_path: Snapshots
+    resource_type: snapshot
+    id_field: SnapshotIdentifier
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_cluster_subnet_groups
+    paginate: true
+    parameters: {}
+    result_path: ClusterSubnetGroups
+    resource_type: subnet_group
+    id_field: ClusterSubnetGroupName
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_cluster_parameter_groups
+    paginate: true
+    parameters: {}
+    result_path: ParameterGroups
+    resource_type: parameter_group
+    id_field: ParameterGroupName
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_cluster_parameters
+    paginate: true
+    parameters:
+      Source: user
+    resource_type: parameter_group
+    depends_on:
+      api: describe_cluster_parameter_groups
+      params:
+        ParameterGroupName: ParameterGroupName
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: resourceexplorer2
+  client: resource-explorer-2
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 1
+  apis:
+  - api: list_indexes
+    paginate: true
+    parameters: {}
+    result_path: Indexes
+    resource_type: index
+    id_field: Arn
+    arn_field: Arn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: rolesanywhere
+  client: rolesanywhere
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 0
+  apis:
+  - api: list_trust_anchors
+    paginate: true
+    parameters: {}
+    result_path: trustAnchors
+    resource_type: trust_anchor
+    id_field: trustAnchorId
+    arn_field: trustAnchorArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_profiles
+    paginate: true
+    parameters: {}
+    result_path: profiles
+    resource_type: profile
+    id_field: profileId
+    arn_field: profileArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: route53
+  client: route53
+  scope: global
+  enabled: true
+  tier: 1
+  collector: route53
+  rule_count: 4
+  apis:
+  - api: list_hosted_zones
+    paginate: true
+    parameters: {}
+    result_path: HostedZones
+    resource_type: hosted_zone
+    id_field: Id
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_hosted_zone
+    paginate: false
+    parameters: {}
+    resource_type: hosted_zone
+    depends_on:
+      api: list_hosted_zones
+      params:
+        Id: Id
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_resource_record_sets
+    paginate: true
+    parameters: {}
+    result_path: ResourceRecordSets
+    resource_type: record_set
+    id_field: Name+Type+SetIdentifier
+    depends_on:
+      api: list_hosted_zones
+      params:
+        HostedZoneId: Id
+    as_resource: true
+    inherit:
+      hosted_zone_name: Name
+    scope_id_to_parent: true
+    mask: []
+    needs_review: false
+  - api: list_health_checks
+    paginate: true
+    parameters: {}
+    result_path: HealthChecks
+    resource_type: health_check
+    id_field: Id
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_health_check_status
+    paginate: false
+    parameters: {}
+    resource_type: health_check
+    depends_on:
+      api: list_health_checks
+      params:
+        HealthCheckId: Id
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    opt_in_flag: --collect-health-check-status
+    needs_review: false
+  - api: list_domains
+    client: route53domains
+    paginate: true
+    parameters: {}
+    result_path: Domains
+    resource_type: domain
+    id_field: DomainName
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_domain_detail
+    client: route53domains
+    paginate: false
+    parameters: {}
+    resource_type: domain
+    depends_on:
+      api: list_domains
+      params:
+        DomainName: DomainName
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: s3
+  client: s3
+  scope: global
+  enabled: true
+  tier: 1
+  collector: s3
+  rule_count: 20
+  apis:
+  - api: list_buckets
+    paginate: true
+    parameters: {}
+    result_path: Buckets
+    resource_type: bucket
+    id_field: Name
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_public_access_block
+    paginate: false
+    parameters: {}
+    resource_type: bucket
+    depends_on:
+      api: list_buckets
+      params:
+        Bucket: Name
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_bucket_policy
+    paginate: false
+    parameters: {}
+    resource_type: bucket
+    depends_on:
+      api: list_buckets
+      params:
+        Bucket: Name
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_bucket_policy_status
+    paginate: false
+    parameters: {}
+    resource_type: bucket
+    depends_on:
+      api: list_buckets
+      params:
+        Bucket: Name
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_bucket_acl
+    paginate: false
+    parameters: {}
+    resource_type: bucket
+    depends_on:
+      api: list_buckets
+      params:
+        Bucket: Name
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_bucket_encryption
+    paginate: false
+    parameters: {}
+    resource_type: bucket
+    depends_on:
+      api: list_buckets
+      params:
+        Bucket: Name
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_bucket_versioning
+    paginate: false
+    parameters: {}
+    resource_type: bucket
+    depends_on:
+      api: list_buckets
+      params:
+        Bucket: Name
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_bucket_logging
+    paginate: false
+    parameters: {}
+    resource_type: bucket
+    depends_on:
+      api: list_buckets
+      params:
+        Bucket: Name
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_bucket_website
+    paginate: false
+    parameters: {}
+    resource_type: bucket
+    depends_on:
+      api: list_buckets
+      params:
+        Bucket: Name
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_bucket_lifecycle_configuration
+    paginate: false
+    parameters: {}
+    resource_type: bucket
+    depends_on:
+      api: list_buckets
+      params:
+        Bucket: Name
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_object_lock_configuration
+    paginate: false
+    parameters: {}
+    resource_type: bucket
+    depends_on:
+      api: list_buckets
+      params:
+        Bucket: Name
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_bucket_replication
+    paginate: false
+    parameters: {}
+    resource_type: bucket
+    depends_on:
+      api: list_buckets
+      params:
+        Bucket: Name
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_bucket_ownership_controls
+    paginate: false
+    parameters: {}
+    resource_type: bucket
+    depends_on:
+      api: list_buckets
+      params:
+        Bucket: Name
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_bucket_notification_configuration
+    paginate: false
+    parameters: {}
+    resource_type: bucket
+    depends_on:
+      api: list_buckets
+      params:
+        Bucket: Name
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_bucket_tagging
+    paginate: false
+    parameters: {}
+    resource_type: bucket
+    depends_on:
+      api: list_buckets
+      params:
+        Bucket: Name
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_public_access_block
+    alias: s3control_account_public_access_block
+    client: s3control
+    paginate: false
+    parameters:
+      AccountId: '{account_id}'
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    setting: s3_account_public_access_block
+    mask: []
+    needs_review: false
+- service: sagemaker
+  client: sagemaker
+  scope: regional
+  enabled: true
+  tier: 2
+  collector: generic
+  rule_count: 11
+  apis:
+  - api: list_notebook_instances
+    paginate: true
+    parameters: {}
+    result_path: NotebookInstances
+    resource_type: notebook_instance
+    id_field: NotebookInstanceName
+    arn_field: NotebookInstanceArn
+    tags_from: tags_notebook.Tags
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_notebook_instance
+    paginate: false
+    parameters: {}
+    resource_type: notebook_instance
+    depends_on:
+      api: list_notebook_instances
+      params:
+        NotebookInstanceName: NotebookInstanceName
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_tags
+    alias: tags_notebook
+    paginate: true
+    parameters: {}
+    resource_type: notebook_instance
+    depends_on:
+      api: list_notebook_instances
+      params:
+        ResourceArn: NotebookInstanceArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_notebook_instance_lifecycle_configs
+    paginate: true
+    parameters: {}
+    result_path: NotebookInstanceLifecycleConfigs
+    resource_type: notebook_lifecycle_config
+    id_field: NotebookInstanceLifecycleConfigName
+    arn_field: NotebookInstanceLifecycleConfigArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_notebook_instance_lifecycle_config
+    paginate: false
+    parameters: {}
+    resource_type: notebook_lifecycle_config
+    depends_on:
+      api: list_notebook_instance_lifecycle_configs
+      params:
+        NotebookInstanceLifecycleConfigName: NotebookInstanceLifecycleConfigName
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask:
+    - b64:OnCreate[].Content
+    - b64:OnStart[].Content
+    needs_review: false
+  - api: list_models
+    paginate: true
+    parameters: {}
+    result_path: Models
+    resource_type: model
+    id_field: ModelName
+    arn_field: ModelArn
+    tags_from: tags_model.Tags
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_model
+    paginate: false
+    parameters: {}
+    resource_type: model
+    depends_on:
+      api: list_models
+      params:
+        ModelName: ModelName
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask:
+    - map:PrimaryContainer.Environment
+    - map:Containers[].Environment
+    needs_review: false
+  - api: list_tags
+    alias: tags_model
+    paginate: true
+    parameters: {}
+    resource_type: model
+    depends_on:
+      api: list_models
+      params:
+        ResourceArn: ModelArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_endpoint_configs
+    paginate: true
+    parameters: {}
+    result_path: EndpointConfigs
+    resource_type: endpoint_config
+    id_field: EndpointConfigName
+    arn_field: EndpointConfigArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_endpoint_config
+    paginate: false
+    parameters: {}
+    resource_type: endpoint_config
+    depends_on:
+      api: list_endpoint_configs
+      params:
+        EndpointConfigName: EndpointConfigName
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_domains
+    paginate: true
+    parameters: {}
+    result_path: Domains
+    resource_type: domain
+    id_field: DomainId
+    arn_field: DomainArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_domain
+    paginate: false
+    parameters: {}
+    resource_type: domain
+    depends_on:
+      api: list_domains
+      params:
+        DomainId: DomainId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_model_package_groups
+    paginate: true
+    parameters: {}
+    result_path: ModelPackageGroupSummaryList
+    resource_type: model_package_group
+    id_field: ModelPackageGroupName
+    arn_field: ModelPackageGroupArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_monitoring_schedules
+    paginate: true
+    parameters: {}
+    result_path: MonitoringScheduleSummaries
+    resource_type: monitoring_schedule
+    id_field: MonitoringScheduleName
+    arn_field: MonitoringScheduleArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_training_jobs
+    paginate: true
+    parameters: {}
+    result_path: TrainingJobSummaries
+    resource_type: training_job
+    id_field: TrainingJobName
+    arn_field: TrainingJobArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    opt_in_flag: --collect-sagemaker-jobs
+    needs_review: false
+  - api: describe_training_job
+    paginate: false
+    parameters: {}
+    resource_type: training_job
+    depends_on:
+      api: list_training_jobs
+      params:
+        TrainingJobName: TrainingJobName
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask:
+    - map:Environment
+    opt_in_flag: --collect-sagemaker-jobs
+    needs_review: false
+  - api: list_processing_jobs
+    paginate: true
+    parameters: {}
+    result_path: ProcessingJobSummaries
+    resource_type: processing_job
+    id_field: ProcessingJobName
+    arn_field: ProcessingJobArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    opt_in_flag: --collect-sagemaker-jobs
+    needs_review: false
+  - api: describe_processing_job
+    paginate: false
+    parameters: {}
+    resource_type: processing_job
+    depends_on:
+      api: list_processing_jobs
+      params:
+        ProcessingJobName: ProcessingJobName
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask:
+    - map:Environment
+    opt_in_flag: --collect-sagemaker-jobs
+    needs_review: false
+- service: secretsmanager
+  client: secretsmanager
+  scope: regional
+  enabled: true
+  tier: 1
+  collector: generic
+  rule_count: 4
+  apis:
+  - api: list_secrets
+    paginate: true
+    parameters: {}
+    result_path: SecretList
+    resource_type: secret
+    id_field: Name
+    arn_field: ARN
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_secret
+    paginate: false
+    parameters: {}
+    resource_type: secret
+    depends_on:
+      api: list_secrets
+      params:
+        SecretId: ARN
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_resource_policy
+    paginate: false
+    parameters: {}
+    resource_type: secret
+    depends_on:
+      api: list_secrets
+      params:
+        SecretId: ARN
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: securityhub
+  client: securityhub
+  scope: regional
+  enabled: true
+  tier: 1
+  collector: generic
+  rule_count: 1
+  enablement_api: describe_hub
+  apis:
+  - api: describe_hub
+    paginate: false
+    parameters: {}
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    setting: securityhub_hub
+    mask: []
+    needs_review: false
+  - api: get_enabled_standards
+    paginate: true
+    parameters: {}
+    result_path: StandardsSubscriptions
+    resource_type: standards_subscription
+    id_field: StandardsSubscriptionArn
+    arn_field: StandardsSubscriptionArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: servicecatalog
+  client: servicecatalog
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 0
+  apis:
+  - api: list_portfolios
+    paginate: true
+    parameters: {}
+    result_path: PortfolioDetails
+    resource_type: portfolio
+    id_field: Id
+    arn_field: ARN
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_portfolio_shares
+    paginate: false
+    parameters:
+      Type: ACCOUNT
+    resource_type: portfolio
+    depends_on:
+      api: list_portfolios
+      params:
+        PortfolioId: Id
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: ses
+  client: sesv2
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 1
+  apis:
+  - api: get_account
+    paginate: false
+    parameters: {}
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    setting: ses_account
+    mask: []
+    needs_review: false
+  - api: list_email_identities
+    paginate: false
+    parameters: {}
+    result_path: EmailIdentities
+    resource_type: email_identity
+    id_field: IdentityName
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_email_identity
+    paginate: false
+    parameters: {}
+    resource_type: email_identity
+    depends_on:
+      api: list_email_identities
+      params:
+        EmailIdentity: IdentityName
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: shield
+  client: shield
+  scope: global
+  enabled: true
+  tier: 2
+  collector: generic
+  rule_count: 6
+  apis:
+  - api: get_subscription_state
+    paginate: false
+    parameters: {}
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    setting: shield_subscription_state
+    mask: []
+    needs_review: false
+  - api: describe_subscription
+    paginate: false
+    parameters: {}
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    setting: shield_subscription
+    mask: []
+    needs_review: false
+  - api: list_protections
+    paginate: true
+    parameters: {}
+    result_path: Protections
+    resource_type: protection
+    id_field: Id
+    arn_field: ProtectionArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: sns
+  client: sns
+  scope: regional
+  enabled: true
+  tier: 1
+  collector: generic
+  rule_count: 3
+  apis:
+  - api: list_topics
+    paginate: true
+    parameters: {}
+    result_path: Topics
+    resource_type: topic
+    id_field: TopicArn
+    arn_field: TopicArn
+    tags_from: list_tags_for_resource.Tags
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_topic_attributes
+    paginate: false
+    parameters: {}
+    resource_type: topic
+    depends_on:
+      api: list_topics
+      params:
+        TopicArn: TopicArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_subscriptions_by_topic
+    paginate: true
+    parameters: {}
+    resource_type: topic
+    depends_on:
+      api: list_topics
+      params:
+        TopicArn: TopicArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_tags_for_resource
+    paginate: false
+    parameters: {}
+    resource_type: topic
+    depends_on:
+      api: list_topics
+      params:
+        ResourceArn: TopicArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: sqs
+  client: sqs
+  scope: regional
+  enabled: true
+  tier: 1
+  collector: sqs
+  rule_count: 2
+  apis:
+  - api: list_queues
+    paginate: true
+    parameters: {}
+    result_path: QueueUrls
+    resource_type: queue
+    id_field: Value
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_queue_attributes
+    paginate: false
+    parameters:
+      AttributeNames:
+      - All
+    resource_type: queue
+    depends_on:
+      api: list_queues
+      params:
+        QueueUrl: Value
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_queue_tags
+    paginate: false
+    parameters: {}
+    resource_type: queue
+    depends_on:
+      api: list_queues
+      params:
+        QueueUrl: Value
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: ssm
+  client: ssm
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 3
+  apis:
+  - api: get_service_setting
+    paginate: false
+    parameters:
+      SettingId: /ssm/documents/console/public-sharing-permission
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    setting: ssm_public_sharing_setting
+    mask: []
+    needs_review: false
+  - api: describe_instance_information
+    paginate: true
+    parameters: {}
+    result_path: InstanceInformationList
+    resource_type: managed_instance
+    id_field: InstanceId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_documents
+    paginate: true
+    parameters:
+      Filters:
+      - Key: Owner
+        Values:
+        - Self
+    result_path: DocumentIdentifiers
+    resource_type: document
+    id_field: Name
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_document_permission
+    paginate: false
+    parameters:
+      PermissionType: Share
+    resource_type: document
+    depends_on:
+      api: list_documents
+      params:
+        Name: Name
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_document
+    paginate: false
+    parameters: {}
+    resource_type: document
+    depends_on:
+      api: list_documents
+      params:
+        Name: Name
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask:
+    - value:Content
+    needs_review: false
+  - api: describe_parameters
+    paginate: true
+    parameters: {}
+    result_path: Parameters
+    resource_type: parameter
+    id_field: Name
+    arn_field: ARN
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_resource_compliance_summaries
+    paginate: true
+    parameters: {}
+    result_path: ResourceComplianceSummaryItems
+    resource_type: compliance_summary
+    id_field: ResourceType+ResourceId+ComplianceType
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: ssmincidents
+  client: ssm-incidents
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 1
+  apis:
+  - api: list_replication_sets
+    paginate: true
+    parameters: {}
+    result_path: replicationSetArns
+    resource_type: replication_set
+    id_field: Value
+    arn_field: Value
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_replication_set
+    paginate: false
+    parameters: {}
+    resource_type: replication_set
+    depends_on:
+      api: list_replication_sets
+      params:
+        arn: Value
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_response_plans
+    paginate: true
+    parameters: {}
+    result_path: responsePlanSummaries
+    resource_type: response_plan
+    id_field: arn
+    arn_field: arn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: stepfunctions
+  client: stepfunctions
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 0
+  apis:
+  - api: list_state_machines
+    paginate: true
+    parameters: {}
+    result_path: stateMachines
+    resource_type: state_machine
+    id_field: stateMachineArn
+    arn_field: stateMachineArn
+    tags_from: list_tags_for_resource.tags
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_state_machine
+    paginate: false
+    parameters: {}
+    resource_type: state_machine
+    depends_on:
+      api: list_state_machines
+      params:
+        stateMachineArn: stateMachineArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask:
+    - value:definition
+    needs_review: false
+  - api: list_tags_for_resource
+    paginate: false
+    parameters: {}
+    resource_type: state_machine
+    depends_on:
+      api: list_state_machines
+      params:
+        resourceArn: stateMachineArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: storagegateway
+  client: storagegateway
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 1
+  apis:
+  - api: list_gateways
+    paginate: true
+    parameters: {}
+    result_path: Gateways
+    resource_type: gateway
+    id_field: GatewayARN
+    arn_field: GatewayARN
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_file_shares
+    paginate: true
+    parameters: {}
+    result_path: FileShareInfoList
+    resource_type: file_share
+    id_field: FileShareARN
+    arn_field: FileShareARN
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: transfer
+  client: transfer
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 2
+  apis:
+  - api: list_servers
+    paginate: true
+    parameters: {}
+    result_path: Servers
+    resource_type: server
+    id_field: ServerId
+    arn_field: Arn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_server
+    paginate: false
+    parameters: {}
+    resource_type: server
+    depends_on:
+      api: list_servers
+      params:
+        ServerId: ServerId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: trustedadvisor
+  client: support
+  scope: global
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 1
+  apis:
+  - api: describe_trusted_advisor_checks
+    paginate: false
+    parameters:
+      language: en
+    result_path: checks
+    resource_type: check
+    id_field: id
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_trusted_advisor_check_result
+    paginate: false
+    parameters: {}
+    resource_type: check
+    depends_on:
+      api: describe_trusted_advisor_checks
+      params:
+        checkId: id
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: vpc
+  client: ec2
+  scope: regional
+  enabled: true
+  tier: 1
+  collector: generic
+  rule_count: 11
+  apis:
+  - api: describe_vpcs
+    paginate: true
+    parameters: {}
+    result_path: Vpcs
+    resource_type: vpc
+    id_field: VpcId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_subnets
+    paginate: true
+    parameters: {}
+    result_path: Subnets
+    resource_type: subnet
+    id_field: SubnetId
+    arn_field: SubnetArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_route_tables
+    paginate: true
+    parameters: {}
+    result_path: RouteTables
+    resource_type: route_table
+    id_field: RouteTableId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_internet_gateways
+    paginate: true
+    parameters: {}
+    result_path: InternetGateways
+    resource_type: internet_gateway
+    id_field: InternetGatewayId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_nat_gateways
+    paginate: true
+    parameters: {}
+    result_path: NatGateways
+    resource_type: nat_gateway
+    id_field: NatGatewayId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_network_acls
+    paginate: true
+    parameters: {}
+    result_path: NetworkAcls
+    resource_type: network_acl
+    id_field: NetworkAclId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_vpc_endpoints
+    paginate: true
+    parameters: {}
+    result_path: VpcEndpoints
+    resource_type: vpc_endpoint
+    id_field: VpcEndpointId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_vpc_peering_connections
+    paginate: true
+    parameters: {}
+    result_path: VpcPeeringConnections
+    resource_type: vpc_peering_connection
+    id_field: VpcPeeringConnectionId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_flow_logs
+    paginate: true
+    parameters: {}
+    result_path: FlowLogs
+    resource_type: flow_log
+    id_field: FlowLogId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_transit_gateways
+    paginate: true
+    parameters: {}
+    result_path: TransitGateways
+    resource_type: transit_gateway
+    id_field: TransitGatewayId
+    arn_field: TransitGatewayArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_transit_gateway_attachments
+    paginate: true
+    parameters: {}
+    result_path: TransitGatewayAttachments
+    resource_type: transit_gateway_attachment
+    id_field: TransitGatewayAttachmentId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_vpn_connections
+    paginate: false
+    parameters: {}
+    result_path: VpnConnections
+    resource_type: vpn_connection
+    id_field: VpnConnectionId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: waf
+  client: waf-regional
+  scope: regional
+  enabled: true
+  tier: 1
+  collector: generic
+  rule_count: 7
+  apis:
+  - api: list_web_acls
+    paginate: false
+    parameters: {}
+    result_path: WebACLs
+    resource_type: web_acl
+    id_field: WebACLId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_web_acl
+    paginate: false
+    parameters: {}
+    resource_type: web_acl
+    depends_on:
+      api: list_web_acls
+      params:
+        WebACLId: WebACLId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_resources_for_web_acl
+    alias: acl_resources_alb
+    paginate: false
+    parameters:
+      ResourceType: APPLICATION_LOAD_BALANCER
+    resource_type: web_acl
+    depends_on:
+      api: list_web_acls
+      params:
+        WebACLId: WebACLId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_resources_for_web_acl
+    alias: acl_resources_api_gateway
+    paginate: false
+    parameters:
+      ResourceType: API_GATEWAY
+    resource_type: web_acl
+    depends_on:
+      api: list_web_acls
+      params:
+        WebACLId: WebACLId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_rules
+    paginate: false
+    parameters: {}
+    result_path: Rules
+    resource_type: rule
+    id_field: RuleId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: wafv2
+  client: wafv2
+  scope: regional
+  enabled: true
+  tier: 1
+  collector: generic
+  rule_count: 3
+  apis:
+  - api: list_web_acls
+    paginate: false
+    parameters:
+      Scope: REGIONAL
+    result_path: WebACLs
+    resource_type: web_acl
+    id_field: ARN
+    arn_field: ARN
+    tags_from: list_tags_for_resource.TagInfoForResource.TagList
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_web_acl
+    paginate: false
+    parameters:
+      Scope: REGIONAL
+    resource_type: web_acl
+    depends_on:
+      api: list_web_acls
+      params:
+        Name: Name
+        Id: Id
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_logging_configuration
+    paginate: false
+    parameters: {}
+    resource_type: web_acl
+    depends_on:
+      api: list_web_acls
+      params:
+        ResourceArn: ARN
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_tags_for_resource
+    paginate: false
+    parameters: {}
+    resource_type: web_acl
+    depends_on:
+      api: list_web_acls
+      params:
+        ResourceARN: ARN
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_resources_for_web_acl
+    alias: acl_resources_alb
+    paginate: false
+    parameters:
+      ResourceType: APPLICATION_LOAD_BALANCER
+    resource_type: web_acl
+    depends_on:
+      api: list_web_acls
+      params:
+        WebACLArn: ARN
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_resources_for_web_acl
+    alias: acl_resources_api_gateway
+    paginate: false
+    parameters:
+      ResourceType: API_GATEWAY
+    resource_type: web_acl
+    depends_on:
+      api: list_web_acls
+      params:
+        WebACLArn: ARN
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_resources_for_web_acl
+    alias: acl_resources_appsync
+    paginate: false
+    parameters:
+      ResourceType: APPSYNC
+    resource_type: web_acl
+    depends_on:
+      api: list_web_acls
+      params:
+        WebACLArn: ARN
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_resources_for_web_acl
+    alias: acl_resources_cognito
+    paginate: false
+    parameters:
+      ResourceType: COGNITO_USER_POOL
+    resource_type: web_acl
+    depends_on:
+      api: list_web_acls
+      params:
+        WebACLArn: ARN
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_resources_for_web_acl
+    alias: acl_resources_app_runner
+    paginate: false
+    parameters:
+      ResourceType: APP_RUNNER_SERVICE
+    resource_type: web_acl
+    depends_on:
+      api: list_web_acls
+      params:
+        WebACLArn: ARN
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_resources_for_web_acl
+    alias: acl_resources_verified_access
+    paginate: false
+    parameters:
+      ResourceType: VERIFIED_ACCESS_INSTANCE
+    resource_type: web_acl
+    depends_on:
+      api: list_web_acls
+      params:
+        WebACLArn: ARN
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_rule_groups
+    paginate: false
+    parameters:
+      Scope: REGIONAL
+    result_path: RuleGroups
+    resource_type: rule_group
+    id_field: ARN
+    arn_field: ARN
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_rule_group
+    paginate: false
+    parameters:
+      Scope: REGIONAL
+    resource_type: rule_group
+    depends_on:
+      api: list_rule_groups
+      params:
+        Name: Name
+        Id: Id
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_ip_sets
+    paginate: false
+    parameters:
+      Scope: REGIONAL
+    result_path: IPSets
+    resource_type: ip_set
+    id_field: ARN
+    arn_field: ARN
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_ip_set
+    paginate: false
+    parameters:
+      Scope: REGIONAL
+    resource_type: ip_set
+    depends_on:
+      api: list_ip_sets
+      params:
+        Name: Name
+        Id: Id
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: wellarchitected
+  client: wellarchitected
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 1
+  apis:
+  - api: list_workloads
+    paginate: false
+    parameters: {}
+    result_path: WorkloadSummaries
+    resource_type: workload
+    id_field: WorkloadId
+    arn_field: WorkloadArn
+    tags_from: list_tags_for_resource.Tags
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_tags_for_resource
+    paginate: false
+    parameters: {}
+    resource_type: workload
+    depends_on:
+      api: list_workloads
+      params:
+        WorkloadArn: WorkloadArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: workspaces
+  client: workspaces
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 2
+  apis:
+  - api: describe_workspaces
+    paginate: true
+    parameters: {}
+    result_path: Workspaces
+    resource_type: workspace
+    id_field: WorkspaceId
+    tags_from: describe_tags.TagList
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_tags
+    paginate: false
+    parameters: {}
+    resource_type: workspace
+    depends_on:
+      api: describe_workspaces
+      params:
+        ResourceId: WorkspaceId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_workspace_directories
+    paginate: true
+    parameters: {}
+    result_path: Directories
+    resource_type: directory
+    id_field: DirectoryId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: apprunner
+  client: apprunner
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 0
+  apis:
+  - api: list_services
+    paginate: false
+    parameters: {}
+    result_path: ServiceSummaryList
+    resource_type: service
+    id_field: ServiceArn
+    arn_field: ServiceArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: describe_service
+    paginate: false
+    parameters: {}
+    resource_type: service
+    depends_on:
+      api: list_services
+      params:
+        ServiceArn: ServiceArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask:
+    - map:Service.SourceConfiguration.ImageRepository.ImageConfiguration.RuntimeEnvironmentVariables
+    - map:Service.SourceConfiguration.CodeRepository.CodeConfiguration.CodeConfigurationValues.RuntimeEnvironmentVariables
+    needs_review: false
+  - api: describe_custom_domains
+    paginate: false
+    parameters: {}
+    resource_type: service
+    depends_on:
+      api: list_services
+      params:
+        ServiceArn: ServiceArn
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: resourcegroupstaggingapi
+  client: resourcegroupstaggingapi
+  scope: regional
+  enabled: false
+  tier: 3
+  collector: generic
+  rule_count: 0
+  apis:
+  - api: get_resources
+    paginate: true
+    parameters:
+      ResourcesPerPage: 100
+    result_path: ResourceTagMappingList
+    resource_type: tagged_resource
+    id_field: ResourceARN
+    arn_field: ResourceARN
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: waf_global
+  client: waf
+  scope: global
+  enabled: true
+  tier: 1
+  collector: generic
+  rule_count: 0
+  apis:
+  - api: list_web_acls
+    paginate: false
+    parameters: {}
+    result_path: WebACLs
+    resource_type: web_acl
+    id_field: WebACLId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_web_acl
+    paginate: false
+    parameters: {}
+    resource_type: web_acl
+    depends_on:
+      api: list_web_acls
+      params:
+        WebACLId: WebACLId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_rules
+    paginate: false
+    parameters: {}
+    result_path: Rules
+    resource_type: rule
+    id_field: RuleId
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+- service: wafv2_cloudfront
+  client: wafv2
+  scope: global
+  enabled: true
+  tier: 1
+  collector: generic
+  rule_count: 0
+  apis:
+  - api: list_web_acls
+    paginate: false
+    parameters:
+      Scope: CLOUDFRONT
+    result_path: WebACLs
+    resource_type: web_acl
+    id_field: ARN
+    arn_field: ARN
+    tags_from: list_tags_for_resource.TagInfoForResource.TagList
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_web_acl
+    paginate: false
+    parameters:
+      Scope: CLOUDFRONT
+    resource_type: web_acl
+    depends_on:
+      api: list_web_acls
+      params:
+        Name: Name
+        Id: Id
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_logging_configuration
+    paginate: false
+    parameters: {}
+    resource_type: web_acl
+    depends_on:
+      api: list_web_acls
+      params:
+        ResourceArn: ARN
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_tags_for_resource
+    paginate: false
+    parameters: {}
+    resource_type: web_acl
+    depends_on:
+      api: list_web_acls
+      params:
+        ResourceARN: ARN
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_distributions_by_web_acl_id
+    client: cloudfront
+    paginate: false
+    parameters: {}
+    resource_type: web_acl
+    depends_on:
+      api: list_web_acls
+      params:
+        WebACLId: ARN
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_rule_groups
+    paginate: false
+    parameters:
+      Scope: CLOUDFRONT
+    result_path: RuleGroups
+    resource_type: rule_group
+    id_field: ARN
+    arn_field: ARN
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_rule_group
+    paginate: false
+    parameters:
+      Scope: CLOUDFRONT
+    resource_type: rule_group
+    depends_on:
+      api: list_rule_groups
+      params:
+        Name: Name
+        Id: Id
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: list_ip_sets
+    paginate: false
+    parameters:
+      Scope: CLOUDFRONT
+    result_path: IPSets
+    resource_type: ip_set
+    id_field: ARN
+    arn_field: ARN
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false
+  - api: get_ip_set
+    paginate: false
+    parameters:
+      Scope: CLOUDFRONT
+    resource_type: ip_set
+    depends_on:
+      api: list_ip_sets
+      params:
+        Name: Name
+        Id: Id
+    as_resource: false
+    inherit: {}
+    scope_id_to_parent: false
+    mask: []
+    needs_review: false

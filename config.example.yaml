@@ -1,0 +1,32 @@
+# Copy to config.yaml (git-ignored). Secrets go in environment variables.
+spec_path: spec/collect_spec.yaml
+mongo:
+  uri: mongodb://localhost:27017   # override with MONGO_URI
+  database: cspm                    # override with MONGO_DATABASE
+  batch_size: 500
+  escape_keys: true
+concurrency:
+  total: 32
+  per_account: 8
+  per_service: 4
+accounts:
+  - account_id: "123456789012"
+    name: example
+    role_arn: arn:aws:iam::123456789012:role/CspmReadOnly
+    external_id_env: CSPM_EXTERNAL_ID_EXAMPLE   # name of the env var, not the value
+    regions: [ap-northeast-2, us-east-1]        # omit for all enabled regions
+
+# Akamai (optional). Credentials never go in this file: use an .edgerc file or environment variables.
+akamai:
+  - name: main
+    edgerc: ~/.edgerc            # or: env_prefix: AKAMAI_MAIN  (reads AKAMAI_MAIN_HOST / _CLIENT_TOKEN / _CLIENT_SECRET / _ACCESS_TOKEN)
+    section: default
+    # account_switch_key_env: AKAMAI_MAIN_SWITCH_KEY   # name of the env var holding the account switch key
+    collect:
+      properties: true           # PAPI: groups, contracts, properties, hostnames, rule trees, origins
+      appsec: true               # configs, security policies, match targets, selected hostnames
+      network_lists: true
+      edge_dns: false            # only if Akamai is your authoritative DNS
+    max_workers: 4
+    requests_per_second: 1.5     # PAPI allows ~100 requests/minute per account; 429s are retried with backoff
+    max_retries: 6

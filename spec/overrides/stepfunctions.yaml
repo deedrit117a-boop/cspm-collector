@@ -1,0 +1,11 @@
+# State machine definitions can embed secrets: masked (reported by type/line only).
+service: stepfunctions
+client: stepfunctions
+scope: regional
+tier: 3
+apis:
+  - {api: list_state_machines, paginate: true, result_path: stateMachines, resource_type: state_machine, id_field: stateMachineArn,
+     arn_field: stateMachineArn, tags_from: list_tags_for_resource.tags}
+  - {api: describe_state_machine, resource_type: state_machine, mask: ["value:definition"],
+     depends_on: {api: list_state_machines, params: {stateMachineArn: stateMachineArn}}}
+  - {api: list_tags_for_resource, resource_type: state_machine, depends_on: {api: list_state_machines, params: {resourceArn: stateMachineArn}}}

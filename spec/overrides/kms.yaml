@@ -1,0 +1,12 @@
+service: kms
+client: kms
+scope: regional
+apis:
+  - {api: list_keys, paginate: true, result_path: Keys, resource_type: key, id_field: KeyId, arn_field: KeyArn,
+     tags_from: list_resource_tags.Tags}
+  - {api: describe_key, resource_type: key, depends_on: {api: list_keys, params: {KeyId: KeyId}}}
+  - {api: get_key_rotation_status, resource_type: key, depends_on: {api: list_keys, params: {KeyId: KeyId}}}
+  - {api: get_key_policy, resource_type: key, parameters: {PolicyName: default}, depends_on: {api: list_keys, params: {KeyId: KeyId}}}
+  - {api: list_grants, paginate: true, resource_type: key, depends_on: {api: list_keys, params: {KeyId: KeyId}}}
+  - {api: list_resource_tags, paginate: true, resource_type: key, depends_on: {api: list_keys, params: {KeyId: KeyId}}}
+  - {api: list_aliases, paginate: true, result_path: Aliases, resource_type: alias, id_field: AliasName, arn_field: AliasArn}

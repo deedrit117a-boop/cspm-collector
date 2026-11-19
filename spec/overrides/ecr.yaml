@@ -1,0 +1,14 @@
+# describe_images can list thousands of images per repository, so it is opt-in (--opt-in --collect-ecr-images).
+service: ecr
+client: ecr
+scope: regional
+tier: 3
+apis:
+  - {api: get_registry_scanning_configuration, setting: ecr_registry_scanning_configuration}
+  - {api: describe_repositories, paginate: true, result_path: repositories, resource_type: repository, id_field: repositoryName,
+     arn_field: repositoryArn, tags_from: list_tags_for_resource.tags}
+  - {api: get_repository_policy, resource_type: repository, depends_on: {api: describe_repositories, params: {repositoryName: repositoryName}}}
+  - {api: get_lifecycle_policy, resource_type: repository, depends_on: {api: describe_repositories, params: {repositoryName: repositoryName}}}
+  - {api: list_tags_for_resource, resource_type: repository, depends_on: {api: describe_repositories, params: {resourceArn: repositoryArn}}}
+  - {api: describe_images, paginate: true, resource_type: repository, opt_in_flag: "--collect-ecr-images",
+     depends_on: {api: describe_repositories, params: {repositoryName: repositoryName}}}

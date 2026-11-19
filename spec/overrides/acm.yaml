@@ -1,0 +1,12 @@
+# ListCertificates only returns RSA_1024/RSA_2048 certificates unless the key types are listed explicitly.
+# CloudFront certificates live in us-east-1, which is collected like every other region.
+service: acm
+client: acm
+scope: regional
+tier: 1
+apis:
+  - {api: list_certificates, paginate: true, result_path: CertificateSummaryList, resource_type: certificate,
+     id_field: CertificateArn, arn_field: CertificateArn, tags_from: list_tags_for_certificate.Tags,
+     parameters: {Includes: {keyTypes: [RSA_1024, RSA_2048, RSA_3072, RSA_4096, EC_prime256v1, EC_secp384r1, EC_secp521r1]}}}
+  - {api: describe_certificate, resource_type: certificate, depends_on: {api: list_certificates, params: {CertificateArn: CertificateArn}}}
+  - {api: list_tags_for_certificate, resource_type: certificate, depends_on: {api: list_certificates, params: {CertificateArn: CertificateArn}}}

@@ -1,0 +1,10 @@
+# Virtual interfaces carry the BGP authentication key (authKey): masked.
+service: directconnect
+client: directconnect
+scope: regional
+tier: 3
+apis:
+  - {api: describe_connections, result_path: connections, resource_type: connection, id_field: connectionId}
+  - {api: describe_virtual_interfaces, result_path: virtualInterfaces, resource_type: virtual_interface, id_field: virtualInterfaceId,
+     mask: ["value:authKey"]}
+  - {api: describe_direct_connect_gateways, result_path: directConnectGateways, resource_type: direct_connect_gateway, id_field: directConnectGatewayId}

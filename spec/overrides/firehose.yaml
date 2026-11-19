@@ -1,0 +1,12 @@
+# TODO: list_delivery_streams pages with ExclusiveStartDeliveryStreamName, which the generic pager does not do:
+# the first 100 streams are collected.
+service: firehose
+client: firehose
+scope: regional
+tier: 3
+apis:
+  - {api: list_delivery_streams, result_path: DeliveryStreamNames, resource_type: delivery_stream, id_field: Value,
+     parameters: {Limit: 100}, arn_from: describe_delivery_stream.DeliveryStreamDescription.DeliveryStreamARN,
+     tags_from: list_tags_for_delivery_stream.Tags}
+  - {api: describe_delivery_stream, resource_type: delivery_stream, depends_on: {api: list_delivery_streams, params: {DeliveryStreamName: Value}}}
+  - {api: list_tags_for_delivery_stream, resource_type: delivery_stream, depends_on: {api: list_delivery_streams, params: {DeliveryStreamName: Value}}}

@@ -1,0 +1,9 @@
+# Query history (list_query_executions) is not collected: it is unbounded and carries query text.
+service: athena
+client: athena
+scope: regional
+tier: 3
+apis:
+  - {api: list_work_groups, result_path: WorkGroups, resource_type: work_group, id_field: Name}
+  - {api: get_work_group, resource_type: work_group, depends_on: {api: list_work_groups, params: {WorkGroup: Name}}}
+  - {api: list_data_catalogs, paginate: true, result_path: DataCatalogsSummary, resource_type: data_catalog, id_field: CatalogName}

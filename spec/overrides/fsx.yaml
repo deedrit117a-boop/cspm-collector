@@ -1,0 +1,6 @@
+service: fsx
+client: fsx
+scope: regional
+tier: 3
+apis:
+  - {api: describe_file_systems, paginate: true, result_path: FileSystems, resource_type: file_system, id_field: FileSystemId, arn_field: ResourceARN}

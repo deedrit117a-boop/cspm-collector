@@ -1,0 +1,10 @@
+# Environment variable values and basic-auth credentials are masked.
+service: amplify
+client: amplify
+scope: regional
+tier: 3
+apis:
+  - {api: list_apps, result_path: apps, resource_type: app, id_field: appId, arn_field: appArn,
+     mask: ["map:environmentVariables", "value:basicAuthCredentials"]}
+  - {api: list_branches, resource_type: app, depends_on: {api: list_apps, params: {appId: appId}},
+     mask: ["map:branches[].environmentVariables", "value:branches[].basicAuthCredentials"]}

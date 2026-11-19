@@ -1,0 +1,10 @@
+# Bulk tag collection for the relationship graph (service / team / environment). Heavy: it returns EVERY tagged
+# resource of the region (tens of thousands in a large account), so it is disabled by default; enable it explicitly.
+service: resourcegroupstaggingapi
+client: resourcegroupstaggingapi
+scope: regional
+tier: 3
+enabled: false
+apis:
+  - {api: get_resources, paginate: true, result_path: ResourceTagMappingList, resource_type: tagged_resource, id_field: ResourceARN,
+     arn_field: ResourceARN, parameters: {ResourcesPerPage: 100}}

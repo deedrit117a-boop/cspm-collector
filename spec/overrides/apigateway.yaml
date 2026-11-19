@@ -1,0 +1,9 @@
+service: apigateway
+client: apigateway
+scope: regional
+apis:
+  - {api: get_rest_apis, paginate: true, result_path: items, resource_type: rest_api, id_field: id}
+  - {api: get_stages, resource_type: rest_api, depends_on: {api: get_rest_apis, params: {restApiId: id}}}
+  - {api: get_authorizers, resource_type: rest_api, depends_on: {api: get_rest_apis, params: {restApiId: id}}}
+  - {api: get_domain_names, paginate: true, result_path: items, resource_type: domain_name, id_field: domainName}
+  - {api: get_base_path_mappings, paginate: true, resource_type: domain_name, depends_on: {api: get_domain_names, params: {domainName: domainName}}}

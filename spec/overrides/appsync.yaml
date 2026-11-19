@@ -1,0 +1,6 @@
+service: appsync
+client: appsync
+scope: regional
+tier: 3
+apis:
+  - {api: list_graphql_apis, result_path: graphqlApis, resource_type: graphql_api, id_field: apiId, arn_field: arn}

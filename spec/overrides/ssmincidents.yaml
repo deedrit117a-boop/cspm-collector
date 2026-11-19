@@ -1,0 +1,8 @@
+service: ssmincidents
+client: ssm-incidents
+scope: regional
+tier: 3
+apis:
+  - {api: list_replication_sets, paginate: true, result_path: replicationSetArns, resource_type: replication_set, id_field: Value, arn_field: Value}
+  - {api: get_replication_set, resource_type: replication_set, depends_on: {api: list_replication_sets, params: {arn: Value}}}
+  - {api: list_response_plans, paginate: true, result_path: responsePlanSummaries, resource_type: response_plan, id_field: arn, arn_field: arn}

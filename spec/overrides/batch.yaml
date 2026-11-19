@@ -1,0 +1,11 @@
+# Job definition environment VALUES are masked.
+service: batch
+client: batch
+scope: regional
+tier: 3
+apis:
+  - {api: describe_compute_environments, paginate: true, result_path: computeEnvironments, resource_type: compute_environment,
+     id_field: computeEnvironmentName, arn_field: computeEnvironmentArn}
+  - {api: describe_job_queues, paginate: true, result_path: jobQueues, resource_type: job_queue, id_field: jobQueueName, arn_field: jobQueueArn}
+  - {api: describe_job_definitions, paginate: true, result_path: jobDefinitions, resource_type: job_definition, id_field: jobDefinitionArn,
+     arn_field: jobDefinitionArn, parameters: {status: ACTIVE}, mask: ["pairs:containerProperties.environment|name|value"]}

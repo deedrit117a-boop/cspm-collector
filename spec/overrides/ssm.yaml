@@ -1,0 +1,18 @@
+# Only the account's own documents. Document CONTENT is fetched but masked (secrets are reported by type/line only);
+# parameter values are never read (describe_parameters returns metadata only).
+service: ssm
+client: ssm
+scope: regional
+tier: 3
+apis:
+  - {api: get_service_setting, setting: ssm_public_sharing_setting,
+     parameters: {SettingId: /ssm/documents/console/public-sharing-permission}}
+  - {api: describe_instance_information, paginate: true, result_path: InstanceInformationList, resource_type: managed_instance, id_field: InstanceId}
+  - {api: list_documents, paginate: true, result_path: DocumentIdentifiers, resource_type: document, id_field: Name,
+     parameters: {Filters: [{Key: Owner, Values: [Self]}]}}
+  - {api: describe_document_permission, resource_type: document, parameters: {PermissionType: Share},
+     depends_on: {api: list_documents, params: {Name: Name}}}
+  - {api: get_document, resource_type: document, depends_on: {api: list_documents, params: {Name: Name}}, mask: ["value:Content"]}
+  - {api: describe_parameters, paginate: true, result_path: Parameters, resource_type: parameter, id_field: Name, arn_field: ARN}
+  - {api: list_resource_compliance_summaries, paginate: true, result_path: ResourceComplianceSummaryItems, resource_type: compliance_summary,
+     id_field: "ResourceType+ResourceId+ComplianceType"}

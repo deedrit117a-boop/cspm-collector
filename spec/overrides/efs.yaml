@@ -1,0 +1,8 @@
+service: efs
+client: efs
+scope: regional
+apis:
+  - {api: describe_file_systems, paginate: true, result_path: FileSystems, resource_type: file_system, id_field: FileSystemId, arn_field: FileSystemArn}
+  - {api: describe_file_system_policy, resource_type: file_system, depends_on: {api: describe_file_systems, params: {FileSystemId: FileSystemId}}}
+  - {api: describe_mount_targets, paginate: true, resource_type: file_system, depends_on: {api: describe_file_systems, params: {FileSystemId: FileSystemId}}}
+  - {api: describe_backup_policy, resource_type: file_system, depends_on: {api: describe_file_systems, params: {FileSystemId: FileSystemId}}}

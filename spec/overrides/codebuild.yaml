@@ -1,0 +1,13 @@
+# Environment variable VALUES are masked (names stay); builds are not listed (history, unbounded).
+service: codebuild
+client: codebuild
+scope: regional
+tier: 2
+apis:
+  - {api: list_projects, paginate: true, result_path: projects, resource_type: project, id_field: Value,
+     arn_from: batch_get_projects.projects.0.arn, tags_from: batch_get_projects.projects.0.tags}
+  - {api: batch_get_projects, resource_type: project, depends_on: {api: list_projects, params: {"names[]": Value}},
+     mask: ["pairs:projects[].environment.environmentVariables|name|value"]}
+  - {api: list_report_groups, paginate: true, result_path: reportGroups, resource_type: report_group, id_field: Value}
+  - {api: batch_get_report_groups, resource_type: report_group, depends_on: {api: list_report_groups, params: {"reportGroupArns[]": Value}}}
+  - {api: list_source_credentials, setting: codebuild_source_credentials}

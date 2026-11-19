@@ -1,0 +1,13 @@
+# Launch configurations hold UserData: it is always masked (see collectors/autoscaling.py).
+service: autoscaling
+client: autoscaling
+scope: regional
+tier: 1
+collector: autoscaling
+apis:
+  - {api: describe_auto_scaling_groups, paginate: true, result_path: AutoScalingGroups, resource_type: auto_scaling_group,
+     id_field: AutoScalingGroupName, arn_field: AutoScalingGroupARN}
+  - {api: describe_launch_configurations, paginate: true, result_path: LaunchConfigurations, resource_type: launch_configuration,
+     id_field: LaunchConfigurationName, arn_field: LaunchConfigurationARN}
+  - {api: describe_policies, paginate: true, result_path: ScalingPolicies, resource_type: scaling_policy,
+     id_field: PolicyARN, arn_field: PolicyARN}

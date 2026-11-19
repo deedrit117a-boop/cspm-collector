@@ -1,0 +1,8 @@
+service: datasync
+client: datasync
+scope: regional
+tier: 3
+apis:
+  - {api: list_tasks, paginate: true, result_path: Tasks, resource_type: task, id_field: TaskArn, arn_field: TaskArn, tags_from: list_tags_for_resource.Tags}
+  - {api: describe_task, resource_type: task, depends_on: {api: list_tasks, params: {TaskArn: TaskArn}}}
+  - {api: list_tags_for_resource, paginate: true, resource_type: task, depends_on: {api: list_tasks, params: {ResourceArn: TaskArn}}}

@@ -1,0 +1,8 @@
+service: accessanalyzer
+client: accessanalyzer
+scope: regional
+enablement_api: list_analyzers
+apis:
+  - {api: list_analyzers, paginate: true, result_path: analyzers, resource_type: analyzer, id_field: arn, arn_field: arn}
+  - {api: list_findings, paginate: true, resource_type: analyzer, parameters: {filter: {status: {eq: [ACTIVE]}}},
+     depends_on: {api: list_analyzers, params: {analyzerArn: arn}}}

@@ -1,0 +1,100 @@
+# AWS error code -> collection status. Edit this file, not the code.
+#
+# Statuses: ACCESS_DENIED, NOT_ENABLED, NOT_SUPPORTED, THROTTLED_GIVEUP, TIMEOUT, ERROR
+# "empty" is special: the resource has no such configuration. It is NOT an error;
+# the collector stores config=null and records SUCCESS.
+
+empty:
+  - NoSuchBucketPolicy
+  - NoSuchPublicAccessBlockConfiguration
+  - ServerSideEncryptionConfigurationNotFoundError
+  - ReplicationConfigurationNotFoundError
+  - ObjectLockConfigurationNotFoundError
+  - OwnershipControlsNotFoundError
+  - NoSuchLifecycleConfiguration
+  - NoSuchTagSet
+  - NoSuchWebsiteConfiguration
+  - NoSuchCORSConfiguration
+  - NoSuchEntity
+  - NoSuchEntityException
+  - ResourceNotFoundException
+  - ResourceNotFound
+  - NotFoundException
+  - PolicyNotFound
+  - PolicyNotFoundException
+  - ParameterNotFound
+  - RepositoryPolicyNotFoundException
+  - LifecyclePolicyNotFoundException
+  - RepositoryNotFoundException
+  - LoadBalancerNotFound
+  - ListenerNotFound
+  - DBParameterGroupNotFound
+  - DBSnapshotNotFound
+  - CertificateNotFound
+  - EntityNotFoundException
+  - WAFNonexistentItemException      # no logging configuration / web ACL gone
+  - AccessPointNotFound              # classic ELB deleted between list and detail
+  - TargetGroupNotFound
+  - RuleNotFound
+  - NoSuchHostedZone
+  - NoSuchHealthCheck
+  - NoSuchDistribution
+  - NoSuchOriginAccessControl
+
+not_enabled:
+  - SubscriptionRequiredException
+  - InvalidAccessException
+  - InsightNotEnabledException
+  - ServiceAccessNotEnabledException
+  - AWSOrganizationsNotInUseException
+  - OrganizationNotFoundException
+  - OrganizationNotInAllFeaturesModeException
+  - PolicyTypeNotEnabledException
+  - UninitializedAccountException   # e.g. Elastic Disaster Recovery not initialized in the account
+  - NoSuchConfigurationRecorderException
+  - NoSuchDeliveryChannelException
+
+not_supported:
+  - OptInRequired
+  - UnrecognizedClientException
+  - InvalidClientTokenId
+  - UnknownOperationException
+  - UnsupportedOperation
+  - AccountNotManagementOrDelegatedAdministratorException
+
+access_denied:
+  - AccessDenied
+  - AccessDeniedException
+  - UnauthorizedOperation
+  - UnauthorizedAccess
+  - AuthorizationError
+  - AuthFailure
+  - AllAccessDisabled
+  - EncryptionKeyAccessDeniedException
+
+throttled:
+  - Throttling
+  - ThrottlingException
+  - ThrottledException
+  - RequestLimitExceeded
+  - TooManyRequestsException
+  - ProvisionedThroughputExceededException
+  - RequestThrottled
+  - SlowDown
+  - LimitExceededException
+
+# Per-service exceptions to the tables above: {service: {error_code: status|empty}}
+service_overrides:
+  s3:
+    NoSuchBucket: ERROR
+  cloudtrail:
+    InsightNotEnabledException: empty   # per-trail call: insights simply are not configured
+  kms:
+    UnsupportedOperationException: empty   # e.g. rotation status of asymmetric / AWS-managed keys
+
+# Same error code, told apart by message text: {service, code, contains, status}
+message_overrides:
+  - {service: macie, code: AccessDeniedException, contains: "Macie is not enabled", status: NOT_ENABLED}
+  - {service: fms, code: AccessDeniedException, contains: "No default admin", status: NOT_ENABLED}
+  - {service: glue, code: AccessDeniedException, contains: "currently disabled", status: NOT_SUPPORTED}  # retired dev endpoints
+  - {service: wafv2, code: WAFInvalidParameterException, contains: "not supported in current region", status: NOT_SUPPORTED}

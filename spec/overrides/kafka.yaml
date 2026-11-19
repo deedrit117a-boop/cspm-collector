@@ -1,0 +1,11 @@
+service: kafka
+client: kafka
+scope: regional
+tier: 2
+apis:
+  - {api: list_clusters_v2, paginate: true, result_path: ClusterInfoList, resource_type: cluster, id_field: ClusterArn, arn_field: ClusterArn}
+  - {api: list_kafka_versions, paginate: true, result_path: KafkaVersions, resource_type: kafka_version, id_field: Version}
+  - {api: list_connectors, client: kafkaconnect, paginate: true, result_path: connectors, resource_type: connector,
+     id_field: connectorArn, arn_field: connectorArn}
+  - {api: describe_connector, client: kafkaconnect, resource_type: connector, mask: ["smap:connectorConfiguration"],
+     depends_on: {api: list_connectors, params: {connectorArn: connectorArn}}}

@@ -1,0 +1,11 @@
+# Environment variables are masked by the lambda collector; get_function's pre-signed code URL is dropped.
+service: awslambda
+client: lambda
+scope: regional
+collector: lambda
+apis:
+  - {api: list_functions, paginate: true, result_path: Functions, resource_type: function, id_field: FunctionName, arn_field: FunctionArn,
+     change_marker: LastModified}
+  - {api: get_function, resource_type: function, depends_on: {api: list_functions, params: {FunctionName: FunctionName}}}
+  - {api: get_policy, resource_type: function, depends_on: {api: list_functions, params: {FunctionName: FunctionName}}}
+  - {api: get_function_url_config, resource_type: function, depends_on: {api: list_functions, params: {FunctionName: FunctionName}}}

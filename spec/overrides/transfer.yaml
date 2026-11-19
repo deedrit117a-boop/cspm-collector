@@ -1,0 +1,7 @@
+service: transfer
+client: transfer
+scope: regional
+tier: 3
+apis:
+  - {api: list_servers, paginate: true, result_path: Servers, resource_type: server, id_field: ServerId, arn_field: Arn}
+  - {api: describe_server, resource_type: server, depends_on: {api: list_servers, params: {ServerId: ServerId}}}

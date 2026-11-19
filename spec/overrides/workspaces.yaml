@@ -1,0 +1,9 @@
+service: workspaces
+client: workspaces
+scope: regional
+tier: 3
+apis:
+  - {api: describe_workspaces, paginate: true, result_path: Workspaces, resource_type: workspace, id_field: WorkspaceId,
+     tags_from: describe_tags.TagList}
+  - {api: describe_tags, resource_type: workspace, depends_on: {api: describe_workspaces, params: {ResourceId: WorkspaceId}}}
+  - {api: describe_workspace_directories, paginate: true, result_path: Directories, resource_type: directory, id_field: DirectoryId}

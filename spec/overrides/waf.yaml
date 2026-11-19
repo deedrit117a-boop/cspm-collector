@@ -1,0 +1,13 @@
+# WAF Classic, regional (waf-regional client). Classic web ACL listings carry no ARN, so no logging lookup.
+service: waf
+client: waf-regional
+scope: regional
+tier: 1
+apis:
+  - {api: list_web_acls, result_path: WebACLs, resource_type: web_acl, id_field: WebACLId}
+  - {api: get_web_acl, resource_type: web_acl, depends_on: {api: list_web_acls, params: {WebACLId: WebACLId}}}
+  - {api: list_resources_for_web_acl, alias: acl_resources_alb, resource_type: web_acl, parameters: {ResourceType: APPLICATION_LOAD_BALANCER},
+     depends_on: {api: list_web_acls, params: {WebACLId: WebACLId}}}
+  - {api: list_resources_for_web_acl, alias: acl_resources_api_gateway, resource_type: web_acl, parameters: {ResourceType: API_GATEWAY},
+     depends_on: {api: list_web_acls, params: {WebACLId: WebACLId}}}
+  - {api: list_rules, result_path: Rules, resource_type: rule, id_field: RuleId}

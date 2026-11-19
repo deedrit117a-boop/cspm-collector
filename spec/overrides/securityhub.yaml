@@ -1,0 +1,8 @@
+service: securityhub
+client: securityhub
+scope: regional
+enablement_api: describe_hub
+apis:
+  - {api: describe_hub, setting: securityhub_hub}
+  - {api: get_enabled_standards, paginate: true, result_path: StandardsSubscriptions, resource_type: standards_subscription,
+     id_field: StandardsSubscriptionArn, arn_field: StandardsSubscriptionArn}

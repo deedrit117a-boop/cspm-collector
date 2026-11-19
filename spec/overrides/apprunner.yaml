@@ -1,0 +1,12 @@
+# Flow-chart entry point (not referenced by Prowler rules): services and their custom domains.
+# Runtime environment variable VALUES are masked.
+service: apprunner
+client: apprunner
+scope: regional
+tier: 3
+apis:
+  - {api: list_services, result_path: ServiceSummaryList, resource_type: service, id_field: ServiceArn, arn_field: ServiceArn}
+  - {api: describe_service, resource_type: service, depends_on: {api: list_services, params: {ServiceArn: ServiceArn}},
+     mask: ["map:Service.SourceConfiguration.ImageRepository.ImageConfiguration.RuntimeEnvironmentVariables",
+            "map:Service.SourceConfiguration.CodeRepository.CodeConfiguration.CodeConfigurationValues.RuntimeEnvironmentVariables"]}
+  - {api: describe_custom_domains, resource_type: service, depends_on: {api: list_services, params: {ServiceArn: ServiceArn}}}

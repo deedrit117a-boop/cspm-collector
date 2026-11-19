@@ -1,0 +1,17 @@
+# Same shared control plane as RDS/DocumentDB: filter on the engine.
+service: neptune
+client: neptune
+scope: regional
+tier: 2
+apis:
+  - {api: describe_db_clusters, paginate: true, result_path: DBClusters, resource_type: db_cluster, id_field: DBClusterIdentifier,
+     arn_field: DBClusterArn, parameters: {Filters: [{Name: engine, Values: [neptune]}]}, tags_from: list_tags_for_resource.TagList}
+  - {api: list_tags_for_resource, resource_type: db_cluster, depends_on: {api: describe_db_clusters, params: {ResourceName: DBClusterArn}}}
+  - {api: describe_db_instances, paginate: true, result_path: DBInstances, resource_type: db_instance, id_field: DBInstanceIdentifier,
+     arn_field: DBInstanceArn, parameters: {Filters: [{Name: engine, Values: [neptune]}]}}
+  - {api: describe_db_cluster_snapshots, paginate: true, result_path: DBClusterSnapshots, resource_type: db_cluster_snapshot,
+     id_field: DBClusterSnapshotIdentifier, arn_field: DBClusterSnapshotArn, parameters: {SnapshotType: manual}}
+  - {api: describe_db_cluster_snapshot_attributes, resource_type: db_cluster_snapshot,
+     depends_on: {api: describe_db_cluster_snapshots, params: {DBClusterSnapshotIdentifier: DBClusterSnapshotIdentifier}}}
+  - {api: describe_db_subnet_groups, paginate: true, result_path: DBSubnetGroups, resource_type: db_subnet_group,
+     id_field: DBSubnetGroupName, arn_field: DBSubnetGroupArn}

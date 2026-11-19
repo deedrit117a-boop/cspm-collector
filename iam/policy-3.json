@@ -1,0 +1,45 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "CspmReadOnly3",
+      "Effect": "Allow",
+      "Action": [
+        "ssm:GetServiceSetting",
+        "ssm:ListDocuments",
+        "ssm:ListResourceComplianceSummaries",
+        "states:DescribeStateMachine",
+        "states:ListStateMachines",
+        "states:ListTagsForResource",
+        "storagegateway:ListFileShares",
+        "storagegateway:ListGateways",
+        "support:DescribeTrustedAdvisorCheckResult",
+        "support:DescribeTrustedAdvisorChecks",
+        "transfer:DescribeServer",
+        "transfer:ListServers",
+        "waf-regional:GetWebACL",
+        "waf-regional:ListResourcesForWebACL",
+        "waf-regional:ListRules",
+        "waf-regional:ListWebACLs",
+        "waf:GetWebACL",
+        "waf:ListRules",
+        "waf:ListWebACLs",
+        "wafv2:GetIPSet",
+        "wafv2:GetLoggingConfiguration",
+        "wafv2:GetRuleGroup",
+        "wafv2:GetWebACL",
+        "wafv2:ListIPSets",
+        "wafv2:ListResourcesForWebACL",
+        "wafv2:ListRuleGroups",
+        "wafv2:ListTagsForResource",
+        "wafv2:ListWebACLs",
+        "wellarchitected:ListTagsForResource",
+        "wellarchitected:ListWorkloads",
+        "workspaces:DescribeTags",
+        "workspaces:DescribeWorkspaceDirectories",
+        "workspaces:DescribeWorkspaces"
+      ],
+      "Resource": "*"
+    }
+  ]
+}

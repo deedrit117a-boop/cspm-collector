@@ -1,0 +1,6 @@
+service: memorydb
+client: memorydb
+scope: regional
+tier: 3
+apis:
+  - {api: describe_clusters, paginate: true, result_path: Clusters, resource_type: cluster, id_field: Name, arn_field: ARN}

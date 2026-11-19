@@ -1,0 +1,24 @@
+# Buckets are listed once per account (global); per-bucket calls run against the bucket's own region.
+# The s3control call shares its API name with the per-bucket one, hence the alias.
+service: s3
+client: s3
+scope: global
+collector: s3
+apis:
+  - {api: list_buckets, paginate: true, result_path: Buckets, resource_type: bucket, id_field: Name}
+  - {api: get_public_access_block, resource_type: bucket, depends_on: {api: list_buckets, params: {Bucket: Name}}}
+  - {api: get_bucket_policy, resource_type: bucket, depends_on: {api: list_buckets, params: {Bucket: Name}}}
+  - {api: get_bucket_policy_status, resource_type: bucket, depends_on: {api: list_buckets, params: {Bucket: Name}}}
+  - {api: get_bucket_acl, resource_type: bucket, depends_on: {api: list_buckets, params: {Bucket: Name}}}
+  - {api: get_bucket_encryption, resource_type: bucket, depends_on: {api: list_buckets, params: {Bucket: Name}}}
+  - {api: get_bucket_versioning, resource_type: bucket, depends_on: {api: list_buckets, params: {Bucket: Name}}}
+  - {api: get_bucket_logging, resource_type: bucket, depends_on: {api: list_buckets, params: {Bucket: Name}}}
+  - {api: get_bucket_website, resource_type: bucket, depends_on: {api: list_buckets, params: {Bucket: Name}}}
+  - {api: get_bucket_lifecycle_configuration, resource_type: bucket, depends_on: {api: list_buckets, params: {Bucket: Name}}}
+  - {api: get_object_lock_configuration, resource_type: bucket, depends_on: {api: list_buckets, params: {Bucket: Name}}}
+  - {api: get_bucket_replication, resource_type: bucket, depends_on: {api: list_buckets, params: {Bucket: Name}}}
+  - {api: get_bucket_ownership_controls, resource_type: bucket, depends_on: {api: list_buckets, params: {Bucket: Name}}}
+  - {api: get_bucket_notification_configuration, resource_type: bucket, depends_on: {api: list_buckets, params: {Bucket: Name}}}
+  - {api: get_bucket_tagging, resource_type: bucket, depends_on: {api: list_buckets, params: {Bucket: Name}}}
+  - {api: get_public_access_block, alias: s3control_account_public_access_block, client: s3control,
+     setting: s3_account_public_access_block, parameters: {AccountId: "{account_id}"}}

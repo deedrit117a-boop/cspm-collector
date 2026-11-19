@@ -1,0 +1,9 @@
+# SES v2 API.
+service: ses
+client: sesv2
+scope: regional
+tier: 3
+apis:
+  - {api: get_account, setting: ses_account}
+  - {api: list_email_identities, result_path: EmailIdentities, resource_type: email_identity, id_field: IdentityName}
+  - {api: get_email_identity, resource_type: email_identity, depends_on: {api: list_email_identities, params: {EmailIdentity: IdentityName}}}

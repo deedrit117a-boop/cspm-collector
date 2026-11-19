@@ -1,0 +1,17 @@
+# Services are described by the ecs collector (cluster + batches of 10 service ARNs) and stored as documents of
+# their own. Task definition environment VALUES are masked; the latest ACTIVE revisions are listed newest first.
+service: ecs
+client: ecs
+scope: regional
+tier: 2
+collector: ecs
+apis:
+  - {api: list_clusters, paginate: true, result_path: clusterArns, resource_type: cluster, id_field: Value, arn_field: Value,
+     tags_from: describe_clusters.clusters.0.tags}
+  - {api: describe_clusters, resource_type: cluster, parameters: {include: [TAGS, SETTINGS, CONFIGURATIONS]},
+     depends_on: {api: list_clusters, params: {"clusters[]": Value}}}
+  - {api: list_task_definitions, paginate: true, result_path: taskDefinitionArns, resource_type: task_definition, id_field: Value,
+     arn_field: Value, parameters: {status: ACTIVE, sort: DESC}}
+  - {api: describe_task_definition, resource_type: task_definition, parameters: {include: [TAGS]},
+     depends_on: {api: list_task_definitions, params: {taskDefinition: Value}},
+     mask: ["pairs:taskDefinition.containerDefinitions[].environment|name|value"]}

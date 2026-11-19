@@ -1,0 +1,30 @@
+# Hand-curated EC2 collection. Replaces the generated entry of the same name.
+service: ec2
+client: ec2
+scope: regional
+collector: ec2
+apis:
+  - {api: describe_instances, paginate: true, result_path: "Reservations[].Instances", resource_type: instance, id_field: InstanceId}
+  - {api: describe_instance_attribute, resource_type: instance, parameters: {Attribute: userData},
+     depends_on: {api: describe_instances, params: {InstanceId: InstanceId}}, opt_in_flag: "--collect-userdata"}
+  - {api: describe_security_groups, paginate: true, result_path: SecurityGroups, resource_type: security_group, id_field: GroupId}
+  - {api: describe_security_group_rules, paginate: true, result_path: SecurityGroupRules, resource_type: security_group_rule, id_field: SecurityGroupRuleId}
+  - {api: describe_network_interfaces, paginate: true, result_path: NetworkInterfaces, resource_type: network_interface, id_field: NetworkInterfaceId}
+  - {api: describe_addresses, result_path: Addresses, resource_type: elastic_ip, id_field: AllocationId}
+  - {api: describe_volumes, paginate: true, result_path: Volumes, resource_type: volume, id_field: VolumeId}
+  - {api: describe_snapshots, paginate: true, result_path: Snapshots, resource_type: snapshot, id_field: SnapshotId, parameters: {OwnerIds: [self]}}
+  - {api: describe_snapshot_attribute, resource_type: snapshot, parameters: {Attribute: createVolumePermission},
+     depends_on: {api: describe_snapshots, params: {SnapshotId: SnapshotId}}}
+  - {api: describe_images, result_path: Images, resource_type: image, id_field: ImageId, parameters: {Owners: [self]}}
+  - {api: describe_launch_templates, paginate: true, result_path: LaunchTemplates, resource_type: launch_template, id_field: LaunchTemplateId}
+  - {api: describe_launch_template_versions, paginate: true, resource_type: launch_template,
+     depends_on: {api: describe_launch_templates, params: {LaunchTemplateId: LaunchTemplateId}}}
+  - {api: describe_managed_prefix_lists, paginate: true, result_path: PrefixLists, resource_type: prefix_list, id_field: PrefixListId}
+  - {api: describe_key_pairs, result_path: KeyPairs, resource_type: key_pair, id_field: KeyPairId}
+  # account/region level settings -> account_settings
+  - {api: get_ebs_encryption_by_default, setting: ebs_encryption_by_default}
+  - {api: get_ebs_default_kms_key_id, setting: ebs_default_kms_key_id}
+  - {api: get_snapshot_block_public_access_state, setting: snapshot_block_public_access}
+  - {api: get_image_block_public_access_state, setting: image_block_public_access}
+  - {api: get_serial_console_access_status, setting: serial_console_access}
+  - {api: get_instance_metadata_defaults, setting: instance_metadata_defaults}

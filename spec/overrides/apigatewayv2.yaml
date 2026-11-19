@@ -1,0 +1,11 @@
+service: apigatewayv2
+client: apigatewayv2
+scope: regional
+apis:
+  - {api: get_apis, result_path: Items, resource_type: api, id_field: ApiId}
+  - {api: get_stages, resource_type: api, depends_on: {api: get_apis, params: {ApiId: ApiId}}}
+  - {api: get_authorizers, resource_type: api, depends_on: {api: get_apis, params: {ApiId: ApiId}}}
+  - {api: get_integrations, resource_type: api, depends_on: {api: get_apis, params: {ApiId: ApiId}}}
+  - {api: get_routes, resource_type: api, depends_on: {api: get_apis, params: {ApiId: ApiId}}}
+  - {api: get_domain_names, result_path: Items, resource_type: domain_name, id_field: DomainName}
+  - {api: get_api_mappings, resource_type: domain_name, depends_on: {api: get_domain_names, params: {DomainName: DomainName}}}

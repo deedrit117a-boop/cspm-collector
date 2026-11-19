@@ -1,0 +1,10 @@
+# Cluster configuration properties are masked where they look like secrets.
+service: emr
+client: emr
+scope: regional
+tier: 3
+apis:
+  - {api: get_block_public_access_configuration, setting: emr_block_public_access}
+  - {api: list_clusters, paginate: true, result_path: Clusters, resource_type: cluster, id_field: Id, arn_field: ClusterArn}
+  - {api: describe_cluster, resource_type: cluster, depends_on: {api: list_clusters, params: {ClusterId: Id}},
+     mask: ["smap:Cluster.Configurations[].Properties"]}

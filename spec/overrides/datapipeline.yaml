@@ -1,0 +1,10 @@
+# Pipeline definitions can embed credentials: field values are masked where they look like secrets.
+service: datapipeline
+client: datapipeline
+scope: regional
+tier: 3
+apis:
+  - {api: list_pipelines, paginate: true, result_path: pipelineIdList, resource_type: pipeline, id_field: id}
+  - {api: describe_pipelines, resource_type: pipeline, depends_on: {api: list_pipelines, params: {"pipelineIds[]": id}}}
+  - {api: get_pipeline_definition, resource_type: pipeline, depends_on: {api: list_pipelines, params: {pipelineId: id}},
+     mask: ["spairs:pipelineObjects[].fields|key|stringValue", "spairs:parameterValues|id|stringValue"]}

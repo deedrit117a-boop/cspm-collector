@@ -1,0 +1,15 @@
+# Connection properties (which can hold passwords) are masked; job default arguments only where they look like
+# secrets. search_tables is not called (it needs a very large scan; add it behind an opt-in flag if required).
+service: glue
+client: glue
+scope: regional
+tier: 2
+apis:
+  - {api: get_connections, paginate: true, result_path: ConnectionList, resource_type: connection, id_field: Name,
+     parameters: {HidePassword: true}, mask: ["map:ConnectionProperties"]}
+  - {api: get_jobs, paginate: true, result_path: Jobs, resource_type: job, id_field: Name, mask: ["smap:DefaultArguments"]}
+  - {api: get_dev_endpoints, paginate: true, result_path: DevEndpoints, resource_type: dev_endpoint, id_field: EndpointName}
+  - {api: get_ml_transforms, result_path: Transforms, resource_type: ml_transform, id_field: TransformId}
+  - {api: get_security_configurations, paginate: true, result_path: SecurityConfigurations, resource_type: security_configuration, id_field: Name}
+  - {api: get_data_catalog_encryption_settings, setting: glue_catalog_encryption}
+  - {api: get_resource_policy, setting: glue_resource_policy}

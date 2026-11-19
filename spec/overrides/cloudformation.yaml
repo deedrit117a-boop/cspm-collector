@@ -1,0 +1,10 @@
+# Parameter and output values are masked only where they look like secrets. Template bodies are not fetched
+# (they cannot be masked structurally); add get_template behind an opt-in flag if a rule needs it.
+service: cloudformation
+client: cloudformation
+scope: regional
+tier: 3
+apis:
+  - {api: describe_stacks, paginate: true, result_path: Stacks, resource_type: stack, id_field: StackId, arn_field: StackId,
+     mask: ["spairs:Parameters|ParameterKey|ParameterValue", "spairs:Outputs|OutputKey|OutputValue"]}
+  - {api: list_stack_sets, paginate: true, result_path: Summaries, resource_type: stack_set, id_field: StackSetName}

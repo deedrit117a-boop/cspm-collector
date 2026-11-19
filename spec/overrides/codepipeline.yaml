@@ -1,0 +1,8 @@
+service: codepipeline
+client: codepipeline
+scope: regional
+tier: 3
+apis:
+  - {api: list_pipelines, paginate: true, result_path: pipelines, resource_type: pipeline, id_field: name,
+     arn_from: get_pipeline.metadata.pipelineArn}
+  - {api: get_pipeline, resource_type: pipeline, depends_on: {api: list_pipelines, params: {name: name}}}

@@ -1,0 +1,7 @@
+# Macie answers AccessDeniedException "Macie is not enabled" when off; error_map.yaml maps that to NOT_ENABLED.
+service: macie
+client: macie2
+scope: regional
+enablement_api: get_macie_session
+apis:
+  - {api: get_macie_session, setting: macie_session}

@@ -1,0 +1,8 @@
+service: fms
+client: fms
+scope: global
+tier: 3
+apis:
+  - {api: get_admin_account, setting: fms_admin_account}
+  - {api: list_policies, paginate: true, result_path: PolicyList, resource_type: policy, id_field: PolicyId, arn_field: PolicyArn}
+  - {api: list_compliance_status, paginate: true, resource_type: policy, depends_on: {api: list_policies, params: {PolicyId: PolicyId}}}

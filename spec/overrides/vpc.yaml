@@ -1,0 +1,17 @@
+# VPC resources are EC2 API calls; kept as their own service so rules and the graph can address them.
+service: vpc
+client: ec2
+scope: regional
+apis:
+  - {api: describe_vpcs, paginate: true, result_path: Vpcs, resource_type: vpc, id_field: VpcId}
+  - {api: describe_subnets, paginate: true, result_path: Subnets, resource_type: subnet, id_field: SubnetId, arn_field: SubnetArn}
+  - {api: describe_route_tables, paginate: true, result_path: RouteTables, resource_type: route_table, id_field: RouteTableId}
+  - {api: describe_internet_gateways, paginate: true, result_path: InternetGateways, resource_type: internet_gateway, id_field: InternetGatewayId}
+  - {api: describe_nat_gateways, paginate: true, result_path: NatGateways, resource_type: nat_gateway, id_field: NatGatewayId}
+  - {api: describe_network_acls, paginate: true, result_path: NetworkAcls, resource_type: network_acl, id_field: NetworkAclId}
+  - {api: describe_vpc_endpoints, paginate: true, result_path: VpcEndpoints, resource_type: vpc_endpoint, id_field: VpcEndpointId}
+  - {api: describe_vpc_peering_connections, paginate: true, result_path: VpcPeeringConnections, resource_type: vpc_peering_connection, id_field: VpcPeeringConnectionId}
+  - {api: describe_flow_logs, paginate: true, result_path: FlowLogs, resource_type: flow_log, id_field: FlowLogId}
+  - {api: describe_transit_gateways, paginate: true, result_path: TransitGateways, resource_type: transit_gateway, id_field: TransitGatewayId, arn_field: TransitGatewayArn}
+  - {api: describe_transit_gateway_attachments, paginate: true, result_path: TransitGatewayAttachments, resource_type: transit_gateway_attachment, id_field: TransitGatewayAttachmentId}
+  - {api: describe_vpn_connections, result_path: VpnConnections, resource_type: vpn_connection, id_field: VpnConnectionId}

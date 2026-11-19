@@ -1,0 +1,11 @@
+# includeShadowTrails=false: a multi-region trail is listed only in its home region (no duplicates per region).
+service: cloudtrail
+client: cloudtrail
+scope: regional
+apis:
+  - {api: describe_trails, result_path: trailList, resource_type: trail, id_field: TrailARN, arn_field: TrailARN,
+     parameters: {includeShadowTrails: false}}
+  - {api: get_trail_status, resource_type: trail, depends_on: {api: describe_trails, params: {Name: TrailARN}}}
+  - {api: get_event_selectors, resource_type: trail, depends_on: {api: describe_trails, params: {TrailName: TrailARN}}}
+  - {api: get_insight_selectors, resource_type: trail, depends_on: {api: describe_trails, params: {TrailName: TrailARN}}}
+  - {api: list_tags, paginate: true, resource_type: trail, depends_on: {api: describe_trails, params: {"ResourceIdList[]": TrailARN}}}

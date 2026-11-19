@@ -1,0 +1,10 @@
+# list_queues returns bare URLs (wrapped as {"Value": url}); the ARN and tags come from the per-queue calls.
+service: sqs
+client: sqs
+scope: regional
+collector: sqs
+apis:
+  - {api: list_queues, paginate: true, result_path: QueueUrls, resource_type: queue, id_field: Value}
+  - {api: get_queue_attributes, resource_type: queue, parameters: {AttributeNames: [All]},
+     depends_on: {api: list_queues, params: {QueueUrl: Value}}}
+  - {api: list_queue_tags, resource_type: queue, depends_on: {api: list_queues, params: {QueueUrl: Value}}}

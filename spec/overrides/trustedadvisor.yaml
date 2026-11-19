@@ -1,0 +1,9 @@
+# The AWS Support API exists only in us-east-1 and needs a Business/Enterprise support plan
+# (SubscriptionRequiredException is recorded as NOT_ENABLED).
+service: trustedadvisor
+client: support
+scope: global
+tier: 3
+apis:
+  - {api: describe_trusted_advisor_checks, result_path: checks, resource_type: check, id_field: id, parameters: {language: en}}
+  - {api: describe_trusted_advisor_check_result, resource_type: check, depends_on: {api: describe_trusted_advisor_checks, params: {checkId: id}}}

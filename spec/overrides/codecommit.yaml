@@ -1,0 +1,8 @@
+service: codecommit
+client: codecommit
+scope: regional
+tier: 3
+apis:
+  - {api: list_repositories, paginate: true, result_path: repositories, resource_type: repository, id_field: repositoryName,
+     arn_from: get_repository.repositoryMetadata.Arn}
+  - {api: get_repository, resource_type: repository, depends_on: {api: list_repositories, params: {repositoryName: repositoryName}}}

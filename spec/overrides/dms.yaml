@@ -1,0 +1,16 @@
+service: dms
+client: dms
+scope: regional
+tier: 2
+apis:
+  - {api: describe_endpoints, paginate: true, result_path: Endpoints, resource_type: endpoint, id_field: EndpointIdentifier,
+     arn_field: EndpointArn, tags_from: tags_endpoint.TagList}
+  - {api: list_tags_for_resource, alias: tags_endpoint, resource_type: endpoint, depends_on: {api: describe_endpoints, params: {ResourceArn: EndpointArn}}}
+  - {api: describe_replication_instances, paginate: true, result_path: ReplicationInstances, resource_type: replication_instance,
+     id_field: ReplicationInstanceIdentifier, arn_field: ReplicationInstanceArn, tags_from: tags_instance.TagList}
+  - {api: list_tags_for_resource, alias: tags_instance, resource_type: replication_instance,
+     depends_on: {api: describe_replication_instances, params: {ResourceArn: ReplicationInstanceArn}}}
+  - {api: describe_replication_tasks, paginate: true, result_path: ReplicationTasks, resource_type: replication_task,
+     id_field: ReplicationTaskIdentifier, arn_field: ReplicationTaskArn, tags_from: tags_task.TagList}
+  - {api: list_tags_for_resource, alias: tags_task, resource_type: replication_task,
+     depends_on: {api: describe_replication_tasks, params: {ResourceArn: ReplicationTaskArn}}}

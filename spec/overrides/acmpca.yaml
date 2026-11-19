@@ -1,0 +1,9 @@
+service: acmpca
+client: acm-pca
+scope: regional
+tier: 3
+apis:
+  - {api: list_certificate_authorities, paginate: true, result_path: CertificateAuthorities, resource_type: certificate_authority,
+     id_field: Arn, arn_field: Arn, tags_from: list_tags.Tags}
+  - {api: list_tags, paginate: true, resource_type: certificate_authority,
+     depends_on: {api: list_certificate_authorities, params: {CertificateAuthorityArn: Arn}}}

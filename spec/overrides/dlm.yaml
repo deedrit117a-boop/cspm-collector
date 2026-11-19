@@ -1,0 +1,8 @@
+service: dlm
+client: dlm
+scope: regional
+tier: 3
+apis:
+  - {api: get_lifecycle_policies, result_path: Policies, resource_type: lifecycle_policy, id_field: PolicyId}
+  - {api: get_lifecycle_policy, resource_type: lifecycle_policy, arn_from: get_lifecycle_policy.Policy.PolicyArn,
+     depends_on: {api: get_lifecycle_policies, params: {PolicyId: PolicyId}}}

@@ -1,0 +1,8 @@
+service: mq
+client: mq
+scope: regional
+tier: 3
+apis:
+  - {api: list_brokers, paginate: true, result_path: BrokerSummaries, resource_type: broker, id_field: BrokerId, arn_field: BrokerArn,
+     tags_from: describe_broker.Tags}
+  - {api: describe_broker, resource_type: broker, depends_on: {api: list_brokers, params: {BrokerId: BrokerId}}}

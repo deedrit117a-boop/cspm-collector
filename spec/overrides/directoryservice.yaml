@@ -1,0 +1,12 @@
+service: directoryservice
+client: ds
+scope: regional
+tier: 2
+apis:
+  - {api: describe_directories, paginate: true, result_path: DirectoryDescriptions, resource_type: directory, id_field: DirectoryId,
+     tags_from: list_tags_for_resource.Tags}
+  - {api: describe_event_topics, resource_type: directory, depends_on: {api: describe_directories, params: {DirectoryId: DirectoryId}}}
+  - {api: list_log_subscriptions, paginate: true, resource_type: directory, depends_on: {api: describe_directories, params: {DirectoryId: DirectoryId}}}
+  - {api: list_certificates, paginate: true, resource_type: directory, depends_on: {api: describe_directories, params: {DirectoryId: DirectoryId}}}
+  - {api: get_snapshot_limits, resource_type: directory, depends_on: {api: describe_directories, params: {DirectoryId: DirectoryId}}}
+  - {api: list_tags_for_resource, paginate: true, resource_type: directory, depends_on: {api: describe_directories, params: {ResourceId: DirectoryId}}}

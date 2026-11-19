@@ -1,0 +1,31 @@
+# REGIONAL scope, once per region. The CLOUDFRONT scope is the separate service wafv2_cloudfront (us-east-1 only).
+# list_resources_for_web_acl takes one ResourceType per call, hence one aliased call per type.
+service: wafv2
+client: wafv2
+scope: regional
+tier: 1
+apis:
+  - {api: list_web_acls, result_path: WebACLs, resource_type: web_acl, id_field: ARN, arn_field: ARN,
+     parameters: {Scope: REGIONAL}, tags_from: list_tags_for_resource.TagInfoForResource.TagList}
+  - {api: get_web_acl, resource_type: web_acl, parameters: {Scope: REGIONAL},
+     depends_on: {api: list_web_acls, params: {Name: Name, Id: Id}}}
+  - {api: get_logging_configuration, resource_type: web_acl, depends_on: {api: list_web_acls, params: {ResourceArn: ARN}}}
+  - {api: list_tags_for_resource, resource_type: web_acl, depends_on: {api: list_web_acls, params: {ResourceARN: ARN}}}
+  - {api: list_resources_for_web_acl, alias: acl_resources_alb, resource_type: web_acl, parameters: {ResourceType: APPLICATION_LOAD_BALANCER},
+     depends_on: {api: list_web_acls, params: {WebACLArn: ARN}}}
+  - {api: list_resources_for_web_acl, alias: acl_resources_api_gateway, resource_type: web_acl, parameters: {ResourceType: API_GATEWAY},
+     depends_on: {api: list_web_acls, params: {WebACLArn: ARN}}}
+  - {api: list_resources_for_web_acl, alias: acl_resources_appsync, resource_type: web_acl, parameters: {ResourceType: APPSYNC},
+     depends_on: {api: list_web_acls, params: {WebACLArn: ARN}}}
+  - {api: list_resources_for_web_acl, alias: acl_resources_cognito, resource_type: web_acl, parameters: {ResourceType: COGNITO_USER_POOL},
+     depends_on: {api: list_web_acls, params: {WebACLArn: ARN}}}
+  - {api: list_resources_for_web_acl, alias: acl_resources_app_runner, resource_type: web_acl, parameters: {ResourceType: APP_RUNNER_SERVICE},
+     depends_on: {api: list_web_acls, params: {WebACLArn: ARN}}}
+  - {api: list_resources_for_web_acl, alias: acl_resources_verified_access, resource_type: web_acl, parameters: {ResourceType: VERIFIED_ACCESS_INSTANCE},
+     depends_on: {api: list_web_acls, params: {WebACLArn: ARN}}}
+  - {api: list_rule_groups, result_path: RuleGroups, resource_type: rule_group, id_field: ARN, arn_field: ARN, parameters: {Scope: REGIONAL}}
+  - {api: get_rule_group, resource_type: rule_group, parameters: {Scope: REGIONAL},
+     depends_on: {api: list_rule_groups, params: {Name: Name, Id: Id}}}
+  - {api: list_ip_sets, result_path: IPSets, resource_type: ip_set, id_field: ARN, arn_field: ARN, parameters: {Scope: REGIONAL}}
+  - {api: get_ip_set, resource_type: ip_set, parameters: {Scope: REGIONAL},
+     depends_on: {api: list_ip_sets, params: {Name: Name, Id: Id}}}

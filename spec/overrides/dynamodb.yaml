@@ -1,0 +1,14 @@
+# Tags and the resource policy need the table ARN as input, which the dynamodb collector builds.
+service: dynamodb
+client: dynamodb
+scope: regional
+tier: 2
+collector: dynamodb
+apis:
+  - {api: list_tables, paginate: true, result_path: TableNames, resource_type: table, id_field: Value}
+  - {api: describe_table, resource_type: table, depends_on: {api: list_tables, params: {TableName: Value}}}
+  - {api: describe_continuous_backups, resource_type: table, depends_on: {api: list_tables, params: {TableName: Value}}}
+  - {api: describe_kinesis_streaming_destination, resource_type: table, depends_on: {api: list_tables, params: {TableName: Value}}}
+  - {api: describe_clusters, client: dax, result_path: Clusters, resource_type: dax_cluster, id_field: ClusterName, arn_field: ClusterArn,
+     tags_from: list_tags.Tags}
+  - {api: list_tags, client: dax, resource_type: dax_cluster, depends_on: {api: describe_clusters, params: {ResourceName: ClusterArn}}}

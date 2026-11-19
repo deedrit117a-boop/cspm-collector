@@ -1,0 +1,1 @@
+"""Akamai collection (EdgeGrid)."""

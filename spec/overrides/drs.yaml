@@ -1,0 +1,7 @@
+service: drs
+client: drs
+scope: regional
+tier: 3
+apis:
+  - {api: describe_source_servers, paginate: true, result_path: items, resource_type: source_server, id_field: sourceServerID, arn_field: arn}
+  - {api: describe_jobs, paginate: true, result_path: items, resource_type: job, id_field: jobID, arn_field: arn}

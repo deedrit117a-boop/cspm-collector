@@ -1,0 +1,11 @@
+# accountId "-" means "the account of the credentials in use".
+service: glacier
+client: glacier
+scope: regional
+apis:
+  - {api: list_vaults, paginate: true, result_path: VaultList, resource_type: vault, id_field: VaultName, arn_field: VaultARN,
+     parameters: {accountId: "-"}, tags_from: list_tags_for_vault.Tags}
+  - {api: get_vault_access_policy, resource_type: vault, parameters: {accountId: "-"},
+     depends_on: {api: list_vaults, params: {vaultName: VaultName}}}
+  - {api: list_tags_for_vault, resource_type: vault, parameters: {accountId: "-"},
+     depends_on: {api: list_vaults, params: {vaultName: VaultName}}}

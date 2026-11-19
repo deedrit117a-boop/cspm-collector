@@ -1,0 +1,8 @@
+service: shield
+client: shield
+scope: global
+tier: 2
+apis:
+  - {api: get_subscription_state, setting: shield_subscription_state}
+  - {api: describe_subscription, setting: shield_subscription}
+  - {api: list_protections, paginate: true, result_path: Protections, resource_type: protection, id_field: Id, arn_field: ProtectionArn}

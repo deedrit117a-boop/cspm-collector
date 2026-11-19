@@ -1,0 +1,10 @@
+# list_tags needs the domain ARN (from describe_domain): the opensearch collector makes that call.
+service: opensearch
+client: opensearch
+scope: regional
+tier: 2
+collector: opensearch
+apis:
+  - {api: list_domain_names, result_path: DomainNames, resource_type: domain, id_field: DomainName, arn_from: describe_domain.DomainStatus.ARN}
+  - {api: describe_domain, resource_type: domain, depends_on: {api: list_domain_names, params: {DomainName: DomainName}}}
+  - {api: describe_domain_config, resource_type: domain, depends_on: {api: list_domain_names, params: {DomainName: DomainName}}}

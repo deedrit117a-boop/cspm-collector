@@ -1,0 +1,19 @@
+# User pools (cognito-idp) and identity pools (cognito-identity).
+service: cognito
+client: cognito-idp
+scope: regional
+tier: 2
+apis:
+  - {api: list_user_pools, paginate: true, result_path: UserPools, resource_type: user_pool, id_field: Id,
+     parameters: {MaxResults: 60}, arn_from: describe_user_pool.UserPool.Arn}
+  - {api: describe_user_pool, resource_type: user_pool, depends_on: {api: list_user_pools, params: {UserPoolId: Id}}}
+  - {api: get_user_pool_mfa_config, resource_type: user_pool, depends_on: {api: list_user_pools, params: {UserPoolId: Id}}}
+  - {api: describe_risk_configuration, resource_type: user_pool, depends_on: {api: list_user_pools, params: {UserPoolId: Id}}}
+  - {api: list_user_pool_clients, paginate: true, resource_type: user_pool, parameters: {MaxResults: 60},
+     depends_on: {api: list_user_pools, params: {UserPoolId: Id}}}
+  - {api: list_identity_pools, client: cognito-identity, result_path: IdentityPools, resource_type: identity_pool,
+     id_field: IdentityPoolId, parameters: {MaxResults: 60}}
+  - {api: describe_identity_pool, client: cognito-identity, resource_type: identity_pool,
+     depends_on: {api: list_identity_pools, params: {IdentityPoolId: IdentityPoolId}}}
+  - {api: get_identity_pool_roles, client: cognito-identity, resource_type: identity_pool,
+     depends_on: {api: list_identity_pools, params: {IdentityPoolId: IdentityPoolId}}}

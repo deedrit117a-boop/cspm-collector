@@ -1,0 +1,8 @@
+service: servicecatalog
+client: servicecatalog
+scope: regional
+tier: 3
+apis:
+  - {api: list_portfolios, paginate: true, result_path: PortfolioDetails, resource_type: portfolio, id_field: Id, arn_field: ARN}
+  - {api: describe_portfolio_shares, resource_type: portfolio, parameters: {Type: ACCOUNT},
+     depends_on: {api: list_portfolios, params: {PortfolioId: Id}}}

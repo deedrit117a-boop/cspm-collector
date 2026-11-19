@@ -1,0 +1,3992 @@
+spec_version: 2026.10.21-696a804e
+prowler_version: 5.46.0
+source_hash: 696a804ecb991812424b809160d94d64311246dea3d012f4164bfc25f2106667
+services:
+- service: accessanalyzer
+  client: accessanalyzer
+  scope: regional
+  enabled: true
+  tier: 1
+  collector: generic
+  rule_count: 2
+  apis:
+  - api: get_finding
+    paginate: false
+    parameters: {}
+    resource_type: finding
+    needs_review: true
+    note: 'required params without a parent API: analyzerArn, id'
+  - api: list_analyzers
+    paginate: true
+    parameters: {}
+    result_path: analyzers
+    resource_type: analyzer
+    needs_review: false
+  - api: list_findings
+    paginate: true
+    parameters: {}
+    result_path: findings
+    resource_type: finding
+    needs_review: true
+    note: 'required params without a parent API: analyzerArn'
+- service: account
+  client: account
+  scope: global
+  enabled: true
+  tier: 1
+  collector: generic
+  rule_count: 4
+  apis:
+  - api: get_alternate_contact
+    paginate: false
+    parameters: {}
+    resource_type: alternate_contact
+    needs_review: true
+    note: 'required params without a parent API: AlternateContactType'
+  - api: get_contact_information
+    paginate: false
+    parameters: {}
+    resource_type: contact_information
+    needs_review: false
+- service: acm
+  client: acm
+  scope: regional
+  enabled: true
+  tier: 1
+  collector: generic
+  rule_count: 3
+  apis:
+  - api: describe_certificate
+    paginate: false
+    parameters: {}
+    resource_type: certificate
+    depends_on:
+      api: list_certificates
+      params:
+        CertificateArn: CertificateArn
+    needs_review: false
+  - api: list_certificates
+    paginate: true
+    parameters: {}
+    result_path: CertificateSummaryList
+    resource_type: certificate
+    id_field: DomainName
+    needs_review: false
+  - api: list_tags_for_certificate
+    paginate: false
+    parameters: {}
+    result_path: Tags
+    resource_type: tags_for_certificate
+    depends_on:
+      api: list_certificates
+      params:
+        CertificateArn: CertificateArn
+    needs_review: false
+- service: acmpca
+  client: acm-pca
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 0
+  apis:
+  - api: list_certificate_authorities
+    paginate: true
+    parameters: {}
+    result_path: CertificateAuthorities
+    resource_type: certificate_authority
+    id_field: Arn
+    needs_review: false
+  - api: list_tags
+    paginate: true
+    parameters: {}
+    result_path: Tags
+    resource_type: tag
+    needs_review: true
+    note: 'required params without a parent API: CertificateAuthorityArn'
+- service: amplify
+  client: amplify
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 0
+  apis:
+  - api: list_apps
+    paginate: true
+    parameters: {}
+    result_path: apps
+    resource_type: app
+    id_field: appId
+    needs_review: false
+  - api: list_branches
+    paginate: true
+    parameters: {}
+    result_path: branches
+    resource_type: branche
+    id_field: activeJobId
+    depends_on:
+      api: list_apps
+      params:
+        appId: appId
+    needs_review: false
+- service: apigateway
+  client: apigateway
+  scope: regional
+  enabled: true
+  tier: 1
+  collector: generic
+  rule_count: 9
+  apis:
+  - api: get_authorizers
+    paginate: true
+    parameters: {}
+    result_path: items
+    resource_type: authorizer
+    needs_review: true
+    note: 'required params without a parent API: restApiId'
+  - api: get_domain_names
+    paginate: true
+    parameters: {}
+    result_path: items
+    resource_type: domain_name
+    id_field: domainNameId
+    needs_review: false
+  - api: get_method
+    paginate: false
+    parameters: {}
+    resource_type: method
+    needs_review: true
+    note: 'required params without a parent API: restApiId, resourceId, httpMethod'
+  - api: get_resources
+    paginate: true
+    parameters: {}
+    result_path: items
+    resource_type: resource
+    id_field: parentId
+    needs_review: true
+    note: 'required params without a parent API: restApiId'
+  - api: get_rest_api
+    paginate: false
+    parameters: {}
+    resource_type: rest_api
+    needs_review: true
+    note: 'required params without a parent API: restApiId'
+  - api: get_rest_apis
+    paginate: true
+    parameters: {}
+    result_path: items
+    resource_type: rest_api
+    id_field: rootResourceId
+    needs_review: false
+  - api: get_stages
+    paginate: false
+    parameters: {}
+    result_path: item
+    resource_type: stage
+    id_field: deploymentId
+    needs_review: true
+    note: 'required params without a parent API: restApiId'
+- service: apigatewayv2
+  client: apigatewayv2
+  scope: regional
+  enabled: true
+  tier: 1
+  collector: generic
+  rule_count: 2
+  apis:
+  - api: get_apis
+    paginate: true
+    parameters: {}
+    result_path: Items
+    resource_type: api
+    id_field: ApiId
+    needs_review: false
+  - api: get_authorizers
+    paginate: true
+    parameters: {}
+    result_path: Items
+    resource_type: authorizer
+    id_field: AuthorizerId
+    depends_on:
+      api: get_apis
+      params:
+        ApiId: ApiId
+    needs_review: false
+  - api: get_stages
+    paginate: true
+    parameters: {}
+    result_path: Items
+    resource_type: stage
+    id_field: ClientCertificateId
+    depends_on:
+      api: get_apis
+      params:
+        ApiId: ApiId
+    needs_review: false
+- service: appstream
+  client: appstream
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 4
+  apis:
+  - api: describe_fleets
+    paginate: true
+    parameters: {}
+    result_path: Fleets
+    resource_type: fleet
+    id_field: Name
+    needs_review: false
+  - api: list_tags_for_resource
+    paginate: false
+    parameters: {}
+    resource_type: tags_for_resource
+    needs_review: true
+    note: 'required params without a parent API: ResourceArn'
+- service: appsync
+  client: appsync
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 0
+  apis:
+  - api: list_graphql_apis
+    paginate: true
+    parameters: {}
+    result_path: graphqlApis
+    resource_type: graphql_api
+    id_field: apiId
+    needs_review: false
+- service: athena
+  client: athena
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 3
+  apis:
+  - api: get_work_group
+    paginate: false
+    parameters: {}
+    resource_type: work_group
+    needs_review: true
+    note: 'required params without a parent API: WorkGroup'
+  - api: list_query_executions
+    paginate: true
+    parameters: {}
+    result_path: QueryExecutionIds
+    resource_type: query_execution
+    needs_review: false
+  - api: list_tags_for_resource
+    paginate: true
+    parameters: {}
+    result_path: Tags
+    resource_type: tags_for_resource
+    needs_review: true
+    note: 'required params without a parent API: ResourceARN'
+  - api: list_work_groups
+    paginate: false
+    parameters: {}
+    result_path: WorkGroups
+    resource_type: work_group
+    id_field: Name
+    needs_review: false
+- service: autoscaling
+  client: autoscaling
+  scope: regional
+  enabled: true
+  tier: 1
+  collector: generic
+  rule_count: 6
+  apis:
+  - api: describe_auto_scaling_groups
+    paginate: true
+    parameters: {}
+    result_path: AutoScalingGroups
+    resource_type: auto_scaling_group
+    id_field: AutoScalingGroupName
+    needs_review: false
+  - api: describe_launch_configurations
+    paginate: true
+    parameters: {}
+    result_path: LaunchConfigurations
+    resource_type: launch_configuration
+    id_field: ImageId
+    needs_review: false
+  - api: describe_scalable_targets
+    client: application-autoscaling
+    paginate: true
+    parameters: {}
+    result_path: ScalableTargets
+    resource_type: scalable_target
+    id_field: ResourceId
+    needs_review: true
+    note: 'required params without a parent API: ServiceNamespace'
+- service: awslambda
+  client: lambda
+  scope: regional
+  enabled: true
+  tier: 1
+  collector: generic
+  rule_count: 9
+  apis:
+  - api: get_function
+    paginate: false
+    parameters: {}
+    resource_type: function
+    depends_on:
+      api: list_functions
+      params:
+        FunctionName: FunctionName
+    needs_review: false
+  - api: get_function_url_config
+    paginate: false
+    parameters: {}
+    resource_type: function_url_config
+    depends_on:
+      api: list_functions
+      params:
+        FunctionName: FunctionName
+    needs_review: false
+  - api: get_layer_version_by_arn
+    paginate: false
+    parameters: {}
+    resource_type: layer_version_by_arn
+    needs_review: true
+    note: 'required params without a parent API: Arn'
+  - api: get_policy
+    paginate: false
+    parameters: {}
+    resource_type: policy
+    depends_on:
+      api: list_functions
+      params:
+        FunctionName: FunctionName
+    needs_review: false
+  - api: list_event_source_mappings
+    paginate: true
+    parameters: {}
+    result_path: EventSourceMappings
+    resource_type: event_source_mapping
+    id_field: EventSourceArn
+    needs_review: false
+  - api: list_functions
+    paginate: true
+    parameters: {}
+    result_path: Functions
+    resource_type: function
+    id_field: RevisionId
+    needs_review: false
+  - api: list_tags
+    paginate: false
+    parameters: {}
+    resource_type: tag
+    needs_review: true
+    note: 'required params without a parent API: Resource'
+- service: backup
+  client: backup
+  scope: regional
+  enabled: true
+  tier: 2
+  collector: generic
+  rule_count: 5
+  apis:
+  - api: get_backup_selection
+    paginate: false
+    parameters: {}
+    resource_type: backup_selection
+    needs_review: true
+    note: 'required params without a parent API: BackupPlanId, SelectionId'
+  - api: list_backup_plans
+    paginate: true
+    parameters: {}
+    result_path: BackupPlansList
+    resource_type: backup_plan
+    id_field: BackupPlanId
+    needs_review: false
+  - api: list_backup_selections
+    paginate: true
+    parameters: {}
+    result_path: BackupSelectionsList
+    resource_type: backup_selection
+    id_field: SelectionId
+    depends_on:
+      api: list_backup_plans
+      params:
+        BackupPlanId: BackupPlanId
+    needs_review: false
+  - api: list_backup_vaults
+    paginate: true
+    parameters: {}
+    result_path: BackupVaultList
+    resource_type: backup_vault
+    id_field: CreatorRequestId
+    needs_review: false
+  - api: list_recovery_points_by_backup_vault
+    paginate: true
+    parameters: {}
+    result_path: RecoveryPoints
+    resource_type: recovery_points_by_backup_vault
+    id_field: BackupVaultName
+    depends_on:
+      api: list_backup_vaults
+      params:
+        BackupVaultName: BackupVaultName
+    needs_review: false
+  - api: list_report_plans
+    paginate: false
+    parameters: {}
+    result_path: ReportPlans
+    resource_type: report_plan
+    id_field: ReportPlanName
+    needs_review: false
+  - api: list_tags
+    paginate: false
+    parameters: {}
+    resource_type: tag
+    needs_review: true
+    note: 'required params without a parent API: ResourceArn'
+- service: batch
+  client: batch
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 0
+  apis:
+  - api: describe_compute_environments
+    paginate: true
+    parameters: {}
+    result_path: computeEnvironments
+    resource_type: compute_environment
+    id_field: computeEnvironmentName
+    needs_review: false
+  - api: describe_job_definitions
+    paginate: true
+    parameters: {}
+    result_path: jobDefinitions
+    resource_type: job_definition
+    id_field: jobDefinitionName
+    needs_review: false
+- service: bedrock
+  client: bedrock
+  scope: regional
+  enabled: true
+  tier: 2
+  collector: generic
+  rule_count: 10
+  apis:
+  - api: get_custom_model
+    paginate: false
+    parameters: {}
+    result_path: validationMetrics
+    resource_type: custom_model
+    needs_review: true
+    note: 'required params without a parent API: modelIdentifier'
+  - api: get_guardrail
+    paginate: false
+    parameters: {}
+    resource_type: guardrail
+    needs_review: true
+    note: 'required params without a parent API: guardrailIdentifier'
+  - api: get_model_invocation_logging_configuration
+    paginate: false
+    parameters: {}
+    resource_type: model_invocation_logging_configuration
+    needs_review: false
+  - api: list_custom_models
+    paginate: true
+    parameters: {}
+    result_path: modelSummaries
+    resource_type: custom_model
+    id_field: ownerAccountId
+    needs_review: false
+  - api: list_guardrails
+    paginate: true
+    parameters: {}
+    result_path: guardrails
+    resource_type: guardrail
+    needs_review: false
+  - api: list_tags_for_resource
+    paginate: false
+    parameters: {}
+    result_path: tags
+    resource_type: tags_for_resource
+    needs_review: true
+    note: 'required params without a parent API: resourceARN'
+  - api: get_agent
+    client: bedrock-agent
+    paginate: false
+    parameters: {}
+    resource_type: agent
+    depends_on:
+      api: list_agents
+      params:
+        agentId: agentId
+    needs_review: false
+  - api: get_agent_version
+    client: bedrock-agent
+    paginate: false
+    parameters: {}
+    resource_type: agent_version
+    needs_review: true
+    note: 'required params without a parent API: agentId, agentVersion'
+  - api: get_data_source
+    client: bedrock-agent
+    paginate: false
+    parameters: {}
+    resource_type: data_source
+    needs_review: true
+    note: 'required params without a parent API: knowledgeBaseId, dataSourceId'
+  - api: get_prompt
+    client: bedrock-agent
+    paginate: false
+    parameters: {}
+    result_path: variants
+    resource_type: prompt
+    id_field: modelId
+    needs_review: true
+    note: 'required params without a parent API: promptIdentifier'
+  - api: list_agent_aliases
+    client: bedrock-agent
+    paginate: true
+    parameters: {}
+    result_path: agentAliasSummaries
+    resource_type: agent_alias
+    id_field: agentAliasId
+    depends_on:
+      api: list_agents
+      params:
+        agentId: agentId
+    needs_review: false
+  - api: list_agents
+    client: bedrock-agent
+    paginate: true
+    parameters: {}
+    result_path: agentSummaries
+    resource_type: agent
+    id_field: agentId
+    needs_review: false
+  - api: list_data_sources
+    client: bedrock-agent
+    paginate: true
+    parameters: {}
+    result_path: dataSourceSummaries
+    resource_type: data_source
+    id_field: knowledgeBaseId
+    depends_on:
+      api: list_knowledge_bases
+      params:
+        knowledgeBaseId: knowledgeBaseId
+    needs_review: false
+  - api: list_knowledge_bases
+    client: bedrock-agent
+    paginate: true
+    parameters: {}
+    result_path: knowledgeBaseSummaries
+    resource_type: knowledge_bas
+    id_field: knowledgeBaseId
+    needs_review: false
+  - api: list_prompts
+    client: bedrock-agent
+    paginate: true
+    parameters: {}
+    result_path: promptSummaries
+    resource_type: prompt
+    needs_review: false
+- service: cloudformation
+  client: cloudformation
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 2
+  apis:
+  - api: describe_stacks
+    paginate: true
+    parameters: {}
+    result_path: Stacks
+    resource_type: stack
+    id_field: StackId
+    needs_review: false
+- service: cloudfront
+  client: cloudfront
+  scope: global
+  enabled: true
+  tier: 1
+  collector: cloudfront
+  rule_count: 14
+  apis:
+  - api: get_distribution_config
+    paginate: false
+    parameters: {}
+    resource_type: distribution_config
+    needs_review: true
+    note: 'required params without a parent API: Id'
+  - api: list_distributions
+    paginate: true
+    parameters: {}
+    result_path: DistributionList.Items
+    resource_type: distribution
+    needs_review: false
+  - api: list_tags_for_resource
+    paginate: false
+    parameters: {}
+    resource_type: tags_for_resource
+    needs_review: true
+    note: 'required params without a parent API: Resource'
+  - api: describe_deliveries
+    client: logs
+    paginate: true
+    parameters: {}
+    result_path: deliveries
+    resource_type: delivery
+    id_field: deliverySourceName
+    needs_review: false
+  - api: describe_delivery_sources
+    client: logs
+    paginate: true
+    parameters: {}
+    result_path: deliverySources
+    resource_type: delivery_source
+    needs_review: false
+- service: cloudtrail
+  client: cloudtrail
+  scope: regional
+  enabled: true
+  tier: 1
+  collector: generic
+  rule_count: 15
+  apis:
+  - api: describe_trails
+    paginate: false
+    parameters: {}
+    result_path: trailList
+    resource_type: trail
+    id_field: KmsKeyId
+    needs_review: false
+  - api: get_event_selectors
+    paginate: false
+    parameters: {}
+    resource_type: event_selector
+    needs_review: true
+    note: 'required params without a parent API: TrailName'
+  - api: get_insight_selectors
+    paginate: false
+    parameters: {}
+    result_path: InsightSelectors
+    resource_type: insight_selector
+    needs_review: false
+  - api: get_trail_status
+    paginate: false
+    parameters: {}
+    resource_type: trail_statu
+    depends_on:
+      api: describe_trails
+      params:
+        Name: Name
+    needs_review: false
+  - api: list_tags
+    paginate: true
+    parameters: {}
+    result_path: ResourceTagList
+    resource_type: tag
+    id_field: ResourceId
+    needs_review: true
+    note: 'required params without a parent API: ResourceIdList'
+  - api: lookup_events
+    paginate: true
+    parameters: {}
+    result_path: Events
+    resource_type: lookup_event
+    id_field: EventId
+    opt_in_flag: --collect-lookup-events
+    needs_review: false
+- service: cloudwatch
+  client: cloudwatch
+  scope: regional
+  enabled: true
+  tier: 1
+  collector: generic
+  rule_count: 22
+  apis:
+  - api: describe_alarms
+    paginate: true
+    parameters: {}
+    result_path: MetricAlarms
+    resource_type: alarm
+    needs_review: false
+  - api: list_tags_for_resource
+    paginate: false
+    parameters: {}
+    result_path: Tags
+    resource_type: tags_for_resource
+    needs_review: true
+    note: 'required params without a parent API: ResourceARN'
+  - api: describe_log_groups
+    client: logs
+    paginate: true
+    parameters: {}
+    result_path: logGroups
+    resource_type: log_group
+    id_field: kmsKeyId
+    needs_review: false
+  - api: describe_metric_filters
+    client: logs
+    paginate: true
+    parameters: {}
+    result_path: metricFilters
+    resource_type: metric_filter
+    id_field: filterName
+    needs_review: false
+  - api: describe_resource_policies
+    client: logs
+    paginate: true
+    parameters: {}
+    result_path: resourcePolicies
+    resource_type: resource_policy
+    id_field: revisionId
+    needs_review: false
+  - api: filter_log_events
+    client: logs
+    paginate: true
+    parameters: {}
+    result_path: events
+    resource_type: filter_log_event
+    opt_in_flag: --collect-filter-log-events
+    needs_review: false
+- service: codeartifact
+  client: codeartifact
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 1
+  apis:
+  - api: list_package_versions
+    paginate: true
+    parameters: {}
+    result_path: versions
+    resource_type: package_version
+    needs_review: true
+    note: 'required params without a parent API: domain, repository, format, package'
+  - api: list_packages
+    paginate: true
+    parameters: {}
+    result_path: packages
+    resource_type: package
+    needs_review: true
+    note: 'required params without a parent API: domain, repository'
+  - api: list_repositories
+    paginate: true
+    parameters: {}
+    result_path: repositories
+    resource_type: repository
+    id_field: domainName
+    needs_review: false
+  - api: list_tags_for_resource
+    paginate: false
+    parameters: {}
+    result_path: tags
+    resource_type: tags_for_resource
+    needs_review: true
+    note: 'required params without a parent API: resourceArn'
+- service: codebuild
+  client: codebuild
+  scope: regional
+  enabled: true
+  tier: 2
+  collector: generic
+  rule_count: 6
+  apis:
+  - api: batch_get_builds
+    paginate: false
+    parameters: {}
+    result_path: builds
+    resource_type: build
+    id_field: projectName
+    needs_review: true
+    note: 'required params without a parent API: ids'
+  - api: batch_get_projects
+    paginate: false
+    parameters: {}
+    result_path: projects
+    resource_type: project
+    needs_review: true
+    note: 'required params without a parent API: names'
+  - api: batch_get_report_groups
+    paginate: false
+    parameters: {}
+    result_path: reportGroups
+    resource_type: report_group
+    needs_review: true
+    note: 'required params without a parent API: reportGroupArns'
+  - api: list_builds_for_project
+    paginate: true
+    parameters: {}
+    result_path: ids
+    resource_type: builds_for_project
+    needs_review: true
+    note: 'required params without a parent API: projectName'
+  - api: list_projects
+    paginate: true
+    parameters: {}
+    result_path: projects
+    resource_type: project
+    needs_review: false
+  - api: list_report_groups
+    paginate: true
+    parameters: {}
+    result_path: reportGroups
+    resource_type: report_group
+    needs_review: false
+- service: codecommit
+  client: codecommit
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 0
+  apis:
+  - api: get_blob
+    paginate: false
+    parameters: {}
+    resource_type: blob
+    needs_review: true
+    note: 'required params without a parent API: repositoryName, blobId'
+  - api: get_branch
+    paginate: false
+    parameters: {}
+    resource_type: branch
+    needs_review: false
+  - api: get_folder
+    paginate: false
+    parameters: {}
+    resource_type: folder
+    needs_review: true
+    note: 'required params without a parent API: repositoryName, folderPath'
+  - api: get_repository
+    paginate: false
+    parameters: {}
+    resource_type: repository
+    depends_on:
+      api: list_repositories
+      params:
+        repositoryName: repositoryName
+    needs_review: false
+  - api: list_repositories
+    paginate: true
+    parameters: {}
+    result_path: repositories
+    resource_type: repository
+    id_field: repositoryId
+    needs_review: false
+  - api: list_tags_for_resource
+    paginate: false
+    parameters: {}
+    resource_type: tags_for_resource
+    needs_review: true
+    note: 'required params without a parent API: resourceArn'
+- service: codepipeline
+  client: codepipeline
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 0
+  apis:
+  - api: get_pipeline
+    paginate: false
+    parameters: {}
+    resource_type: pipeline
+    depends_on:
+      api: list_pipelines
+      params:
+        name: name
+    needs_review: false
+  - api: list_pipelines
+    paginate: true
+    parameters: {}
+    result_path: pipelines
+    resource_type: pipeline
+    needs_review: false
+  - api: list_tags_for_resource
+    paginate: true
+    parameters: {}
+    result_path: tags
+    resource_type: tags_for_resource
+    needs_review: true
+    note: 'required params without a parent API: resourceArn'
+- service: cognito
+  client: cognito-idp
+  scope: regional
+  enabled: true
+  tier: 2
+  collector: generic
+  rule_count: 16
+  apis:
+  - api: describe_risk_configuration
+    paginate: false
+    parameters: {}
+    resource_type: risk_configuration
+    needs_review: true
+    note: 'required params without a parent API: UserPoolId'
+  - api: describe_user_pool
+    paginate: false
+    parameters: {}
+    resource_type: user_pool
+    needs_review: true
+    note: 'required params without a parent API: UserPoolId'
+  - api: describe_user_pool_client
+    paginate: false
+    parameters: {}
+    resource_type: user_pool_client
+    needs_review: true
+    note: 'required params without a parent API: UserPoolId, ClientId'
+  - api: get_user_pool_mfa_config
+    paginate: false
+    parameters: {}
+    resource_type: user_pool_mfa_config
+    needs_review: true
+    note: 'required params without a parent API: UserPoolId'
+  - api: list_user_pool_clients
+    paginate: true
+    parameters: {}
+    result_path: UserPoolClients
+    resource_type: user_pool_client
+    id_field: ClientId
+    needs_review: true
+    note: 'required params without a parent API: UserPoolId'
+  - api: list_user_pools
+    paginate: true
+    parameters: {}
+    result_path: UserPools
+    resource_type: user_pool
+    id_field: Id
+    needs_review: true
+    note: 'required params without a parent API: MaxResults'
+  - api: describe_identity_pool
+    client: cognito-identity
+    paginate: false
+    parameters: {}
+    result_path: CognitoIdentityProviders
+    resource_type: identity_pool
+    id_field: ClientId
+    needs_review: true
+    note: 'required params without a parent API: IdentityPoolId'
+  - api: get_identity_pool_roles
+    client: cognito-identity
+    paginate: false
+    parameters: {}
+    resource_type: identity_pool_role
+    needs_review: true
+    note: 'required params without a parent API: IdentityPoolId'
+  - api: list_identity_pools
+    client: cognito-identity
+    paginate: true
+    parameters: {}
+    result_path: IdentityPools
+    resource_type: identity_pool
+    id_field: IdentityPoolId
+    needs_review: true
+    note: 'required params without a parent API: MaxResults'
+- service: config
+  client: config
+  scope: regional
+  enabled: true
+  tier: 1
+  collector: generic
+  rule_count: 2
+  apis:
+  - api: describe_configuration_aggregators
+    paginate: true
+    parameters: {}
+    result_path: ConfigurationAggregators
+    resource_type: configuration_aggregator
+    id_field: ConfigurationAggregatorName
+    needs_review: false
+  - api: describe_configuration_recorder_status
+    paginate: false
+    parameters: {}
+    result_path: ConfigurationRecordersStatus
+    resource_type: configuration_recorder_statu
+    needs_review: false
+  - api: describe_configuration_recorders
+    paginate: false
+    parameters: {}
+    result_path: ConfigurationRecorders
+    resource_type: configuration_recorder
+    id_field: connectorArn
+    needs_review: false
+  - api: list_delegated_administrators
+    client: organizations
+    paginate: true
+    parameters: {}
+    result_path: DelegatedAdministrators
+    resource_type: delegated_administrator
+    id_field: Id
+    needs_review: false
+- service: datapipeline
+  client: datapipeline
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 0
+  apis:
+  - api: describe_pipelines
+    paginate: false
+    parameters: {}
+    result_path: pipelineDescriptionList
+    resource_type: pipeline
+    id_field: pipelineId
+    needs_review: true
+    note: 'required params without a parent API: pipelineIds'
+  - api: get_pipeline_definition
+    paginate: false
+    parameters: {}
+    resource_type: pipeline_definition
+    needs_review: true
+    note: 'required params without a parent API: pipelineId'
+  - api: list_pipelines
+    paginate: true
+    parameters: {}
+    result_path: pipelineIdList
+    resource_type: pipeline
+    needs_review: false
+- service: datasync
+  client: datasync
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 1
+  apis:
+  - api: describe_task
+    paginate: false
+    parameters: {}
+    resource_type: task
+    depends_on:
+      api: list_tasks
+      params:
+        TaskArn: TaskArn
+    needs_review: false
+  - api: list_tags_for_resource
+    paginate: true
+    parameters: {}
+    result_path: Tags
+    resource_type: tags_for_resource
+    needs_review: true
+    note: 'required params without a parent API: ResourceArn'
+  - api: list_tasks
+    paginate: true
+    parameters: {}
+    result_path: Tasks
+    resource_type: task
+    id_field: Name
+    needs_review: false
+- service: directconnect
+  client: directconnect
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 2
+  apis:
+  - api: describe_connections
+    paginate: false
+    parameters: {}
+    result_path: connections
+    resource_type: connection
+    id_field: connectionId
+    needs_review: false
+  - api: describe_virtual_interfaces
+    paginate: false
+    parameters: {}
+    result_path: virtualInterfaces
+    resource_type: virtual_interface
+    id_field: virtualInterfaceId
+    needs_review: false
+- service: directoryservice
+  client: ds
+  scope: regional
+  enabled: true
+  tier: 2
+  collector: generic
+  rule_count: 6
+  apis:
+  - api: describe_directories
+    paginate: true
+    parameters: {}
+    result_path: DirectoryDescriptions
+    resource_type: directory
+    id_field: DirectoryId
+    needs_review: false
+  - api: describe_event_topics
+    paginate: false
+    parameters: {}
+    result_path: EventTopics
+    resource_type: event_topic
+    id_field: DirectoryId
+    needs_review: false
+  - api: get_snapshot_limits
+    paginate: false
+    parameters: {}
+    resource_type: snapshot_limit
+    depends_on:
+      api: describe_directories
+      params:
+        DirectoryId: DirectoryId
+    needs_review: false
+  - api: list_certificates
+    paginate: true
+    parameters: {}
+    result_path: CertificatesInfo
+    resource_type: certificate
+    id_field: CertificateId
+    depends_on:
+      api: describe_directories
+      params:
+        DirectoryId: DirectoryId
+    needs_review: false
+  - api: list_log_subscriptions
+    paginate: true
+    parameters: {}
+    result_path: LogSubscriptions
+    resource_type: log_subscription
+    id_field: DirectoryId
+    needs_review: false
+  - api: list_tags_for_resource
+    paginate: true
+    parameters: {}
+    result_path: Tags
+    resource_type: tags_for_resource
+    needs_review: true
+    note: 'required params without a parent API: ResourceId'
+- service: dlm
+  client: dlm
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 1
+  apis:
+  - api: get_lifecycle_policies
+    paginate: false
+    parameters: {}
+    result_path: Policies
+    resource_type: lifecycle_policy
+    id_field: PolicyId
+    needs_review: false
+  - api: describe_snapshots
+    client: ec2
+    paginate: true
+    parameters: {}
+    result_path: Snapshots
+    resource_type: snapshot
+    id_field: SnapshotId
+    needs_review: false
+- service: dms
+  client: dms
+  scope: regional
+  enabled: true
+  tier: 2
+  collector: generic
+  rule_count: 6
+  apis:
+  - api: describe_endpoints
+    paginate: true
+    parameters: {}
+    result_path: Endpoints
+    resource_type: endpoint
+    id_field: KmsKeyId
+    needs_review: false
+  - api: describe_replication_instances
+    paginate: true
+    parameters: {}
+    result_path: ReplicationInstances
+    resource_type: replication_instance
+    id_field: KmsKeyId
+    needs_review: false
+  - api: describe_replication_tasks
+    paginate: true
+    parameters: {}
+    result_path: ReplicationTasks
+    resource_type: replication_task
+    id_field: SourceEndpointArn
+    needs_review: false
+  - api: list_tags_for_resource
+    paginate: false
+    parameters: {}
+    result_path: TagList
+    resource_type: tags_for_resource
+    id_field: ResourceArn
+    needs_review: false
+- service: documentdb
+  client: docdb
+  scope: regional
+  enabled: true
+  tier: 2
+  collector: generic
+  rule_count: 6
+  apis:
+  - api: describe_db_cluster_snapshot_attributes
+    paginate: false
+    parameters: {}
+    resource_type: db_cluster_snapshot_attribute
+    depends_on:
+      api: describe_db_cluster_snapshots
+      params:
+        DBClusterSnapshotIdentifier: DBClusterSnapshotIdentifier
+    needs_review: false
+  - api: describe_db_cluster_snapshots
+    paginate: true
+    parameters: {}
+    result_path: DBClusterSnapshots
+    resource_type: db_cluster_snapshot
+    id_field: VpcId
+    needs_review: false
+  - api: describe_db_clusters
+    paginate: true
+    parameters: {}
+    result_path: DBClusters
+    resource_type: db_cluster
+    id_field: HostedZoneId
+    needs_review: false
+  - api: describe_db_instances
+    paginate: true
+    parameters: {}
+    result_path: DBInstances
+    resource_type: db_instance
+    id_field: KmsKeyId
+    needs_review: false
+  - api: list_tags_for_resource
+    paginate: false
+    parameters: {}
+    result_path: TagList
+    resource_type: tags_for_resource
+    needs_review: true
+    note: 'required params without a parent API: ResourceName'
+- service: drs
+  client: drs
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 1
+  apis:
+  - api: describe_jobs
+    paginate: true
+    parameters: {}
+    result_path: items
+    resource_type: job
+    needs_review: false
+- service: dynamodb
+  client: dynamodb
+  scope: regional
+  enabled: true
+  tier: 2
+  collector: generic
+  rule_count: 9
+  apis:
+  - api: describe_continuous_backups
+    paginate: false
+    parameters: {}
+    resource_type: continuous_backup
+    needs_review: true
+    note: 'required params without a parent API: TableName'
+  - api: describe_table
+    paginate: false
+    parameters: {}
+    resource_type: table
+    needs_review: true
+    note: 'required params without a parent API: TableName'
+  - api: get_resource_policy
+    paginate: false
+    parameters: {}
+    resource_type: resource_policy
+    needs_review: true
+    note: 'required params without a parent API: ResourceArn'
+  - api: list_tables
+    paginate: true
+    parameters: {}
+    result_path: TableNames
+    resource_type: table
+    needs_review: false
+  - api: list_tags_of_resource
+    paginate: true
+    parameters: {}
+    result_path: Tags
+    resource_type: tags_of_resource
+    needs_review: true
+    note: 'required params without a parent API: ResourceArn'
+  - api: describe_clusters
+    client: dax
+    paginate: true
+    parameters: {}
+    result_path: Clusters
+    resource_type: cluster
+    id_field: ClusterName
+    needs_review: false
+  - api: list_tags
+    client: dax
+    paginate: true
+    parameters: {}
+    result_path: Tags
+    resource_type: tag
+    needs_review: true
+    note: 'required params without a parent API: ResourceName'
+- service: ec2
+  client: ec2
+  scope: regional
+  enabled: true
+  tier: 1
+  collector: generic
+  rule_count: 71
+  apis:
+  - api: describe_addresses
+    paginate: false
+    parameters: {}
+    result_path: Addresses
+    resource_type: address
+    id_field: AllocationId
+    needs_review: false
+  - api: describe_client_vpn_endpoints
+    paginate: true
+    parameters: {}
+    result_path: ClientVpnEndpoints
+    resource_type: client_vpn_endpoint
+    id_field: ClientVpnEndpointId
+    needs_review: false
+  - api: describe_images
+    paginate: true
+    parameters: {}
+    result_path: Images
+    resource_type: image
+    id_field: SourceInstanceId
+    needs_review: false
+  - api: describe_instance_attribute
+    paginate: false
+    parameters: {}
+    resource_type: instance_attribute
+    needs_review: true
+    note: 'required params without a parent API: InstanceId, Attribute'
+  - api: describe_instances
+    paginate: true
+    parameters: {}
+    result_path: Reservations
+    resource_type: instance
+    id_field: ReservationId
+    needs_review: false
+  - api: describe_launch_template_versions
+    paginate: true
+    parameters: {}
+    result_path: LaunchTemplateVersions
+    resource_type: launch_template_version
+    id_field: LaunchTemplateId
+    needs_review: false
+  - api: describe_launch_templates
+    paginate: true
+    parameters: {}
+    result_path: LaunchTemplates
+    resource_type: launch_template
+    id_field: LaunchTemplateId
+    needs_review: false
+  - api: describe_network_acls
+    paginate: true
+    parameters: {}
+    result_path: NetworkAcls
+    resource_type: network_acl
+    id_field: NetworkAclId
+    needs_review: false
+  - api: describe_network_interfaces
+    paginate: true
+    parameters: {}
+    result_path: NetworkInterfaces
+    resource_type: network_interface
+    id_field: NetworkInterfaceId
+    needs_review: false
+  - api: describe_security_groups
+    paginate: true
+    parameters: {}
+    result_path: SecurityGroups
+    resource_type: security_group
+    id_field: GroupId
+    needs_review: false
+  - api: describe_snapshot_attribute
+    paginate: false
+    parameters: {}
+    resource_type: snapshot_attribute
+    needs_review: true
+    note: 'required params without a parent API: Attribute, SnapshotId'
+  - api: describe_snapshots
+    paginate: true
+    parameters: {}
+    result_path: Snapshots
+    resource_type: snapshot
+    id_field: SnapshotId
+    needs_review: false
+  - api: describe_transit_gateways
+    paginate: true
+    parameters: {}
+    result_path: TransitGateways
+    resource_type: transit_gateway
+    id_field: TransitGatewayId
+    needs_review: false
+  - api: describe_volumes
+    paginate: true
+    parameters: {}
+    result_path: Volumes
+    resource_type: volume
+    id_field: AvailabilityZoneId
+    needs_review: false
+  - api: get_ebs_encryption_by_default
+    paginate: false
+    parameters: {}
+    resource_type: ebs_encryption_by_default
+    needs_review: false
+  - api: get_image_block_public_access_state
+    paginate: false
+    parameters: {}
+    resource_type: image_block_public_access_state
+    needs_review: false
+  - api: get_instance_metadata_defaults
+    paginate: false
+    parameters: {}
+    resource_type: instance_metadata_default
+    needs_review: false
+  - api: get_snapshot_block_public_access_state
+    paginate: false
+    parameters: {}
+    resource_type: snapshot_block_public_access_state
+    needs_review: false
+- service: ecr
+  client: ecr
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 4
+  apis:
+  - api: describe_image_scan_findings
+    paginate: true
+    parameters: {}
+    result_path: imageScanFindings.findings
+    resource_type: image_scan_finding
+    needs_review: true
+    note: 'required params without a parent API: repositoryName, imageId'
+  - api: describe_images
+    paginate: true
+    parameters: {}
+    result_path: imageDetails
+    resource_type: image
+    id_field: registryId
+    depends_on:
+      api: describe_repositories
+      params:
+        repositoryName: repositoryName
+    needs_review: false
+  - api: describe_repositories
+    paginate: true
+    parameters: {}
+    result_path: repositories
+    resource_type: repository
+    id_field: registryId
+    needs_review: false
+  - api: get_lifecycle_policy
+    paginate: false
+    parameters: {}
+    resource_type: lifecycle_policy
+    depends_on:
+      api: describe_repositories
+      params:
+        repositoryName: repositoryName
+    needs_review: false
+  - api: get_registry_scanning_configuration
+    paginate: false
+    parameters: {}
+    resource_type: registry_scanning_configuration
+    needs_review: false
+  - api: get_repository_policy
+    paginate: false
+    parameters: {}
+    resource_type: repository_policy
+    depends_on:
+      api: describe_repositories
+      params:
+        repositoryName: repositoryName
+    needs_review: false
+  - api: list_tags_for_resource
+    paginate: false
+    parameters: {}
+    result_path: tags
+    resource_type: tags_for_resource
+    needs_review: true
+    note: 'required params without a parent API: resourceArn'
+- service: ecs
+  client: ecs
+  scope: regional
+  enabled: true
+  tier: 2
+  collector: generic
+  rule_count: 11
+  apis:
+  - api: describe_clusters
+    paginate: false
+    parameters: {}
+    resource_type: cluster
+    needs_review: true
+    note: could not determine result_path
+  - api: describe_services
+    paginate: false
+    parameters: {}
+    resource_type: service
+    needs_review: true
+    note: 'required params without a parent API: services'
+  - api: describe_task_definition
+    paginate: false
+    parameters: {}
+    result_path: tags
+    resource_type: task_definition
+    needs_review: true
+    note: 'required params without a parent API: taskDefinition'
+  - api: list_clusters
+    paginate: true
+    parameters: {}
+    result_path: clusterArns
+    resource_type: cluster
+    needs_review: false
+  - api: list_services
+    paginate: true
+    parameters: {}
+    result_path: serviceArns
+    resource_type: service
+    needs_review: false
+  - api: list_task_definitions
+    paginate: true
+    parameters: {}
+    result_path: taskDefinitionArns
+    resource_type: task_definition
+    needs_review: false
+- service: efs
+  client: efs
+  scope: regional
+  enabled: true
+  tier: 1
+  collector: generic
+  rule_count: 6
+  apis:
+  - api: describe_access_points
+    paginate: true
+    parameters: {}
+    result_path: AccessPoints
+    resource_type: access_point
+    id_field: AccessPointId
+    needs_review: false
+  - api: describe_backup_policy
+    paginate: false
+    parameters: {}
+    resource_type: backup_policy
+    depends_on:
+      api: describe_access_points
+      params:
+        FileSystemId: FileSystemId
+    needs_review: false
+  - api: describe_file_system_policy
+    paginate: false
+    parameters: {}
+    resource_type: file_system_policy
+    depends_on:
+      api: describe_access_points
+      params:
+        FileSystemId: FileSystemId
+    needs_review: false
+  - api: describe_file_systems
+    paginate: true
+    parameters: {}
+    result_path: FileSystems
+    resource_type: file_system
+    id_field: OwnerId
+    needs_review: false
+  - api: describe_mount_targets
+    paginate: true
+    parameters: {}
+    result_path: MountTargets
+    resource_type: mount_target
+    id_field: OwnerId
+    needs_review: false
+- service: eks
+  client: eks
+  scope: regional
+  enabled: true
+  tier: 2
+  collector: generic
+  rule_count: 6
+  apis:
+  - api: describe_addon
+    paginate: false
+    parameters: {}
+    resource_type: addon
+    needs_review: true
+    note: 'required params without a parent API: clusterName, addonName'
+  - api: describe_cluster
+    paginate: false
+    parameters: {}
+    resource_type: cluster
+    needs_review: true
+    note: 'required params without a parent API: name'
+  - api: list_addons
+    paginate: true
+    parameters: {}
+    result_path: addons
+    resource_type: addon
+    needs_review: true
+    note: 'required params without a parent API: clusterName'
+  - api: list_clusters
+    paginate: true
+    parameters: {}
+    result_path: clusters
+    resource_type: cluster
+    needs_review: false
+- service: elasticache
+  client: elasticache
+  scope: regional
+  enabled: true
+  tier: 2
+  collector: generic
+  rule_count: 8
+  apis:
+  - api: describe_cache_clusters
+    paginate: true
+    parameters: {}
+    result_path: CacheClusters
+    resource_type: cache_cluster
+    id_field: CacheClusterId
+    needs_review: false
+  - api: describe_cache_subnet_groups
+    paginate: true
+    parameters: {}
+    result_path: CacheSubnetGroups
+    resource_type: cache_subnet_group
+    id_field: VpcId
+    needs_review: false
+  - api: describe_replication_groups
+    paginate: true
+    parameters: {}
+    result_path: ReplicationGroups
+    resource_type: replication_group
+    id_field: ReplicationGroupId
+    needs_review: false
+  - api: list_tags_for_resource
+    paginate: false
+    parameters: {}
+    result_path: TagList
+    resource_type: tags_for_resource
+    needs_review: true
+    note: 'required params without a parent API: ResourceName'
+- service: elasticbeanstalk
+  client: elasticbeanstalk
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 3
+  apis:
+  - api: describe_configuration_settings
+    paginate: false
+    parameters: {}
+    result_path: ConfigurationSettings
+    resource_type: configuration_setting
+    id_field: SolutionStackName
+    depends_on:
+      api: describe_environments
+      params:
+        ApplicationName: ApplicationName
+    needs_review: false
+  - api: describe_environments
+    paginate: true
+    parameters: {}
+    result_path: Environments
+    resource_type: environment
+    id_field: EnvironmentId
+    needs_review: false
+  - api: list_tags_for_resource
+    paginate: false
+    parameters: {}
+    result_path: ResourceTags
+    resource_type: tags_for_resource
+    needs_review: true
+    note: 'required params without a parent API: ResourceArn'
+- service: elb
+  client: elb
+  scope: regional
+  enabled: true
+  tier: 1
+  collector: generic
+  rule_count: 9
+  apis:
+  - api: describe_load_balancer_attributes
+    paginate: false
+    parameters: {}
+    resource_type: load_balancer_attribute
+    depends_on:
+      api: describe_load_balancers
+      params:
+        LoadBalancerName: LoadBalancerName
+    needs_review: false
+  - api: describe_load_balancers
+    paginate: true
+    parameters: {}
+    result_path: LoadBalancerDescriptions
+    resource_type: load_balancer
+    id_field: VPCId
+    needs_review: false
+  - api: describe_tags
+    paginate: false
+    parameters: {}
+    result_path: TagDescriptions
+    resource_type: tag
+    id_field: LoadBalancerName
+    needs_review: true
+    note: 'required params without a parent API: LoadBalancerNames'
+- service: elbv2
+  client: elbv2
+  scope: regional
+  enabled: true
+  tier: 1
+  collector: elbv2
+  rule_count: 12
+  apis:
+  - api: describe_listeners
+    paginate: true
+    parameters: {}
+    result_path: Listeners
+    resource_type: listener
+    id_field: ListenerArn
+    needs_review: false
+  - api: describe_load_balancer_attributes
+    paginate: false
+    parameters: {}
+    result_path: Attributes
+    resource_type: load_balancer_attribute
+    depends_on:
+      api: describe_listeners
+      params:
+        LoadBalancerArn: LoadBalancerArn
+    needs_review: false
+  - api: describe_load_balancers
+    paginate: true
+    parameters: {}
+    result_path: LoadBalancers
+    resource_type: load_balancer
+    id_field: CanonicalHostedZoneId
+    needs_review: false
+  - api: describe_rules
+    paginate: true
+    parameters: {}
+    result_path: Rules
+    resource_type: rule
+    id_field: RuleArn
+    needs_review: false
+  - api: describe_tags
+    paginate: false
+    parameters: {}
+    result_path: TagDescriptions
+    resource_type: tag
+    id_field: ResourceArn
+    needs_review: true
+    note: 'required params without a parent API: ResourceArns'
+- service: emr
+  client: emr
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 3
+  apis:
+  - api: describe_cluster
+    paginate: false
+    parameters: {}
+    resource_type: cluster
+    needs_review: true
+    note: 'required params without a parent API: ClusterId'
+  - api: get_block_public_access_configuration
+    paginate: false
+    parameters: {}
+    resource_type: block_public_access_configuration
+    needs_review: false
+  - api: list_clusters
+    paginate: true
+    parameters: {}
+    result_path: Clusters
+    resource_type: cluster
+    id_field: Id
+    needs_review: false
+- service: eventbridge
+  client: events
+  scope: regional
+  enabled: true
+  tier: 1
+  collector: generic
+  rule_count: 4
+  apis:
+  - api: describe_event_bus
+    paginate: false
+    parameters: {}
+    resource_type: event_bu
+    needs_review: true
+    note: could not determine result_path
+  - api: list_endpoints
+    paginate: false
+    parameters: {}
+    result_path: Endpoints
+    resource_type: endpoint
+    id_field: EndpointId
+    needs_review: false
+  - api: list_event_buses
+    paginate: false
+    parameters: {}
+    result_path: EventBuses
+    resource_type: event_bus
+    id_field: Name
+    needs_review: false
+  - api: list_tags_for_resource
+    paginate: false
+    parameters: {}
+    result_path: Tags
+    resource_type: tags_for_resource
+    needs_review: true
+    note: 'required params without a parent API: ResourceARN'
+  - api: get_resource_policy
+    client: schemas
+    paginate: false
+    parameters: {}
+    resource_type: resource_policy
+    needs_review: false
+  - api: list_registries
+    client: schemas
+    paginate: true
+    parameters: {}
+    result_path: Registries
+    resource_type: registry
+    id_field: RegistryName
+    needs_review: false
+- service: firehose
+  client: firehose
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 0
+  apis:
+  - api: describe_delivery_stream
+    paginate: false
+    parameters: {}
+    resource_type: delivery_stream
+    needs_review: true
+    note: 'required params without a parent API: DeliveryStreamName'
+  - api: list_delivery_streams
+    paginate: false
+    parameters: {}
+    resource_type: delivery_stream
+    needs_review: true
+    note: could not determine result_path
+  - api: list_tags_for_delivery_stream
+    paginate: false
+    parameters: {}
+    result_path: Tags
+    resource_type: tags_for_delivery_stream
+    needs_review: true
+    note: 'required params without a parent API: DeliveryStreamName'
+- service: fms
+  client: fms
+  scope: global
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 1
+  apis:
+  - api: list_compliance_status
+    paginate: true
+    parameters: {}
+    result_path: PolicyComplianceStatusList
+    resource_type: compliance_statu
+    id_field: PolicyId
+    depends_on:
+      api: list_policies
+      params:
+        PolicyId: PolicyId
+    needs_review: false
+  - api: list_policies
+    paginate: true
+    parameters: {}
+    result_path: PolicyList
+    resource_type: policy
+    id_field: PolicyId
+    needs_review: false
+- service: fsx
+  client: fsx
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 3
+  apis:
+  - api: describe_file_systems
+    paginate: true
+    parameters: {}
+    result_path: FileSystems
+    resource_type: file_system
+    id_field: OwnerId
+    needs_review: false
+- service: glacier
+  client: glacier
+  scope: regional
+  enabled: true
+  tier: 1
+  collector: generic
+  rule_count: 1
+  apis:
+  - api: get_vault_access_policy
+    paginate: false
+    parameters: {}
+    resource_type: vault_access_policy
+    needs_review: true
+    note: 'required params without a parent API: accountId, vaultName'
+  - api: list_tags_for_vault
+    paginate: false
+    parameters: {}
+    resource_type: tags_for_vault
+    needs_review: true
+    note: 'required params without a parent API: accountId, vaultName'
+  - api: list_vaults
+    paginate: true
+    parameters: {}
+    result_path: VaultList
+    resource_type: vault
+    id_field: VaultName
+    needs_review: true
+    note: 'required params without a parent API: accountId'
+- service: globalaccelerator
+  client: globalaccelerator
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 0
+  apis:
+  - api: list_accelerators
+    paginate: true
+    parameters: {}
+    result_path: Accelerators
+    resource_type: accelerator
+    id_field: Name
+    needs_review: false
+  - api: list_tags_for_resource
+    paginate: false
+    parameters: {}
+    result_path: Tags
+    resource_type: tags_for_resource
+    needs_review: true
+    note: 'required params without a parent API: ResourceArn'
+- service: glue
+  client: glue
+  scope: regional
+  enabled: true
+  tier: 2
+  collector: generic
+  rule_count: 12
+  apis:
+  - api: get_connections
+    paginate: true
+    parameters: {}
+    result_path: ConnectionList
+    resource_type: connection
+    id_field: Name
+    needs_review: false
+  - api: get_data_catalog_encryption_settings
+    paginate: false
+    parameters: {}
+    resource_type: data_catalog_encryption_setting
+    needs_review: false
+  - api: get_dev_endpoints
+    paginate: true
+    parameters: {}
+    result_path: DevEndpoints
+    resource_type: dev_endpoint
+    id_field: SubnetId
+    needs_review: false
+  - api: get_jobs
+    paginate: true
+    parameters: {}
+    result_path: Jobs
+    resource_type: job
+    id_field: Name
+    needs_review: false
+  - api: get_ml_transforms
+    paginate: false
+    parameters: {}
+    result_path: Transforms
+    resource_type: ml_transform
+    id_field: TransformId
+    needs_review: false
+  - api: get_resource_policy
+    paginate: false
+    parameters: {}
+    resource_type: resource_policy
+    needs_review: false
+  - api: get_security_configurations
+    paginate: true
+    parameters: {}
+    result_path: SecurityConfigurations
+    resource_type: security_configuration
+    id_field: Name
+    needs_review: false
+  - api: get_tags
+    paginate: false
+    parameters: {}
+    resource_type: tag
+    needs_review: true
+    note: 'required params without a parent API: ResourceArn'
+  - api: search_tables
+    paginate: false
+    parameters: {}
+    result_path: TableList
+    resource_type: search_table
+    id_field: CatalogId
+    opt_in_flag: --collect-search-tables
+    needs_review: false
+- service: guardduty
+  client: guardduty
+  scope: regional
+  enabled: true
+  tier: 1
+  collector: generic
+  rule_count: 9
+  apis:
+  - api: describe_organization_configuration
+    paginate: false
+    parameters: {}
+    result_path: Features
+    resource_type: organization_configuration
+    id_field: Name
+    needs_review: true
+    note: 'required params without a parent API: DetectorId'
+  - api: get_administrator_account
+    paginate: false
+    parameters: {}
+    resource_type: administrator_account
+    needs_review: true
+    note: 'required params without a parent API: DetectorId'
+  - api: get_detector
+    paginate: false
+    parameters: {}
+    result_path: Features
+    resource_type: detector
+    id_field: Name
+    needs_review: true
+    note: 'required params without a parent API: DetectorId'
+  - api: list_detectors
+    paginate: true
+    parameters: {}
+    result_path: DetectorIds
+    resource_type: detector
+    needs_review: false
+  - api: list_findings
+    paginate: true
+    parameters: {}
+    result_path: FindingIds
+    resource_type: finding
+    needs_review: true
+    note: 'required params without a parent API: DetectorId'
+  - api: list_members
+    paginate: true
+    parameters: {}
+    result_path: Members
+    resource_type: member
+    id_field: AccountId
+    needs_review: true
+    note: 'required params without a parent API: DetectorId'
+  - api: list_organization_admin_accounts
+    paginate: true
+    parameters: {}
+    result_path: AdminAccounts
+    resource_type: organization_admin_account
+    id_field: AdminAccountId
+    needs_review: false
+  - api: list_tags_for_resource
+    paginate: false
+    parameters: {}
+    resource_type: tags_for_resource
+    needs_review: true
+    note: 'required params without a parent API: ResourceArn'
+- service: iam
+  client: iam
+  scope: global
+  enabled: true
+  tier: 1
+  collector: iam
+  rule_count: 45
+  apis:
+  - api: generate_credential_report
+    paginate: false
+    parameters: {}
+    resource_type: generate_credential_report
+    needs_review: false
+  - api: get_account_password_policy
+    paginate: false
+    parameters: {}
+    resource_type: account_password_policy
+    needs_review: false
+  - api: get_account_summary
+    paginate: false
+    parameters: {}
+    resource_type: account_summary
+    needs_review: false
+  - api: get_credential_report
+    paginate: false
+    parameters: {}
+    resource_type: credential_report
+    needs_review: false
+  - api: get_group
+    paginate: true
+    parameters: {}
+    result_path: Users
+    resource_type: group
+    id_field: UserId
+    depends_on:
+      api: list_groups
+      params:
+        GroupName: GroupName
+    needs_review: false
+  - api: get_group_policy
+    paginate: false
+    parameters: {}
+    resource_type: group_policy
+    needs_review: true
+    note: 'required params without a parent API: GroupName, PolicyName'
+  - api: get_login_profile
+    paginate: false
+    parameters: {}
+    resource_type: login_profile
+    needs_review: false
+  - api: get_policy_version
+    paginate: false
+    parameters: {}
+    resource_type: policy_version
+    needs_review: true
+    note: 'required params without a parent API: PolicyArn, VersionId'
+  - api: get_role
+    paginate: false
+    parameters: {}
+    resource_type: role
+    depends_on:
+      api: list_roles
+      params:
+        RoleName: RoleName
+    needs_review: false
+  - api: get_role_policy
+    paginate: false
+    parameters: {}
+    resource_type: role_policy
+    needs_review: true
+    note: 'required params without a parent API: RoleName, PolicyName'
+  - api: get_service_last_accessed_details
+    paginate: false
+    parameters: {}
+    result_path: ServicesLastAccessed
+    resource_type: service_last_accessed_detail
+    id_field: ServiceName
+    needs_review: true
+    note: 'required params without a parent API: JobId'
+  - api: get_user_policy
+    paginate: false
+    parameters: {}
+    resource_type: user_policy
+    needs_review: true
+    note: 'required params without a parent API: UserName, PolicyName'
+  - api: list_access_keys
+    paginate: true
+    parameters: {}
+    result_path: AccessKeyMetadata
+    resource_type: access_key
+    id_field: AccessKeyId
+    needs_review: false
+  - api: list_attached_group_policies
+    paginate: true
+    parameters: {}
+    result_path: AttachedPolicies
+    resource_type: attached_group_policy
+    id_field: PolicyName
+    depends_on:
+      api: list_groups
+      params:
+        GroupName: GroupName
+    needs_review: false
+  - api: list_attached_role_policies
+    paginate: true
+    parameters: {}
+    result_path: AttachedPolicies
+    resource_type: attached_role_policy
+    id_field: PolicyName
+    depends_on:
+      api: list_roles
+      params:
+        RoleName: RoleName
+    needs_review: false
+  - api: list_attached_user_policies
+    paginate: true
+    parameters: {}
+    result_path: AttachedPolicies
+    resource_type: attached_user_policy
+    id_field: PolicyName
+    depends_on:
+      api: list_access_keys
+      params:
+        UserName: UserName
+    needs_review: false
+  - api: list_entities_for_policy
+    paginate: true
+    parameters: {}
+    result_path: PolicyGroups
+    resource_type: entities_for_policy
+    needs_review: true
+    note: 'required params without a parent API: PolicyArn'
+  - api: list_group_policies
+    paginate: true
+    parameters: {}
+    result_path: PolicyNames
+    resource_type: group_policy
+    depends_on:
+      api: list_groups
+      params:
+        GroupName: GroupName
+    needs_review: false
+  - api: list_groups
+    paginate: true
+    parameters: {}
+    result_path: Groups
+    resource_type: group
+    id_field: GroupId
+    needs_review: false
+  - api: list_mfa_devices
+    paginate: true
+    parameters: {}
+    result_path: MFADevices
+    resource_type: mfa_device
+    id_field: UserName
+    needs_review: false
+  - api: list_organizations_features
+    paginate: false
+    parameters: {}
+    resource_type: organizations_feature
+    needs_review: true
+    note: could not determine result_path
+  - api: list_policies
+    paginate: true
+    parameters: {}
+    result_path: Policies
+    resource_type: policy
+    id_field: PolicyId
+    needs_review: false
+  - api: list_policy_tags
+    paginate: true
+    parameters: {}
+    result_path: Tags
+    resource_type: policy_tag
+    needs_review: true
+    note: 'required params without a parent API: PolicyArn'
+  - api: list_role_policies
+    paginate: true
+    parameters: {}
+    result_path: PolicyNames
+    resource_type: role_policy
+    depends_on:
+      api: list_roles
+      params:
+        RoleName: RoleName
+    needs_review: false
+  - api: list_role_tags
+    paginate: true
+    parameters: {}
+    result_path: Tags
+    resource_type: role_tag
+    depends_on:
+      api: list_roles
+      params:
+        RoleName: RoleName
+    needs_review: false
+  - api: list_roles
+    paginate: true
+    parameters: {}
+    result_path: Roles
+    resource_type: role
+    id_field: RoleId
+    needs_review: false
+  - api: list_saml_provider_tags
+    paginate: true
+    parameters: {}
+    result_path: Tags
+    resource_type: saml_provider_tag
+    needs_review: true
+    note: 'required params without a parent API: SAMLProviderArn'
+  - api: list_saml_providers
+    paginate: false
+    parameters: {}
+    result_path: SAMLProviderList
+    resource_type: saml_provider
+    id_field: Arn
+    needs_review: false
+  - api: list_server_certificate_tags
+    paginate: true
+    parameters: {}
+    result_path: Tags
+    resource_type: server_certificate_tag
+    depends_on:
+      api: list_server_certificates
+      params:
+        ServerCertificateName: ServerCertificateName
+    needs_review: false
+  - api: list_server_certificates
+    paginate: true
+    parameters: {}
+    result_path: ServerCertificateMetadataList
+    resource_type: server_certificate
+    id_field: ServerCertificateId
+    needs_review: false
+  - api: list_service_specific_credentials
+    paginate: false
+    parameters: {}
+    result_path: ServiceSpecificCredentials
+    resource_type: service_specific_credential
+    id_field: ServiceSpecificCredentialId
+    needs_review: false
+  - api: list_user_policies
+    paginate: true
+    parameters: {}
+    result_path: PolicyNames
+    resource_type: user_policy
+    depends_on:
+      api: list_access_keys
+      params:
+        UserName: UserName
+    needs_review: false
+  - api: list_user_tags
+    paginate: true
+    parameters: {}
+    result_path: Tags
+    resource_type: user_tag
+    depends_on:
+      api: list_access_keys
+      params:
+        UserName: UserName
+    needs_review: false
+  - api: list_users
+    paginate: true
+    parameters: {}
+    result_path: Users
+    resource_type: user
+    id_field: UserId
+    needs_review: false
+  - api: list_virtual_mfa_devices
+    paginate: true
+    parameters: {}
+    result_path: VirtualMFADevices
+    resource_type: virtual_mfa_device
+    needs_review: false
+  - api: generate_service_last_accessed_details
+    paginate: false
+    parameters: {}
+    resource_type: generate_service_last_accessed_detail
+    depends_on:
+      api: list_groups
+      params:
+        Arn: Arn
+    opt_in_flag: --collect-generate-service-last-accessed-details
+    needs_review: false
+- service: inspector2
+  client: inspector2
+  scope: regional
+  enabled: true
+  tier: 1
+  collector: generic
+  rule_count: 2
+  apis:
+  - api: batch_get_account_status
+    paginate: false
+    parameters: {}
+    resource_type: account_statu
+    needs_review: false
+  - api: batch_get_finding_details
+    paginate: false
+    parameters: {}
+    resource_type: finding_detail
+    needs_review: true
+    note: 'required params without a parent API: findingArns'
+  - api: list_coverage
+    paginate: true
+    parameters: {}
+    result_path: coveredResources
+    resource_type: coverage
+    id_field: resourceId
+    needs_review: false
+  - api: list_findings
+    paginate: true
+    parameters: {}
+    result_path: findings
+    resource_type: finding
+    id_field: awsAccountId
+    needs_review: false
+- service: kafka
+  client: kafka
+  scope: regional
+  enabled: true
+  tier: 2
+  collector: generic
+  rule_count: 8
+  apis:
+  - api: list_clusters_v2
+    paginate: true
+    parameters: {}
+    result_path: ClusterInfoList
+    resource_type: clusters_v2
+    id_field: ClusterName
+    needs_review: false
+  - api: list_kafka_versions
+    paginate: true
+    parameters: {}
+    result_path: KafkaVersions
+    resource_type: kafka_version
+    needs_review: false
+  - api: list_connectors
+    client: kafkaconnect
+    paginate: true
+    parameters: {}
+    result_path: connectors
+    resource_type: connector
+    id_field: connectorName
+    needs_review: false
+- service: kinesis
+  client: kinesis
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 1
+  apis:
+  - api: describe_stream
+    paginate: true
+    parameters: {}
+    result_path: StreamDescription.Shards
+    resource_type: stream
+    needs_review: false
+  - api: list_streams
+    paginate: true
+    parameters: {}
+    result_path: StreamNames
+    resource_type: stream
+    id_field: StreamName
+    needs_review: false
+  - api: list_tags_for_stream
+    paginate: false
+    parameters: {}
+    result_path: Tags
+    resource_type: tags_for_stream
+    needs_review: false
+- service: kms
+  client: kms
+  scope: regional
+  enabled: true
+  tier: 1
+  collector: generic
+  rule_count: 5
+  apis:
+  - api: describe_key
+    paginate: false
+    parameters: {}
+    resource_type: key
+    depends_on:
+      api: list_keys
+      params:
+        KeyId: KeyId
+    needs_review: false
+  - api: get_key_policy
+    paginate: false
+    parameters: {}
+    resource_type: key_policy
+    depends_on:
+      api: list_keys
+      params:
+        KeyId: KeyId
+    needs_review: false
+  - api: get_key_rotation_status
+    paginate: false
+    parameters: {}
+    resource_type: key_rotation_statu
+    depends_on:
+      api: list_keys
+      params:
+        KeyId: KeyId
+    needs_review: false
+  - api: list_aliases
+    paginate: true
+    parameters: {}
+    result_path: Aliases
+    resource_type: alias
+    id_field: TargetKeyId
+    needs_review: false
+  - api: list_keys
+    paginate: true
+    parameters: {}
+    result_path: Keys
+    resource_type: key
+    id_field: KeyId
+    needs_review: false
+  - api: list_resource_tags
+    paginate: true
+    parameters: {}
+    result_path: Tags
+    resource_type: resource_tag
+    depends_on:
+      api: list_keys
+      params:
+        KeyId: KeyId
+    needs_review: false
+- service: lightsail
+  client: lightsail
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 4
+  apis:
+  - api: get_instances
+    paginate: true
+    parameters: {}
+    result_path: instances
+    resource_type: instance
+    id_field: blueprintId
+    needs_review: false
+  - api: get_relational_databases
+    paginate: true
+    parameters: {}
+    result_path: relationalDatabases
+    resource_type: relational_databas
+    id_field: relationalDatabaseBlueprintId
+    needs_review: false
+  - api: get_static_ips
+    paginate: true
+    parameters: {}
+    result_path: staticIps
+    resource_type: static_ip
+    needs_review: false
+- service: macie
+  client: macie2
+  scope: regional
+  enabled: true
+  tier: 1
+  collector: generic
+  rule_count: 2
+  apis:
+  - api: get_automated_discovery_configuration
+    paginate: false
+    parameters: {}
+    resource_type: automated_discovery_configuration
+    needs_review: false
+  - api: get_macie_session
+    paginate: false
+    parameters: {}
+    resource_type: macie_session
+    needs_review: false
+- service: memorydb
+  client: memorydb
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 0
+  apis:
+  - api: describe_clusters
+    paginate: true
+    parameters: {}
+    result_path: Clusters
+    resource_type: cluster
+    id_field: KmsKeyId
+    needs_review: false
+- service: mq
+  client: mq
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 4
+  apis:
+  - api: describe_broker
+    paginate: false
+    parameters: {}
+    resource_type: broker
+    depends_on:
+      api: list_brokers
+      params:
+        BrokerId: BrokerId
+    needs_review: false
+  - api: list_brokers
+    paginate: true
+    parameters: {}
+    result_path: BrokerSummaries
+    resource_type: broker
+    id_field: BrokerId
+    needs_review: false
+- service: neptune
+  client: neptune
+  scope: regional
+  enabled: true
+  tier: 2
+  collector: generic
+  rule_count: 10
+  apis:
+  - api: describe_db_cluster_snapshot_attributes
+    paginate: false
+    parameters: {}
+    resource_type: db_cluster_snapshot_attribute
+    depends_on:
+      api: describe_db_cluster_snapshots
+      params:
+        DBClusterSnapshotIdentifier: DBClusterSnapshotIdentifier
+    needs_review: false
+  - api: describe_db_cluster_snapshots
+    paginate: true
+    parameters: {}
+    result_path: DBClusterSnapshots
+    resource_type: db_cluster_snapshot
+    id_field: VpcId
+    needs_review: false
+  - api: describe_db_clusters
+    paginate: true
+    parameters: {}
+    result_path: DBClusters
+    resource_type: db_cluster
+    id_field: HostedZoneId
+    needs_review: false
+  - api: describe_db_subnet_groups
+    paginate: true
+    parameters: {}
+    result_path: DBSubnetGroups
+    resource_type: db_subnet_group
+    id_field: VpcId
+    needs_review: false
+  - api: list_tags_for_resource
+    paginate: false
+    parameters: {}
+    result_path: TagList
+    resource_type: tags_for_resource
+    needs_review: true
+    note: 'required params without a parent API: ResourceName'
+- service: networkfirewall
+  client: network-firewall
+  scope: regional
+  enabled: true
+  tier: 2
+  collector: generic
+  rule_count: 7
+  apis:
+  - api: describe_firewall
+    paginate: false
+    parameters: {}
+    resource_type: firewall
+    needs_review: true
+    note: could not determine result_path
+  - api: describe_firewall_policy
+    paginate: false
+    parameters: {}
+    resource_type: firewall_policy
+    needs_review: true
+    note: could not determine result_path
+  - api: describe_logging_configuration
+    paginate: false
+    parameters: {}
+    resource_type: logging_configuration
+    needs_review: true
+    note: could not determine result_path
+  - api: list_firewalls
+    paginate: true
+    parameters: {}
+    result_path: Firewalls
+    resource_type: firewall
+    id_field: TransitGatewayAttachmentId
+    needs_review: false
+- service: opensearch
+  client: opensearch
+  scope: regional
+  enabled: true
+  tier: 2
+  collector: generic
+  rule_count: 11
+  apis:
+  - api: describe_domain
+    paginate: false
+    parameters: {}
+    resource_type: domain
+    depends_on:
+      api: list_domain_names
+      params:
+        DomainName: DomainName
+    needs_review: false
+  - api: list_domain_names
+    paginate: false
+    parameters: {}
+    result_path: DomainNames
+    resource_type: domain_name
+    id_field: DomainName
+    needs_review: false
+  - api: list_tags
+    paginate: false
+    parameters: {}
+    result_path: TagList
+    resource_type: tag
+    needs_review: true
+    note: 'required params without a parent API: ARN'
+- service: organizations
+  client: organizations
+  scope: global
+  enabled: true
+  tier: 1
+  collector: generic
+  rule_count: 5
+  apis:
+  - api: describe_organization
+    paginate: false
+    parameters: {}
+    resource_type: organization
+    needs_review: true
+    note: could not determine result_path
+  - api: describe_policy
+    paginate: false
+    parameters: {}
+    resource_type: policy
+    needs_review: true
+    note: 'required params without a parent API: PolicyId'
+  - api: list_delegated_administrators
+    paginate: true
+    parameters: {}
+    result_path: DelegatedAdministrators
+    resource_type: delegated_administrator
+    id_field: Id
+    needs_review: false
+  - api: list_policies
+    paginate: true
+    parameters: {}
+    result_path: Policies
+    resource_type: policy
+    id_field: Id
+    needs_review: true
+    note: 'required params without a parent API: Filter'
+  - api: list_targets_for_policy
+    paginate: true
+    parameters: {}
+    result_path: Targets
+    resource_type: targets_for_policy
+    id_field: TargetId
+    needs_review: true
+    note: 'required params without a parent API: PolicyId'
+- service: rds
+  client: rds
+  scope: regional
+  enabled: true
+  tier: 1
+  collector: generic
+  rule_count: 34
+  apis:
+  - api: describe_certificates
+    paginate: true
+    parameters: {}
+    result_path: Certificates
+    resource_type: certificate
+    id_field: CertificateArn
+    needs_review: false
+  - api: describe_db_cluster_parameters
+    paginate: true
+    parameters: {}
+    result_path: Parameters
+    resource_type: db_cluster_parameter
+    id_field: ParameterName
+    needs_review: true
+    note: 'required params without a parent API: DBClusterParameterGroupName'
+  - api: describe_db_cluster_snapshot_attributes
+    paginate: false
+    parameters: {}
+    resource_type: db_cluster_snapshot_attribute
+    depends_on:
+      api: describe_db_cluster_snapshots
+      params:
+        DBClusterSnapshotIdentifier: DBClusterSnapshotIdentifier
+    needs_review: false
+  - api: describe_db_cluster_snapshots
+    paginate: true
+    parameters: {}
+    result_path: DBClusterSnapshots
+    resource_type: db_cluster_snapshot
+    id_field: VpcId
+    needs_review: false
+  - api: describe_db_clusters
+    paginate: true
+    parameters: {}
+    result_path: DBClusters
+    resource_type: db_cluster
+    id_field: HostedZoneId
+    needs_review: false
+  - api: describe_db_engine_versions
+    paginate: true
+    parameters: {}
+    result_path: DBEngineVersions
+    resource_type: db_engine_version
+    id_field: KMSKeyId
+    needs_review: false
+  - api: describe_db_instances
+    paginate: true
+    parameters: {}
+    result_path: DBInstances
+    resource_type: db_instance
+    id_field: KmsKeyId
+    needs_review: false
+  - api: describe_db_parameters
+    paginate: true
+    parameters: {}
+    result_path: Parameters
+    resource_type: db_parameter
+    id_field: ParameterName
+    needs_review: true
+    note: 'required params without a parent API: DBParameterGroupName'
+  - api: describe_db_snapshot_attributes
+    paginate: false
+    parameters: {}
+    resource_type: db_snapshot_attribute
+    depends_on:
+      api: describe_db_snapshots
+      params:
+        DBSnapshotIdentifier: DBSnapshotIdentifier
+    needs_review: false
+  - api: describe_db_snapshots
+    paginate: true
+    parameters: {}
+    result_path: DBSnapshots
+    resource_type: db_snapshot
+    id_field: VpcId
+    needs_review: false
+  - api: describe_event_subscriptions
+    paginate: true
+    parameters: {}
+    result_path: EventSubscriptionsList
+    resource_type: event_subscription
+    id_field: CustomerAwsId
+    needs_review: false
+  - api: list_tags_for_resource
+    paginate: false
+    parameters: {}
+    result_path: TagList
+    resource_type: tags_for_resource
+    needs_review: true
+    note: 'required params without a parent API: ResourceName'
+- service: redshift
+  client: redshift
+  scope: regional
+  enabled: true
+  tier: 2
+  collector: generic
+  rule_count: 10
+  apis:
+  - api: describe_cluster_parameters
+    paginate: true
+    parameters: {}
+    result_path: Parameters
+    resource_type: cluster_parameter
+    id_field: ParameterName
+    needs_review: true
+    note: 'required params without a parent API: ParameterGroupName'
+  - api: describe_cluster_snapshots
+    paginate: true
+    parameters: {}
+    result_path: Snapshots
+    resource_type: cluster_snapshot
+    id_field: VpcId
+    needs_review: false
+  - api: describe_cluster_subnet_groups
+    paginate: true
+    parameters: {}
+    result_path: ClusterSubnetGroups
+    resource_type: cluster_subnet_group
+    id_field: VpcId
+    needs_review: false
+  - api: describe_clusters
+    paginate: true
+    parameters: {}
+    result_path: Clusters
+    resource_type: cluster
+    id_field: VpcId
+    needs_review: false
+  - api: describe_logging_status
+    paginate: false
+    parameters: {}
+    resource_type: logging_statu
+    depends_on:
+      api: describe_cluster_snapshots
+      params:
+        ClusterIdentifier: ClusterIdentifier
+    needs_review: false
+- service: resourceexplorer2
+  client: resource-explorer-2
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 1
+  apis:
+  - api: list_indexes
+    paginate: true
+    parameters: {}
+    result_path: Indexes
+    resource_type: index
+    id_field: Arn
+    needs_review: false
+- service: rolesanywhere
+  client: rolesanywhere
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 0
+  apis:
+  - api: list_profiles
+    paginate: true
+    parameters: {}
+    result_path: profiles
+    resource_type: profile
+    id_field: profileId
+    needs_review: false
+  - api: list_tags_for_resource
+    paginate: false
+    parameters: {}
+    result_path: tags
+    resource_type: tags_for_resource
+    needs_review: true
+    note: 'required params without a parent API: resourceArn'
+  - api: list_trust_anchors
+    paginate: true
+    parameters: {}
+    result_path: trustAnchors
+    resource_type: trust_anchor
+    id_field: trustAnchorId
+    needs_review: false
+- service: route53
+  client: route53
+  scope: global
+  enabled: true
+  tier: 1
+  collector: route53
+  rule_count: 4
+  apis:
+  - api: list_hosted_zones
+    paginate: true
+    parameters: {}
+    result_path: HostedZones
+    resource_type: hosted_zone
+    id_field: Id
+    needs_review: false
+  - api: list_query_logging_configs
+    paginate: true
+    parameters: {}
+    result_path: QueryLoggingConfigs
+    resource_type: query_logging_config
+    id_field: Id
+    needs_review: false
+  - api: list_resource_record_sets
+    paginate: true
+    parameters: {}
+    result_path: ResourceRecordSets
+    resource_type: resource_record_set
+    id_field: HealthCheckId
+    depends_on:
+      api: list_query_logging_configs
+      params:
+        HostedZoneId: HostedZoneId
+    needs_review: false
+  - api: list_tags_for_resource
+    paginate: false
+    parameters: {}
+    resource_type: tags_for_resource
+    needs_review: true
+    note: 'required params without a parent API: ResourceType, ResourceId'
+  - api: describe_addresses
+    client: ec2
+    paginate: false
+    parameters: {}
+    result_path: Addresses
+    resource_type: address
+    id_field: AllocationId
+    needs_review: false
+  - api: get_domain_detail
+    client: route53domains
+    paginate: false
+    parameters: {}
+    resource_type: domain_detail
+    depends_on:
+      api: list_domains
+      params:
+        DomainName: DomainName
+    needs_review: false
+  - api: list_domains
+    client: route53domains
+    paginate: true
+    parameters: {}
+    result_path: Domains
+    resource_type: domain
+    id_field: DomainName
+    needs_review: false
+  - api: list_tags_for_domain
+    client: route53domains
+    paginate: false
+    parameters: {}
+    result_path: TagList
+    resource_type: tags_for_domain
+    depends_on:
+      api: list_domains
+      params:
+        DomainName: DomainName
+    needs_review: false
+- service: s3
+  client: s3
+  scope: global
+  enabled: true
+  tier: 1
+  collector: s3
+  rule_count: 20
+  apis:
+  - api: get_bucket_acl
+    paginate: false
+    parameters: {}
+    result_path: Grants
+    resource_type: bucket_acl
+    needs_review: true
+    note: 'required params without a parent API: Bucket'
+  - api: get_bucket_encryption
+    paginate: false
+    parameters: {}
+    resource_type: bucket_encryption
+    needs_review: true
+    note: 'required params without a parent API: Bucket'
+  - api: get_bucket_lifecycle_configuration
+    paginate: false
+    parameters: {}
+    result_path: Rules
+    resource_type: bucket_lifecycle_configuration
+    needs_review: true
+    note: 'required params without a parent API: Bucket'
+  - api: get_bucket_location
+    paginate: false
+    parameters: {}
+    resource_type: bucket_location
+    needs_review: true
+    note: 'required params without a parent API: Bucket'
+  - api: get_bucket_logging
+    paginate: false
+    parameters: {}
+    resource_type: bucket_logging
+    needs_review: true
+    note: 'required params without a parent API: Bucket'
+  - api: get_bucket_notification_configuration
+    paginate: false
+    parameters: {}
+    resource_type: bucket_notification_configuration
+    needs_review: true
+    note: 'required params without a parent API: Bucket'
+  - api: get_bucket_ownership_controls
+    paginate: false
+    parameters: {}
+    resource_type: bucket_ownership_control
+    needs_review: true
+    note: 'required params without a parent API: Bucket'
+  - api: get_bucket_policy
+    paginate: false
+    parameters: {}
+    resource_type: bucket_policy
+    needs_review: true
+    note: 'required params without a parent API: Bucket'
+  - api: get_bucket_replication
+    paginate: false
+    parameters: {}
+    resource_type: bucket_replication
+    needs_review: true
+    note: 'required params without a parent API: Bucket'
+  - api: get_bucket_tagging
+    paginate: false
+    parameters: {}
+    result_path: TagSet
+    resource_type: bucket_tagging
+    needs_review: true
+    note: 'required params without a parent API: Bucket'
+  - api: get_bucket_versioning
+    paginate: false
+    parameters: {}
+    resource_type: bucket_versioning
+    needs_review: true
+    note: 'required params without a parent API: Bucket'
+  - api: get_object_acl
+    paginate: false
+    parameters: {}
+    result_path: Grants
+    resource_type: object_acl
+    needs_review: true
+    note: 'required params without a parent API: Bucket, Key'
+  - api: get_object_lock_configuration
+    paginate: false
+    parameters: {}
+    resource_type: object_lock_configuration
+    needs_review: true
+    note: 'required params without a parent API: Bucket'
+  - api: get_public_access_block
+    paginate: false
+    parameters: {}
+    resource_type: public_access_block
+    needs_review: true
+    note: 'required params without a parent API: Bucket'
+  - api: list_buckets
+    paginate: true
+    parameters: {}
+    result_path: Buckets
+    resource_type: bucket
+    id_field: Name
+    needs_review: false
+  - api: list_objects_v2
+    paginate: true
+    parameters: {}
+    result_path: Contents
+    resource_type: objects_v2
+    needs_review: true
+    note: 'required params without a parent API: Bucket'
+  - api: get_access_point
+    client: s3control
+    paginate: false
+    parameters: {}
+    resource_type: access_point
+    needs_review: true
+    note: 'required params without a parent API: AccountId, Name'
+  - api: list_access_points
+    client: s3control
+    paginate: false
+    parameters: {}
+    result_path: AccessPointList
+    resource_type: access_point
+    id_field: BucketAccountId
+    needs_review: true
+    note: 'required params without a parent API: AccountId'
+  - api: list_multi_region_access_points
+    client: s3control
+    paginate: false
+    parameters: {}
+    result_path: AccessPoints
+    resource_type: multi_region_access_point
+    id_field: Name
+    needs_review: true
+    note: 'required params without a parent API: AccountId'
+  - api: head_bucket
+    paginate: false
+    parameters: {}
+    resource_type: head_bucket
+    opt_in_flag: --collect-head-bucket
+    needs_review: true
+    note: 'required params without a parent API: Bucket'
+- service: sagemaker
+  client: sagemaker
+  scope: regional
+  enabled: true
+  tier: 2
+  collector: generic
+  rule_count: 11
+  apis:
+  - api: describe_domain
+    paginate: false
+    parameters: {}
+    resource_type: domain
+    depends_on:
+      api: list_domains
+      params:
+        DomainId: DomainId
+    needs_review: false
+  - api: describe_endpoint_config
+    paginate: false
+    parameters: {}
+    resource_type: endpoint_config
+    depends_on:
+      api: list_endpoint_configs
+      params:
+        EndpointConfigName: EndpointConfigName
+    needs_review: false
+  - api: describe_model
+    paginate: false
+    parameters: {}
+    result_path: Containers
+    resource_type: model
+    id_field: ModelPackageName
+    depends_on:
+      api: list_models
+      params:
+        ModelName: ModelName
+    needs_review: false
+  - api: describe_notebook_instance
+    paginate: false
+    parameters: {}
+    resource_type: notebook_instance
+    depends_on:
+      api: list_notebook_instances
+      params:
+        NotebookInstanceName: NotebookInstanceName
+    needs_review: false
+  - api: describe_notebook_instance_lifecycle_config
+    paginate: false
+    parameters: {}
+    resource_type: notebook_instance_lifecycle_config
+    depends_on:
+      api: list_notebook_instances
+      params:
+        NotebookInstanceLifecycleConfigName: NotebookInstanceLifecycleConfigName
+    needs_review: false
+  - api: describe_processing_job
+    paginate: false
+    parameters: {}
+    result_path: ProcessingInputs
+    resource_type: processing_job
+    id_field: InputName
+    depends_on:
+      api: list_processing_jobs
+      params:
+        ProcessingJobName: ProcessingJobName
+    needs_review: false
+  - api: describe_training_job
+    paginate: false
+    parameters: {}
+    resource_type: training_job
+    depends_on:
+      api: list_training_jobs
+      params:
+        TrainingJobName: TrainingJobName
+    needs_review: false
+  - api: list_domains
+    paginate: true
+    parameters: {}
+    result_path: Domains
+    resource_type: domain
+    id_field: DomainId
+    needs_review: false
+  - api: list_endpoint_configs
+    paginate: true
+    parameters: {}
+    result_path: EndpointConfigs
+    resource_type: endpoint_config
+    id_field: EndpointConfigName
+    needs_review: false
+  - api: list_model_package_groups
+    paginate: true
+    parameters: {}
+    result_path: ModelPackageGroupSummaryList
+    resource_type: model_package_group
+    id_field: ModelPackageGroupName
+    needs_review: false
+  - api: list_model_packages
+    paginate: true
+    parameters: {}
+    result_path: ModelPackageSummaryList
+    resource_type: model_package
+    id_field: ModelPackageName
+    needs_review: false
+  - api: list_models
+    paginate: true
+    parameters: {}
+    result_path: Models
+    resource_type: model
+    id_field: ModelName
+    needs_review: false
+  - api: list_monitoring_schedules
+    paginate: true
+    parameters: {}
+    result_path: MonitoringScheduleSummaries
+    resource_type: monitoring_schedule
+    id_field: MonitoringScheduleName
+    needs_review: false
+  - api: list_notebook_instances
+    paginate: true
+    parameters: {}
+    result_path: NotebookInstances
+    resource_type: notebook_instance
+    id_field: NotebookInstanceName
+    needs_review: false
+  - api: list_processing_jobs
+    paginate: true
+    parameters: {}
+    result_path: ProcessingJobSummaries
+    resource_type: processing_job
+    id_field: ProcessingJobName
+    needs_review: false
+  - api: list_tags
+    paginate: true
+    parameters: {}
+    result_path: Tags
+    resource_type: tag
+    needs_review: true
+    note: 'required params without a parent API: ResourceArn'
+  - api: list_training_jobs
+    paginate: true
+    parameters: {}
+    result_path: TrainingJobSummaries
+    resource_type: training_job
+    id_field: TrainingJobName
+    needs_review: false
+- service: secretsmanager
+  client: secretsmanager
+  scope: regional
+  enabled: true
+  tier: 1
+  collector: generic
+  rule_count: 4
+  apis:
+  - api: get_resource_policy
+    paginate: false
+    parameters: {}
+    resource_type: resource_policy
+    needs_review: true
+    note: 'required params without a parent API: SecretId'
+  - api: list_secrets
+    paginate: true
+    parameters: {}
+    result_path: SecretList
+    resource_type: secret
+    id_field: KmsKeyId
+    needs_review: false
+- service: securityhub
+  client: securityhub
+  scope: regional
+  enabled: true
+  tier: 1
+  collector: generic
+  rule_count: 1
+  apis:
+  - api: describe_hub
+    paginate: false
+    parameters: {}
+    resource_type: hub
+    needs_review: true
+    note: could not determine result_path
+  - api: describe_organization_configuration
+    paginate: false
+    parameters: {}
+    resource_type: organization_configuration
+    needs_review: true
+    note: could not determine result_path
+  - api: get_enabled_standards
+    paginate: true
+    parameters: {}
+    result_path: StandardsSubscriptions
+    resource_type: enabled_standard
+    id_field: StandardsSubscriptionArn
+    needs_review: false
+  - api: list_enabled_products_for_import
+    paginate: true
+    parameters: {}
+    result_path: ProductSubscriptions
+    resource_type: enabled_products_for_import
+    needs_review: false
+  - api: list_organization_admin_accounts
+    paginate: true
+    parameters: {}
+    result_path: AdminAccounts
+    resource_type: organization_admin_account
+    id_field: AccountId
+    needs_review: false
+  - api: list_tags_for_resource
+    paginate: false
+    parameters: {}
+    resource_type: tags_for_resource
+    needs_review: true
+    note: 'required params without a parent API: ResourceArn'
+- service: servicecatalog
+  client: servicecatalog
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 0
+  apis:
+  - api: describe_portfolio
+    paginate: false
+    parameters: {}
+    resource_type: portfolio
+    depends_on:
+      api: list_portfolios
+      params:
+        Id: Id
+    needs_review: false
+  - api: describe_portfolio_shares
+    paginate: false
+    parameters: {}
+    result_path: PortfolioShareDetails
+    resource_type: portfolio_share
+    id_field: PrincipalId
+    needs_review: true
+    note: 'required params without a parent API: PortfolioId, Type'
+  - api: list_portfolios
+    paginate: true
+    parameters: {}
+    result_path: PortfolioDetails
+    resource_type: portfolio
+    id_field: Id
+    needs_review: false
+- service: ses
+  client: ses
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 1
+  apis:
+  - api: get_email_identity
+    client: sesv2
+    paginate: false
+    parameters: {}
+    result_path: Tags
+    resource_type: email_identity
+    needs_review: true
+    note: 'required params without a parent API: EmailIdentity'
+  - api: list_email_identities
+    client: sesv2
+    paginate: false
+    parameters: {}
+    result_path: EmailIdentities
+    resource_type: email_identity
+    id_field: IdentityName
+    needs_review: false
+- service: shield
+  client: shield
+  scope: global
+  enabled: true
+  tier: 2
+  collector: generic
+  rule_count: 6
+  apis:
+  - api: get_subscription_state
+    paginate: false
+    parameters: {}
+    resource_type: subscription_state
+    needs_review: false
+  - api: list_protections
+    paginate: true
+    parameters: {}
+    result_path: Protections
+    resource_type: protection
+    id_field: Id
+    needs_review: false
+- service: sns
+  client: sns
+  scope: regional
+  enabled: true
+  tier: 1
+  collector: generic
+  rule_count: 3
+  apis:
+  - api: get_topic_attributes
+    paginate: false
+    parameters: {}
+    resource_type: topic_attribute
+    depends_on:
+      api: list_topics
+      params:
+        TopicArn: TopicArn
+    needs_review: false
+  - api: list_subscriptions_by_topic
+    paginate: true
+    parameters: {}
+    result_path: Subscriptions
+    resource_type: subscriptions_by_topic
+    id_field: SubscriptionArn
+    depends_on:
+      api: list_topics
+      params:
+        TopicArn: TopicArn
+    needs_review: false
+  - api: list_tags_for_resource
+    paginate: false
+    parameters: {}
+    result_path: Tags
+    resource_type: tags_for_resource
+    needs_review: true
+    note: 'required params without a parent API: ResourceArn'
+  - api: list_topics
+    paginate: true
+    parameters: {}
+    result_path: Topics
+    resource_type: topic
+    id_field: TopicArn
+    needs_review: false
+- service: sqs
+  client: sqs
+  scope: regional
+  enabled: true
+  tier: 1
+  collector: generic
+  rule_count: 2
+  apis:
+  - api: get_queue_attributes
+    paginate: false
+    parameters: {}
+    resource_type: queue_attribute
+    needs_review: true
+    note: 'required params without a parent API: QueueUrl'
+  - api: list_queue_tags
+    paginate: false
+    parameters: {}
+    resource_type: queue_tag
+    needs_review: true
+    note: 'required params without a parent API: QueueUrl'
+  - api: list_queues
+    paginate: true
+    parameters: {}
+    result_path: QueueUrls
+    resource_type: queue
+    needs_review: false
+- service: ssm
+  client: ssm
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 3
+  apis:
+  - api: describe_document_permission
+    paginate: false
+    parameters: {}
+    result_path: AccountSharingInfoList
+    resource_type: document_permission
+    id_field: AccountId
+    needs_review: true
+    note: 'required params without a parent API: Name, PermissionType'
+  - api: describe_instance_information
+    paginate: true
+    parameters: {}
+    result_path: InstanceInformationList
+    resource_type: instance_information
+    id_field: InstanceId
+    needs_review: false
+  - api: get_document
+    paginate: false
+    parameters: {}
+    resource_type: document
+    depends_on:
+      api: describe_instance_information
+      params:
+        Name: Name
+    needs_review: false
+  - api: list_documents
+    paginate: true
+    parameters: {}
+    result_path: DocumentIdentifiers
+    resource_type: document
+    id_field: Name
+    needs_review: false
+  - api: list_resource_compliance_summaries
+    paginate: true
+    parameters: {}
+    result_path: ResourceComplianceSummaryItems
+    resource_type: resource_compliance_summary
+    id_field: ResourceId
+    needs_review: false
+- service: ssmincidents
+  client: ssm-incidents
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 1
+  apis:
+  - api: get_replication_set
+    paginate: false
+    parameters: {}
+    resource_type: replication_set
+    depends_on:
+      api: list_response_plans
+      params:
+        arn: arn
+    needs_review: false
+  - api: list_replication_sets
+    paginate: true
+    parameters: {}
+    result_path: replicationSetArns
+    resource_type: replication_set
+    needs_review: false
+  - api: list_response_plans
+    paginate: true
+    parameters: {}
+    result_path: responsePlanSummaries
+    resource_type: response_plan
+    id_field: displayName
+    needs_review: false
+  - api: list_tags_for_resource
+    paginate: false
+    parameters: {}
+    resource_type: tags_for_resource
+    needs_review: true
+    note: 'required params without a parent API: resourceArn'
+- service: stepfunctions
+  client: stepfunctions
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 0
+  apis:
+  - api: describe_state_machine
+    paginate: false
+    parameters: {}
+    resource_type: state_machine
+    depends_on:
+      api: list_state_machines
+      params:
+        stateMachineArn: stateMachineArn
+    needs_review: false
+  - api: list_state_machines
+    paginate: true
+    parameters: {}
+    result_path: stateMachines
+    resource_type: state_machine
+    id_field: stateMachineArn
+    needs_review: false
+  - api: list_tags_for_resource
+    paginate: false
+    parameters: {}
+    result_path: tags
+    resource_type: tags_for_resource
+    needs_review: true
+    note: 'required params without a parent API: resourceArn'
+- service: storagegateway
+  client: storagegateway
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 1
+  apis:
+  - api: describe_nfs_file_shares
+    paginate: false
+    parameters: {}
+    result_path: NFSFileShareInfoList
+    resource_type: nfs_file_share
+    id_field: FileShareId
+    needs_review: true
+    note: 'required params without a parent API: FileShareARNList'
+  - api: describe_smb_file_shares
+    paginate: false
+    parameters: {}
+    result_path: SMBFileShareInfoList
+    resource_type: smb_file_share
+    id_field: FileShareId
+    needs_review: true
+    note: 'required params without a parent API: FileShareARNList'
+  - api: list_file_shares
+    paginate: true
+    parameters: {}
+    result_path: FileShareInfoList
+    resource_type: file_share
+    id_field: FileShareId
+    needs_review: false
+  - api: list_gateways
+    paginate: true
+    parameters: {}
+    result_path: Gateways
+    resource_type: gateway
+    id_field: GatewayId
+    needs_review: false
+- service: transfer
+  client: transfer
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 2
+  apis:
+  - api: describe_server
+    paginate: false
+    parameters: {}
+    resource_type: server
+    depends_on:
+      api: list_servers
+      params:
+        ServerId: ServerId
+    needs_review: false
+  - api: list_servers
+    paginate: true
+    parameters: {}
+    result_path: Servers
+    resource_type: server
+    id_field: ServerId
+    needs_review: false
+- service: trustedadvisor
+  client: support
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 1
+  apis:
+  - api: describe_services
+    paginate: false
+    parameters: {}
+    result_path: services
+    resource_type: service
+    needs_review: false
+  - api: describe_trusted_advisor_check_result
+    paginate: false
+    parameters: {}
+    resource_type: trusted_advisor_check_result
+    needs_review: true
+    note: 'required params without a parent API: checkId'
+  - api: describe_trusted_advisor_checks
+    paginate: false
+    parameters: {}
+    result_path: checks
+    resource_type: trusted_advisor_check
+    needs_review: true
+    note: 'required params without a parent API: language'
+- service: vpc
+  client: ec2
+  scope: regional
+  enabled: true
+  tier: 1
+  collector: generic
+  rule_count: 11
+  apis:
+  - api: describe_flow_logs
+    paginate: true
+    parameters: {}
+    result_path: FlowLogs
+    resource_type: flow_log
+    id_field: FlowLogId
+    needs_review: false
+  - api: describe_network_interfaces
+    paginate: true
+    parameters: {}
+    result_path: NetworkInterfaces
+    resource_type: network_interface
+    id_field: NetworkInterfaceId
+    needs_review: false
+  - api: describe_route_tables
+    paginate: true
+    parameters: {}
+    result_path: RouteTables
+    resource_type: route_table
+    id_field: RouteTableId
+    needs_review: false
+  - api: describe_subnets
+    paginate: true
+    parameters: {}
+    result_path: Subnets
+    resource_type: subnet
+    id_field: AvailabilityZoneId
+    needs_review: false
+  - api: describe_vpc_endpoint_service_permissions
+    paginate: true
+    parameters: {}
+    result_path: AllowedPrincipals
+    resource_type: vpc_endpoint_service_permission
+    id_field: ServicePermissionId
+    depends_on:
+      api: describe_vpc_endpoint_services
+      params:
+        ServiceId: ServiceId
+    needs_review: false
+  - api: describe_vpc_endpoint_services
+    paginate: true
+    parameters: {}
+    result_path: ServiceDetails
+    resource_type: vpc_endpoint_service
+    id_field: ServiceId
+    needs_review: false
+  - api: describe_vpc_endpoints
+    paginate: true
+    parameters: {}
+    result_path: VpcEndpoints
+    resource_type: vpc_endpoint
+    id_field: VpcEndpointId
+    needs_review: false
+  - api: describe_vpc_peering_connections
+    paginate: true
+    parameters: {}
+    result_path: VpcPeeringConnections
+    resource_type: vpc_peering_connection
+    id_field: VpcPeeringConnectionId
+    needs_review: false
+  - api: describe_vpcs
+    paginate: true
+    parameters: {}
+    result_path: Vpcs
+    resource_type: vpc
+    id_field: OwnerId
+    needs_review: false
+  - api: describe_vpn_connections
+    paginate: false
+    parameters: {}
+    result_path: VpnConnections
+    resource_type: vpn_connection
+    id_field: TransitGatewayId
+    needs_review: false
+- service: waf
+  client: waf
+  scope: regional
+  enabled: true
+  tier: 1
+  collector: waf
+  rule_count: 7
+  apis:
+  - api: get_logging_configuration
+    paginate: false
+    parameters: {}
+    resource_type: logging_configuration
+    needs_review: true
+    note: 'required params without a parent API: ResourceArn'
+  - api: get_rule
+    paginate: false
+    parameters: {}
+    resource_type: rule
+    depends_on:
+      api: list_activated_rules_in_rule_group
+      params:
+        RuleId: RuleId
+    needs_review: false
+  - api: get_web_acl
+    paginate: false
+    parameters: {}
+    resource_type: web_acl
+    depends_on:
+      api: list_web_acls
+      params:
+        WebACLId: WebACLId
+    needs_review: false
+  - api: list_activated_rules_in_rule_group
+    paginate: true
+    parameters: {}
+    result_path: ActivatedRules
+    resource_type: activated_rules_in_rule_group
+    id_field: RuleId
+    needs_review: false
+  - api: list_rule_groups
+    paginate: true
+    parameters: {}
+    result_path: RuleGroups
+    resource_type: rule_group
+    id_field: RuleGroupId
+    needs_review: false
+  - api: list_rules
+    paginate: true
+    parameters: {}
+    result_path: Rules
+    resource_type: rule
+    id_field: RuleId
+    needs_review: false
+  - api: list_web_acls
+    paginate: true
+    parameters: {}
+    result_path: WebACLs
+    resource_type: web_acl
+    id_field: WebACLId
+    needs_review: false
+  - api: list_resources_for_web_acl
+    client: waf-regional
+    paginate: false
+    parameters: {}
+    resource_type: resources_for_web_acl
+    needs_review: true
+    note: 'required params without a parent API: WebACLId'
+- service: wafv2
+  client: wafv2
+  scope: regional
+  enabled: true
+  tier: 1
+  collector: wafv2
+  rule_count: 3
+  apis:
+  - api: get_logging_configuration
+    paginate: false
+    parameters: {}
+    resource_type: logging_configuration
+    needs_review: true
+    note: 'required params without a parent API: ResourceArn'
+  - api: get_web_acl
+    paginate: false
+    parameters: {}
+    resource_type: web_acl
+    needs_review: false
+  - api: list_resources_for_web_acl
+    paginate: false
+    parameters: {}
+    resource_type: resources_for_web_acl
+    needs_review: true
+    note: 'required params without a parent API: WebACLArn'
+  - api: list_tags_for_resource
+    paginate: false
+    parameters: {}
+    resource_type: tags_for_resource
+    needs_review: true
+    note: 'required params without a parent API: ResourceARN'
+  - api: list_web_acls
+    paginate: false
+    parameters: {}
+    result_path: WebACLs
+    resource_type: web_acl
+    id_field: Id
+    needs_review: true
+    note: 'required params without a parent API: Scope'
+- service: wellarchitected
+  client: wellarchitected
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 1
+  apis:
+  - api: list_tags_for_resource
+    paginate: false
+    parameters: {}
+    resource_type: tags_for_resource
+    depends_on:
+      api: list_workloads
+      params:
+        WorkloadArn: WorkloadArn
+    needs_review: false
+  - api: list_workloads
+    paginate: false
+    parameters: {}
+    result_path: WorkloadSummaries
+    resource_type: workload
+    id_field: WorkloadId
+    needs_review: false
+- service: workspaces
+  client: workspaces
+  scope: regional
+  enabled: true
+  tier: 3
+  collector: generic
+  rule_count: 2
+  apis:
+  - api: describe_tags
+    paginate: false
+    parameters: {}
+    result_path: TagList
+    resource_type: tag
+    needs_review: true
+    note: 'required params without a parent API: ResourceId'
+  - api: describe_workspaces
+    paginate: true
+    parameters: {}
+    result_path: Workspaces
+    resource_type: workspace
+    id_field: WorkspaceId
+    needs_review: false

@@ -1,0 +1,15 @@
+service: elasticache
+client: elasticache
+scope: regional
+tier: 2
+apis:
+  - {api: describe_cache_clusters, paginate: true, result_path: CacheClusters, resource_type: cache_cluster, id_field: CacheClusterId,
+     arn_field: ARN, parameters: {ShowCacheNodeInfo: true}, tags_from: tags_cluster.TagList}
+  - {api: list_tags_for_resource, alias: tags_cluster, resource_type: cache_cluster,
+     depends_on: {api: describe_cache_clusters, params: {ResourceName: ARN}}}
+  - {api: describe_replication_groups, paginate: true, result_path: ReplicationGroups, resource_type: replication_group,
+     id_field: ReplicationGroupId, arn_field: ARN, tags_from: tags_group.TagList}
+  - {api: list_tags_for_resource, alias: tags_group, resource_type: replication_group,
+     depends_on: {api: describe_replication_groups, params: {ResourceName: ARN}}}
+  - {api: describe_cache_subnet_groups, paginate: true, result_path: CacheSubnetGroups, resource_type: cache_subnet_group,
+     id_field: CacheSubnetGroupName, arn_field: ARN}

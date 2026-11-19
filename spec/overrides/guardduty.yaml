@@ -1,0 +1,7 @@
+service: guardduty
+client: guardduty
+scope: regional
+enablement_api: list_detectors
+apis:
+  - {api: list_detectors, paginate: true, result_path: DetectorIds, resource_type: detector, id_field: Value}
+  - {api: get_detector, resource_type: detector, depends_on: {api: list_detectors, params: {DetectorId: Value}}}

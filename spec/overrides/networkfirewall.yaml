@@ -1,0 +1,12 @@
+service: networkfirewall
+client: network-firewall
+scope: regional
+tier: 2
+apis:
+  - {api: list_firewalls, paginate: true, result_path: Firewalls, resource_type: firewall, id_field: FirewallArn, arn_field: FirewallArn}
+  - {api: describe_firewall, resource_type: firewall, depends_on: {api: list_firewalls, params: {FirewallArn: FirewallArn}}}
+  - {api: describe_logging_configuration, resource_type: firewall, depends_on: {api: list_firewalls, params: {FirewallArn: FirewallArn}}}
+  - {api: list_firewall_policies, paginate: true, result_path: FirewallPolicies, resource_type: firewall_policy, id_field: Arn, arn_field: Arn}
+  - {api: describe_firewall_policy, resource_type: firewall_policy, depends_on: {api: list_firewall_policies, params: {FirewallPolicyArn: Arn}}}
+  - {api: list_rule_groups, paginate: true, result_path: RuleGroups, resource_type: rule_group, id_field: Arn, arn_field: Arn}
+  - {api: describe_rule_group, resource_type: rule_group, depends_on: {api: list_rule_groups, params: {RuleGroupArn: Arn}}}

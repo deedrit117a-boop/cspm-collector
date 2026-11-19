@@ -1,0 +1,7 @@
+service: storagegateway
+client: storagegateway
+scope: regional
+tier: 3
+apis:
+  - {api: list_gateways, paginate: true, result_path: Gateways, resource_type: gateway, id_field: GatewayARN, arn_field: GatewayARN}
+  - {api: list_file_shares, paginate: true, result_path: FileShareInfoList, resource_type: file_share, id_field: FileShareARN, arn_field: FileShareARN}

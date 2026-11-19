@@ -1,0 +1,8 @@
+service: appstream
+client: appstream
+scope: regional
+tier: 3
+apis:
+  - {api: describe_fleets, result_path: Fleets, resource_type: fleet, id_field: Name, arn_field: Arn, tags_from: tags_fleet.Tags}
+  - {api: list_tags_for_resource, alias: tags_fleet, resource_type: fleet, depends_on: {api: describe_fleets, params: {ResourceArn: Arn}}}
+  - {api: describe_stacks, result_path: Stacks, resource_type: stack, id_field: Name, arn_field: Arn}

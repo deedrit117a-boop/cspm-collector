@@ -1,0 +1,17 @@
+# Models/guardrails use the bedrock client, agents and knowledge bases the bedrock-agent client.
+service: bedrock
+client: bedrock
+scope: regional
+tier: 2
+apis:
+  - {api: get_model_invocation_logging_configuration, setting: bedrock_invocation_logging}
+  - {api: list_custom_models, paginate: true, result_path: modelSummaries, resource_type: custom_model, id_field: modelArn, arn_field: modelArn}
+  - {api: get_custom_model, resource_type: custom_model, depends_on: {api: list_custom_models, params: {modelIdentifier: modelArn}}}
+  - {api: list_guardrails, paginate: true, result_path: guardrails, resource_type: guardrail, id_field: id, arn_field: arn}
+  - {api: get_guardrail, resource_type: guardrail, depends_on: {api: list_guardrails, params: {guardrailIdentifier: id}}}
+  - {api: list_agents, client: bedrock-agent, paginate: true, result_path: agentSummaries, resource_type: agent, id_field: agentId}
+  - {api: get_agent, client: bedrock-agent, resource_type: agent, arn_from: get_agent.agent.agentArn, depends_on: {api: list_agents, params: {agentId: agentId}}}
+  - {api: list_agent_aliases, client: bedrock-agent, paginate: true, resource_type: agent, depends_on: {api: list_agents, params: {agentId: agentId}}}
+  - {api: list_knowledge_bases, client: bedrock-agent, paginate: true, result_path: knowledgeBaseSummaries, resource_type: knowledge_base, id_field: knowledgeBaseId}
+  - {api: list_data_sources, client: bedrock-agent, paginate: true, resource_type: knowledge_base,
+     depends_on: {api: list_knowledge_bases, params: {knowledgeBaseId: knowledgeBaseId}}}

@@ -1,0 +1,12 @@
+# CloudWatch alarms plus CloudWatch Logs metric filters / log groups (the CIS monitoring rules read them together).
+service: cloudwatch
+client: cloudwatch
+scope: regional
+apis:
+  - {api: describe_alarms, paginate: true, result_path: MetricAlarms, resource_type: alarm, id_field: AlarmName,
+     arn_field: AlarmArn, tags_from: list_tags_for_resource.Tags}
+  - {api: list_tags_for_resource, resource_type: alarm, depends_on: {api: describe_alarms, params: {ResourceARN: AlarmArn}}}
+  - {api: describe_metric_filters, client: logs, paginate: true, result_path: metricFilters, resource_type: metric_filter,
+     id_field: "logGroupName+filterName"}
+  - {api: describe_log_groups, client: logs, paginate: true, result_path: logGroups, resource_type: log_group,
+     id_field: logGroupName, arn_field: arn}

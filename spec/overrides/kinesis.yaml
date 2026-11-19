@@ -1,0 +1,10 @@
+# describe_stream_summary instead of describe_stream: same encryption fields, without the full shard list.
+service: kinesis
+client: kinesis
+scope: regional
+tier: 3
+apis:
+  - {api: list_streams, paginate: true, result_path: StreamNames, resource_type: stream, id_field: Value,
+     arn_from: describe_stream_summary.StreamDescriptionSummary.StreamARN, tags_from: list_tags_for_stream.Tags}
+  - {api: describe_stream_summary, resource_type: stream, depends_on: {api: list_streams, params: {StreamName: Value}}}
+  - {api: list_tags_for_stream, resource_type: stream, depends_on: {api: list_streams, params: {StreamName: Value}}}

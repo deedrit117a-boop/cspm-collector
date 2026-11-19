@@ -1,0 +1,40 @@
+# Environment VALUES of models and jobs and notebook lifecycle scripts are masked. Training and processing jobs are
+# history (thousands of items): they are collected only with --opt-in --collect-sagemaker-jobs.
+service: sagemaker
+client: sagemaker
+scope: regional
+tier: 2
+apis:
+  - {api: list_notebook_instances, paginate: true, result_path: NotebookInstances, resource_type: notebook_instance,
+     id_field: NotebookInstanceName, arn_field: NotebookInstanceArn, tags_from: tags_notebook.Tags}
+  - {api: describe_notebook_instance, resource_type: notebook_instance,
+     depends_on: {api: list_notebook_instances, params: {NotebookInstanceName: NotebookInstanceName}}}
+  - {api: list_tags, alias: tags_notebook, paginate: true, resource_type: notebook_instance,
+     depends_on: {api: list_notebook_instances, params: {ResourceArn: NotebookInstanceArn}}}
+  - {api: list_notebook_instance_lifecycle_configs, paginate: true, result_path: NotebookInstanceLifecycleConfigs,
+     resource_type: notebook_lifecycle_config, id_field: NotebookInstanceLifecycleConfigName, arn_field: NotebookInstanceLifecycleConfigArn}
+  - {api: describe_notebook_instance_lifecycle_config, resource_type: notebook_lifecycle_config,
+     mask: ["b64:OnCreate[].Content", "b64:OnStart[].Content"],
+     depends_on: {api: list_notebook_instance_lifecycle_configs, params: {NotebookInstanceLifecycleConfigName: NotebookInstanceLifecycleConfigName}}}
+  - {api: list_models, paginate: true, result_path: Models, resource_type: model, id_field: ModelName, arn_field: ModelArn, tags_from: tags_model.Tags}
+  - {api: describe_model, resource_type: model, depends_on: {api: list_models, params: {ModelName: ModelName}},
+     mask: ["map:PrimaryContainer.Environment", "map:Containers[].Environment"]}
+  - {api: list_tags, alias: tags_model, paginate: true, resource_type: model, depends_on: {api: list_models, params: {ResourceArn: ModelArn}}}
+  - {api: list_endpoint_configs, paginate: true, result_path: EndpointConfigs, resource_type: endpoint_config,
+     id_field: EndpointConfigName, arn_field: EndpointConfigArn}
+  - {api: describe_endpoint_config, resource_type: endpoint_config,
+     depends_on: {api: list_endpoint_configs, params: {EndpointConfigName: EndpointConfigName}}}
+  - {api: list_domains, paginate: true, result_path: Domains, resource_type: domain, id_field: DomainId, arn_field: DomainArn}
+  - {api: describe_domain, resource_type: domain, depends_on: {api: list_domains, params: {DomainId: DomainId}}}
+  - {api: list_model_package_groups, paginate: true, result_path: ModelPackageGroupSummaryList, resource_type: model_package_group,
+     id_field: ModelPackageGroupName, arn_field: ModelPackageGroupArn}
+  - {api: list_monitoring_schedules, paginate: true, result_path: MonitoringScheduleSummaries, resource_type: monitoring_schedule,
+     id_field: MonitoringScheduleName, arn_field: MonitoringScheduleArn}
+  - {api: list_training_jobs, paginate: true, result_path: TrainingJobSummaries, resource_type: training_job, id_field: TrainingJobName,
+     arn_field: TrainingJobArn, opt_in_flag: "--collect-sagemaker-jobs"}
+  - {api: describe_training_job, resource_type: training_job, opt_in_flag: "--collect-sagemaker-jobs", mask: ["map:Environment"],
+     depends_on: {api: list_training_jobs, params: {TrainingJobName: TrainingJobName}}}
+  - {api: list_processing_jobs, paginate: true, result_path: ProcessingJobSummaries, resource_type: processing_job, id_field: ProcessingJobName,
+     arn_field: ProcessingJobArn, opt_in_flag: "--collect-sagemaker-jobs"}
+  - {api: describe_processing_job, resource_type: processing_job, opt_in_flag: "--collect-sagemaker-jobs", mask: ["map:Environment"],
+     depends_on: {api: list_processing_jobs, params: {ProcessingJobName: ProcessingJobName}}}
